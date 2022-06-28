@@ -8,7 +8,7 @@ density =0; % 0 -16
 methods = [1,2];%1 = proposed ,2=spades%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   2 = EM , 3 = ML , 4 = approximate ML , 5 = lin nonneg , 6 = lin appx ML nonneg 7 = integrated apxml
 func_methods = {@Proposed, @SPADES};
 colors = ['k';'r';'g';'m'];
-sparsity_vals = 100:50:500;
+sparsity_vals = 1000:100:5000;
 num_of_basis_functions = 600;%[200,600];
 sample_num =500;% [50,100,200,400,600];
 dlt = .01;
@@ -94,6 +94,7 @@ for i = 1 : length(sample_num)
                     MSE(g, r, n) = immse(true_density , estimated_density');%sum(sum((true_density - estimated_density).^2))/N;
                     if MSE(g, r, n) < min_mse
                     hold on;plot(sorted_X,estimated_density,colors(n),'LineWidth' , 2);
+                    min_mse = MSE(g, r, n);
                     end
                     
                 end
