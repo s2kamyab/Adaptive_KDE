@@ -8,12 +8,12 @@ density =0; % 0 -16
 methods = [1,2];%1 = proposed ,2=spades%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   2 = EM , 3 = ML , 4 = approximate ML , 5 = lin nonneg , 6 = lin appx ML nonneg 7 = integrated apxml
 func_methods = {@Proposed, @SPADES};
 colors = ['k';'r';'g';'m'];
-sparsity_vals = 0:0.5:10;
+sparsity_vals = 0.00000001:0.000001:0.000001;
 num_of_basis_functions = 600;%[200,600];
 sample_num =500;% [50,100,200,400,600];
 dlt = .01;
 nrun =5;
-
+min_mse = 10000000000000000;
 %% Estimating pdf
 
 th = 1e-5; % stopping threshold
@@ -92,7 +92,9 @@ for i = 1 : length(sample_num)
                     
                     estimated_density = w'*B_Z;
                     MSE(g, r, n) = immse(true_density , estimated_density');%sum(sum((true_density - estimated_density).^2))/N;
+                    if MSE(g, r, n) < min_mse
                     hold on;plot(sorted_X,estimated_density,colors(n),'LineWidth' , 2);
+                    end
                     
                 end
                 
@@ -109,7 +111,7 @@ end
 MSE_proposed = mean(MSE(:,:,1), 2);
 MSE_spades = mean(MSE(:,:,2), 2);
 % figure;plot([50,100,200,400,600], [MSE_proposed';MSE_spades'], 'LineWidth' , 2);
-figure;plot(0:0.5:10, [MSE_proposed';MSE_spades'], 'LineWidth' , 2);
-legend( 'Proposed AKDE (\gamma=7, M = 600)' , 'SPADES (\gamma=7, M = 600)');
+figure;plot(sparsity_vals, [MSE_proposed';MSE_spades'], 'LineWidth' , 2);
+legend( 'Proposed AKDE' , 'SPADES');
 xlabel('\gamma');ylabel('Average MSE');
 grid on;

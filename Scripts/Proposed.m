@@ -1,4 +1,4 @@
-function out = linear_appxml(input)%(X, means_b, bw_b , gamma)
+function out = Proposed(input)%(X, means_b, bw_b , gamma)
 % the density function is parametrized as a linear combination of a number of sample points
 % f_w(x) = \sum_i w_i b_i(x)
 % here, each b_i(x) is a Gaussian with mean means_b(i) and standard deviation bw_b
