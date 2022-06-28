@@ -8,7 +8,7 @@ density =0; % 0 -16
 methods = [1,2];%1 = proposed ,2=spades%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   2 = EM , 3 = ML , 4 = approximate ML , 5 = lin nonneg , 6 = lin appx ML nonneg 7 = integrated apxml
 func_methods = {@Proposed, @SPADES};
 colors = ['k';'r';'g';'m'];
-sparsity_vals = 0.00000001:0.000001:0.000001;
+sparsity_vals = 100:50:500;
 num_of_basis_functions = 600;%[200,600];
 sample_num =500;% [50,100,200,400,600];
 dlt = .01;
@@ -35,7 +35,7 @@ for i = 1 : length(sample_num)
     means_k = linspace(X_min, X_max, m_k);
     
     % compute covariance of y = 1/N \sum k(x_i) empirically
-    for ysmple = 1 : 500
+    for ysmple = 1 : 50
         X2 = pdf_sample(pdf, N)'; % sampled data
         % find samples of y = mean(K(x))
         X2_min = min(X2);

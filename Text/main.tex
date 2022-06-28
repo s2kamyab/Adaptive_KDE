@@ -1,0 +1,78 @@
+\documentclass[a4paper]{article}
+
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+%% Useful packages
+
+\usepackage[fleqn]{amsmath}
+\usepackage{breqn}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}	
+
+\title{Adaptive Kernel Density Estimation using the Generalized Method of Moments and Compressive Kernel Selection}
+\author{Shima Kamyab, Behrooz Nasihatkon, Reza Boostani}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We formulate the problem of varying bandwidth kernel density estimation as an optimization problem. The method estimates the density function as a linear combination of a large number of kernel functions with different bandwidths. The target function is a quadratic form obtained using the Generalized Method of Moments, plus an sparsity including $L_1$ term for adaptively choosing the best kernels. 
+\end{abstract}
+
+%\begin{Keyword} 
+\textbf{Keywords:} Generalized method of moments, Adaptive Kernel Density Estimation, Sparse Density Estimation, Sparse Mixture Models.
+%\end{keyword}
+
+\section{Introduction}
+\label{sec:intro}
+\input{Content/01_Introduction}
+
+\section{Related Works}
+\label{sec:rev}
+%\input{Content/02_Review.tex}
+
+\section{Our Method}
+\label{sec:prop}
+%\input{Content/03_Proposed_Method.tex}
+
+%\section{Derivations}
+%\label{sec:derivs}
+\input{Content/Derivations.tex}
+
+\section{Simulation Study}
+\label{sec:sim}
+\input{Content/04_Experiments}
+
+\section{Remarks and Future work}
+\label{sec:numerical}
+In practice, when a large number of highly correlated $k_j$-s are used, due to computational limitations, the matrix $C$ is
+usually rank deficient or ill-conditioned. In such cases the inverse matrix $C^{-1}$ cannot be computed. Consider the
+eigenvalue decomposition of the symmetric positive semi-definite matrix $C$.
+%\begin{align*}
+%\label{eq:svd_C}
+% C =V \Lambda V^T = [V_1  V_2] \Lambda  [V_1 V_2]^T 
+%\end{align*}
+where $V$ is the square matrix of eigenvectors, $\Lambda$ is the diagonal matrix of eigenvalues, and $[V_1 V_2]$
+represents the splitting of $V$ such that $V_2$ contains the eigenvectors corresponding to the zero eigenvalues. If the
+vector $e$ is distributed according to the covariance matrix $C$, then $e$ has to lie on the subspace spanned by the columns
+of $V_1$. Alternatively, $V_2^T e$ vanishes for any realization of $e$.  Therefore, we need to add the constraint $V_2^T
+e = V_2^T(Hw - b ) = 0$ In this case, the optimization problem \ref{eq:ml2_w} can be modified as 
+%\begin{align}
+%\label{eq:ml2_w_rank_def}
+%w^* &= \underset{\theta}{\operatorname{argmin}} (H w - \bar{y})^T c^\dagger (Hw - \bar{y} ) 
+%\text{subject to}\\
+%& V_2^TH  w = V_2^T b \\
+%&a_i \geq w_i,  a_i \geq -w_i
+%\end{align}
+where $C^{\dagger}$ is the pseudo-inverse. The above turns into a quadratic programming problem if the linear constraint $V_2^THw =
+V_2^T b$ is feasible.
+\bibliographystyle{acm}
+\bibliography{references}
+\end{document}

@@ -1,0 +1,90 @@
+We start by an example. Consider a random variable $X$ with a Gamma distribution $\Gamma(k,\theta)$  . The mean and second moments are respectively equal to $\varepsilon(X)=k\theta$  and $\varepsilon(X^2)=k(k+1)\theta^2$ . Given a set of sample points $x_1, …, x_n $, we could compute $y_1=\sum_{i=1}^nx_i/N$ and $y_2=\sum_{i=1}^n x_i^2/N$  . We can estimate the distribution parameters $k$ and $\theta$ by solving the polynomial equations:
+
+\begin{align}
+  \label{eq:poly_eq}
+  k \theta  &= y_1,
+  \\
+  k (k-1) \theta^2 &= y_2.
+\end{align}
+This solution, of course, is not generally optimal in the Maximum-likelihood sense. To get a better estimation, one may think
+of adding more equations. For example, by adding the third moment of $X$, we get $k (k+1) (k+2) \theta^3 = y_3 = \sum_{i=1}^n
+x_i^2/N$. In this way, we obtain an overdetermined system of polynomial equations. Now, the question is how to combine these
+equations such that the final solution is (close to) optimal in terms of maximum-likelihood. It is the object of this paper to
+provide an answer to this question.
+
+\subsection{The Method}
+Consider a set of independent sample points $x_1, x_2,\ldots,x_N \in R ^d$ drawn from a distribution with the parametric
+density function $f_\theta\colon \Omega \subseteq R^d \rightarrow R$. 
+To estimate the set of parameters $\theta$ we take the following approach. 
+Consider a set of
+functions $k_1,k_2,\ldots, k_M$ with $k_j\colon R^d \rightarrow R$. For each function, we consider the random variables
+$y_j = \sum_{i=1}^N k_j(x_i) / N$. The idea is to maximize the likelihood with respect to the variables $y_j$, rather
+than the samples $x_i$. We arrange $y_j$-s in a vector $y$, that is
+\begin{align}
+ \label{eq:y}
+  y =  \frac{1}{N} \sum_{i=1}^N k(x_i). 
+\end{align}
+where $k(x_i) = [k_1(x_i), \ldots, k_M(x_i)]^T$. The key observation is that $y$ is the sum of $N$ random vectors with the
+same distribution, and thus, its distribution can be well approximated with a Gaussian given sufficiently many
+sample points due to the \emph{Central Limit Theorem}. The mean of this distribution is
+\begin{align}
+  \label{eq:e}
+ \mu = \varepsilon(y) = \int_\omega k(x) f_\theta(x) dx, 
+\end{align}
+and its covariance matrix is equal to  
+\begin{align}
+  \label{eq:cov}
+  C = \varepsilon((y-\mu)(y-\mu)^T) = \frac{1}{N} \, \varepsilon\left(k(x)k(x)^T\right) - \frac{1}{N}\, \mu\,\mu^T.
+\end{align}
+Since the distribution of $y$ is approximation by a Gaussian, the maximum
+likelihood solution with respect to $y$ can be approximated as
+\begin{align}
+  \label{eq:ml_y}
+  \theta^* &= (\mu_\theta - y)^T C_\theta^{-1} (\mu_\theta - y)
+\end{align}
+where the subscript in $\mu_\theta$ and $C_\theta$ indicates that they are function of $\theta$. If the covariance matrix is
+somehow estimated as $\hat{c}$, the above turns to a (generally nonlinear) maximum likelihood problem
+\begin{align}
+  \label{eq:ml_y_ls}
+  \theta^* &= \underset{\theta}{\operatorname{argmin}}(\mu_\theta - y)^T \hat{c}^{-1} (\mu_\theta - y). 
+\end{align}
+Returning to our problem in the introduction section, \ref{eq:ml_y_ls} gives a way of (nearly) optimally solving the
+overdetermined set of equations $\mu_\theta = y$. We try to choose functions $k_j$ such that $\mu_\theta$ gets a
+desirable form and \ref{eq:ml_y_ls} or \ref{eq:ml_y} become a well-behaved optimization problem. 
+\subsection{Linear mixture of fixed basis functions}
+Now, assume that $f$ is parameterised as a linear combination of a set of basis functions $b_k$, that is
+\begin{align}
+  f_w(x) = \sum_{k=1}^P w_k b_k(x) = b(x)^T w,
+\end{align}
+where $b\colon R^d \rightarrow R^P$ is the vertical concatenation of $b_k$-s and $w = [w_1,w_2,\ldots,w_P]^T \in R^P$. In this case, the problem \eqref{eq:ml_y_ls}
+turns to
+\begin{align}
+  \label{eq:ml2_w}
+  w^* = \underset{\theta}{\operatorname{argmin}} \left(H w - \bar{y} \right)^T \hat{c}^{-1} \left(Hw - \bar{y} \right) 
+\end{align}
+where, 
+\begin{align}
+  \label{eq:H}
+  H = \int_\omega k(x) b(x)^T dx \in R^{M * P}.
+\end{align}
+In order to lead the problem toward finding sparse w-s, we added l1 penalty to the optimization problem. Therefore, the problem will be as \eqref{eq:sparse} 
+\begin{equation}
+%\begin{align*}
+\label{eq:sparse}
+[w^*,a^*] =\underset{w,a}{\operatorname{argmin}}\{(Hw-\bar{y})^T\hat{c}^{-1}(Hw-\bar{y})+\gamma\sum_{i=1}^Pa_i \} 
+s.t \hspace{3cm} a_i \geq w_i,  a_i \geq -w_i
+%\end{align*}
+\end{equation}
+We can write \ref{eq:sparse} as a conditional quadratic programming problem:
+\begin{align*}
+\label{eq:quadP}
+[w^*,a^*]&=\underset{w,a}{\operatorname{argmin}}\{\frac{1}{2}(w'^TA'w')+f'^Tw'\}\\
+s.t  &\hspace{2cm} a_i \geq w_i,  a_i \geq -w_i \\
+\mbox{where},\\
+&w_{P*1}=[w_1,\ldots,w_P]^T \\
+&A_{P*P}=-2H^T\hat{c}^{-1}H \\
+&f_{P*1}=-2H^T\hat{c}^{-1}\bar{y} \\
+&w'_{2P*1}=[w_1, w_2, ...,w_P, a_1, a_2 , ..., a_P]^T  \\ 
+&A'_{(2P*2P)}=\left[{ \begin{array}{c c}  A_{P*P} & 0 \\ 0 & 0 \\  \end{array}} \right] \\ ,  &f'_{(2P*1)} =[f_{P*1}^T,1,1,...,1]^T \\ \\
+\end{align*}
+In (\ref{eq:H}) we need to specify basis functions $b_i$-s and $k_j$-s. We choose $k_j$-s as 10 gaussian functions with fix bandwidths. In the case of $b_i$-s, assuming that they are gaussian kernels, we adopted an adaptive scheme for selection of appropriate bandwidths for each kernel. We put gaussian kernels with different bandwidths on each sample data and consider these kernels as $b_i$-s. In the process of quadratic programming the suitable kernel for each interval will be selected. This is shown in simulation section.
