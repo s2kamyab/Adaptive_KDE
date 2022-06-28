@@ -1,4 +1,5 @@
 function out = SPADES(input)
+global f lambda N k
 % Implementation of SPADES method as in
 %Bunea F, Tsybakov AB, Wegkamp MH, Barbu A. Spades and mixture models. The Annals of Statistics. 2010 Aug;38(4):2525-58.
 %the density function is parametrized as a linear combination of a number of sample points
@@ -40,10 +41,13 @@ while flag == 1
         lambda =  lambda_0_negj;
     else
         % use linmin to find best lambda_j
-%         grid_lambda_j = 
+        for k = 1:m_b % aya har bar meghdare jadid jaygozin mishavad?
+            lambda(k) = simulannealbnd(@g_j_linmin,lambda(k));
+        end
     end
     %4 - if |lambda_old - lambda|> epsilon go to 2 epsilon = precision level
     if norm(lambda_old - lambda) <= 0.001
         flag = 0;
     end
 end
+out.w = lambda;

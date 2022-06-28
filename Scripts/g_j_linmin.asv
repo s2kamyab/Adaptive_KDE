@@ -1,0 +1,3 @@
+function out = g_j_linmin()
+g
+out = -(2/N)*sum(f(:,j)) + 2*f(:,j)*norm(sum(f.*repmat(lambda_0_negj , N,1) , 2));
