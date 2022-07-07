@@ -4,12 +4,12 @@ clc;
 close all
 %% initialization
 
-density =0; % 0 -16
-methods = [1,2];%1 = proposed ,2=spades%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   2 = EM , 3 = ML , 4 = approximate ML , 5 = lin nonneg , 6 = lin appx ML nonneg 7 = integrated apxml
+density =5; % 0 -16
+methods = [1, 2];%1 = proposed ,2=spades%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   2 = EM , 3 = ML , 4 = approximate ML , 5 = lin nonneg , 6 = lin appx ML nonneg 7 = integrated apxml
 func_methods = {@Proposed, @SPADES};
 colors = ['k';'r';'g';'m'];
-sparsity_vals = 1000:100:5000;
-num_of_basis_functions = 600;%[200,600];
+sparsity_vals = 0.1:0.5:5;
+num_of_basis_functions = 60;%[200,600];
 sample_num =500;% [50,100,200,400,600];
 dlt = .01;
 nrun =5;
@@ -68,7 +68,7 @@ for i = 1 : length(sample_num)
         input.m_b = num_of_basis_functions(M);% number of basis functions
         for c = 1 : q
             for d = 1 : num_of_basis_functions(M)/q
-                bw_b(c,d) = c *20*(X_max - X_min)/input.m_b;
+                bw_b(c,d) = c *(X_max - X_min)/input.m_b;
             end
         end
         input.bw_b = bw_b(:);
@@ -90,7 +90,7 @@ for i = 1 : length(sample_num)
                     B_Z = eval_kernels(sorted_X, 'Gaussian', {input.means_b, input.bw_b});
 %                     B_X = eval_kernels(X, 'Gaussian', {input.means_b, input.bw_b});
                     
-                    estimated_density = w'*B_Z;
+                    estimated_density = w*B_Z;
                     MSE(g, r, n) = immse(true_density , estimated_density');%sum(sum((true_density - estimated_density).^2))/N;
                     if MSE(g, r, n) < min_mse
                     hold on;plot(sorted_X,estimated_density,colors(n),'LineWidth' , 2);
