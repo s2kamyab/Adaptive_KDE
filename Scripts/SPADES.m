@@ -1,73 +1,45 @@
 function out = SPADES(input)
-global f lambda N k
-% Implementation of SPADES method as in
-%Bunea F, Tsybakov AB, Wegkamp MH, Barbu A. Spades and mixture models. The Annals of Statistics. 2010 Aug;38(4):2525-58.
-%the density function is parametrized as a linear combination of a number of sample points
-% f_w(x) = \sum_i w_i b_i(x)
-% here, each b_i(x) is a Gaussian with mean means_b(i) and standard deviation bw_b
-addpath('l1_ls_matlab\');
+
 X = input.X;
 [X , ~] = sort(X);
 means_b = input.means_b;
 bw_b = input.bw_b;
 w = input.gamma; % regularization wieght
-N = length(X); % number of sample points
-m_b = max(size(means_b)); % number of basis functions
-p = m_b;%size(means_b,1);% number of basis functions
+n = length(X); % number of sample points
+M = max(size(means_b)); % number of basis functions
+p = M;%size(means_b,1);% number of basis functions
 
 % introducing number of applied functions all Gaussian all with bandwidth bw and with different centres
 X_min = min(X);
 X_max = max(X);
 % create fixed Gaussian basis functions f_j
 clear f
-for j = 1: m_b
+for j = 1: M
     f(:,j) = normpdf(X , means_b(j) , bw_b(j));
+    a(j) = sum(f(:,j));
 end
-%% l1_ls Matlab toolbox for solving l1 norm least squares optimization
-% My proposed solution:
-% If we denote [?_1,…, ?_? ]^? (fixed basis functions) by A and [?_1, …., ?_?] by ? and [?_1,…,?_? ]^? by W, we have:
-% min_? ????^2?2/? ?(?=1…?)?(?_? )?+2?|?|
-% I believe we could equivalently minimize:
-% ????1?^2+2?|?|
-% Because
-% ????1?^2= ????^2+1^2?2??
-% Where, maximizing 2?? is equivalent to maximizing its empirical expectation
-% ?2/? ?_(?=1…?)\sum ?(?_? )?
-%Therefore, using l1_ls MATLAB command we have:
-
-A=f;
-lambdaa = w;
-y = ones(N,1);
-out=[];
-[t,status] = l1_ls(A,y,lambdaa,1);
-out.w = t';
-
-
-% %% Cooerdinate Descent Algorithm
-% % 1- initial all lambdas to 1/m_b
-% lambda = 1/m_b*ones(1,m_b);
-% % 2 - choose a direction j from {1...m_b} and set lambda_old = lambda
-% 
-% flag = 1;
-% while flag == 1
-%     j = randi(m_b);
-%     lambda_old = lambda;
-%     %3- if g_j(lambda^0_j)|<w then set lambda = lambda^0_j otherwise obtain
-%     %lambda by line minimization in direction j
-%     lambda_0_negj = lambda;
-%     lambda_0_negj(j)=0;
-%     g_j_lambda_0_negj = -(2/N)*sum(f(:,j)) + 2*f(:,j)*norm(sum(f.*repmat(lambda_0_negj , N,1) , 2));
-%     if abs(g_j_lambda_0_negj) < w
-%         lambda =  lambda_0_negj;
-%     else
-%         % use linmin to find best lambda_j
-%         for k = 1:m_b % aya har bar meghdare jadid jaygozin mishavad?
-%             lambda(k) = simulannealbnd(@g_j_linmin,lambda(k));
-%         end
-%     end
-%     %4 - if |lambda_old - lambda|> epsilon go to 2 epsilon = precision level
-%     if norm(lambda_old - lambda) <= 0.001
-%         flag = 0;
-%     end
-% end
-% out.w = lambda;
+ %% Soving via Quadratic Programming
+ 
+ % Actual optimization statement:
+ % f_lambda = \sum_j=1..M \lambda_j f_j(x)
+ % -2/n \sum_i=1...n f_lambda (X_i) + ||f_lambda||^2 + 2\sum_j=1..M w_j|\lambda_j|
+ % Quadratic optimization form:
+ %   min_\lambda,t  X^TQX+C^T ,     s. t. BX >=0
+ % X = [\lambda , t]^T
+ % C = [2/n *a , 2W*1]^T
+ % a_j = \sum_i=1..n f_j(x_i) , j=1..M
+ % Q = [A , 0; 0, 0]_(2M*2M)
+ % A_ij = \int f_i(x)f_j(x)dx
+ % B = [I_M , -I_M ; I_M, I_M]
+ for i =1 : M
+     for j = 1 : M
+         A(i,j) = trapz(X , f(:,i).*f(:,j));
+     end
+ end
+ C = [2/n * a , 2 * w * ones(1,M)]';
+ Q = [A , zeros(M,M);zeros(M,M), zeros(M,M)];
+ B = [eye(M) , -eye(M) ; eye(M) , eye(M)];
+ 
+ X_hat = quadprog(Q, C, -B, zeros(2*M,1));
+ out.w = X_hat(1:M)'/sum(X_hat(1:M));
+ 
