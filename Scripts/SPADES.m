@@ -7,16 +7,16 @@ bw_b = input.bw_b;
 w = input.gamma; % regularization wieght
 n = length(X); % number of sample points
 M = max(size(means_b)); % number of basis functions
-p = M;%size(means_b,1);% number of basis functions
 
-% introducing number of applied functions all Gaussian all with bandwidth bw and with different centres
+
 X_min = min(X);
 X_max = max(X);
-% create fixed Gaussian basis functions f_j
+
+% create fixed Gaussian basis functions f_js
 clear f
 for j = 1: M
     f(:,j) = normpdf(X , means_b(j) , bw_b(j));
-    a(j) = sum(f(:,j));
+    a(1,j) = sum(f(:,j));
 end
  %% Soving via Quadratic Programming
  
@@ -24,13 +24,14 @@ end
  % f_lambda = \sum_j=1..M \lambda_j f_j(x)
  % -2/n \sum_i=1...n f_lambda (X_i) + ||f_lambda||^2 + 2\sum_j=1..M w_j|\lambda_j|
  % Quadratic optimization form:
- %   min_\lambda,t  X^TQX+C^T ,     s. t. BX >=0
+ %   min_\lambda,t  X^TQX + C^T ,     s. t. BX >=0
  % X = [\lambda , t]^T
  % C = [2/n *a , 2W*1]^T
  % a_j = \sum_i=1..n f_j(x_i) , j=1..M
  % Q = [A , 0; 0, 0]_(2M*2M)
  % A_ij = \int f_i(x)f_j(x)dx
- % B = [I_M , -I_M ; I_M, I_M]
+ % B = [I_M , -I_M ; -I_M, -I_M]
+ 
  for i =1 : M
      for j = 1 : M
          A(i,j) = trapz(X , f(:,i).*f(:,j));
@@ -38,8 +39,8 @@ end
  end
  C = [2/n * a , 2 * w * ones(1,M)]';
  Q = [A , zeros(M,M);zeros(M,M), zeros(M,M)];
- B = [eye(M) , -eye(M) ; eye(M) , eye(M)];
+ B = [eye(M) , -eye(M) ; -eye(M) , -eye(M)];
  
- X_hat = quadprog(Q, C, -B, zeros(2*M,1));
+ X_hat = quadprog(Q, C, B, zeros(2*M,1));
  out.w = X_hat(1:M)'/sum(X_hat(1:M));
  

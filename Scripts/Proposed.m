@@ -6,7 +6,7 @@ function out = Proposed(input)%(X, means_b, bw_b , gamma)
 X = input.X;
 [X , ~] = sort(X);
 means_b = input.means_b; 
-bw_b = input.bw_b*50;
+bw_b = input.bw_b;
 gamma = input.gamma;
 N = length(X); % number of sample points
 m_b = max(size(means_b)); % number of basis functions
@@ -84,7 +84,7 @@ f = [-2 * (H'*Sig_inv) *y;  gamma * ones(m_b,1)];
 out = struct();
 w = quadprog(H_quadprog, f, A , zeros(2*m_b , 1));%, Aeq, 1);
 w = w(1:m_b)';
-% w = w / sum(w);
+w = w / sum(w);
 out.w = w;
 %w2 = lscov(KB,kb,Sig);
 
