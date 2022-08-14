@@ -4,15 +4,15 @@ clc;
 close all
 %% initialization
 
-density_num =4; % 0 -16
+density_num =2; % 0 -16
 methods = [1,2];%1 = proposed ,2=spades
 func_methods = {@Proposed, @SPADES};
 colors = ['k';'r';'g';'m'];
-sparsity_vals = 20:10:400;
+sparsity_vals = logspace(-5,5,100);
 num_of_basis_functions = 100;%[200,600];
-sample_num =1000;% [50,100,200,400,600];
+sample_num =100;% [50,100,200,400,600];
 dlt = .01;
-nrun =50;
+nrun =5;
 min_mse_proposed = 10000000000000000;
 min_mse_spades = 10000000000000000;
 %% Estimating pdf
@@ -108,9 +108,10 @@ MSE_proposed = mean(MSE(:,:,1), 2);
 MSE_spades = mean(MSE(:,:,2), 2);
 
 hold on;plot(sorted_X,estimated_density_proposed,colors(1),'LineWidth' , 2);
+grid on;
 hold on;plot(sorted_X,estimated_density_spades,colors(2),'LineWidth' , 2);
 legend('GT','Proposed AKDE', 'SPADES'); grid on;
 
 figure; 
-subplot(1,2,1);plot(sparsity_vals, MSE_proposed', 'LineWidth' , 2);legend( 'Proposed AKDE' ); grid on;xlabel('\gamma');ylabel('Average MSE');
-subplot(1,2,2); plot(sparsity_vals, MSE_spades' , 'LineWidth' , 2);legend( 'SPADES');xlabel('\gamma');ylabel('Average MSE');grid on;
+subplot(1,2,1);semilogx(sparsity_vals, MSE_proposed', 'LineWidth' , 2);legend( 'Proposed AKDE' ); grid on;xlabel('\gamma');ylabel('Average MSE');%set(gca, 'XScale', 'log')
+subplot(1,2,2); semilogx(sparsity_vals, MSE_spades' , 'LineWidth' , 2);legend( 'SPADES');xlabel('\gamma');ylabel('Average MSE');grid on;%set(gca, 'XScale', 'log')
