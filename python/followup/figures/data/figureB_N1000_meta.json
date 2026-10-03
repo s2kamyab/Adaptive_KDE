@@ -1,0 +1,7 @@
+{
+  "figure": "B",
+  "N": 1000,
+  "R": 30,
+  "bands": "pointwise 10th-90th percentile over independent datasets",
+  "not": "these are NOT confidence bands for the true density"
+}

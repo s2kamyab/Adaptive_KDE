@@ -1,0 +1,8 @@
+cost: confirm done
+cost: hr done
+N                            200   500   1000  5000
+stage   method                                     
+confirm I4_simplex_l2       0.721   NaN 1.252 1.982
+        I7_simplex_cvanchor 0.184   NaN 0.356 0.641
+hr      I4_simplex_l2         NaN 0.942   NaN 1.995
+        I7_simplex_cvanchor   NaN 0.204   NaN 0.374

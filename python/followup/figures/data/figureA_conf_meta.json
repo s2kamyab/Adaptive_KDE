@@ -1,0 +1,11 @@
+{
+  "figure": "A",
+  "which": "conf",
+  "sizes": [
+    200,
+    5000
+  ],
+  "replicate_rule": "rep 0, the first prespecified seed",
+  "plot_range_rule": "truth quantiles [0.0005, 0.9995]",
+  "truth_use": "evaluation and visualisation only"
+}

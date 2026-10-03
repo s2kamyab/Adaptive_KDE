@@ -1,0 +1,4 @@
+stage dev: 528 fits, jobs 12
+[Parallel(n_jobs=12)]: Using backend LokyBackend with 12 concurrent workers.
+[Parallel(n_jobs=12)]: Done  48 tasks      | elapsed:  1.6min
+[Parallel(n_jobs=12)]: Done 138 tasks      | elapsed:  5.7min

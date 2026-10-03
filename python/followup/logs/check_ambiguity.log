@@ -1,0 +1,66 @@
+  f0 N=500   base     |S|=114 |Z|=186  R_full*=8.02e-11  witnesses=116
+  f0 N=500   matched  |S|=114 |Z|=186  R_full*=8.02e-11  witnesses=112
+  f0 N=5000  base     |S|=161 |Z|=139  R_full*=6.045e-13  witnesses=115
+  f0 N=5000  matched  |S|=161 |Z|=139  R_full*=6.045e-13  witnesses=116
+  f2 N=500   base     |S|=84 |Z|=216  R_full*=0.002085  witnesses=118
+  f2 N=500   matched  |S|=84 |Z|=216  R_full*=0.002085  witnesses=125
+  f2 N=5000  base     |S|=95 |Z|=205  R_full*=0.00315  witnesses=119
+  f2 N=5000  matched  |S|=95 |Z|=205  R_full*=0.00315  witnesses=126
+  f5 N=500   base     |S|=127 |Z|=173  R_full*=3.243e-11  witnesses=117
+  f5 N=500   matched  |S|=127 |Z|=173  R_full*=3.243e-11  witnesses=110
+  f5 N=5000  base     |S|=109 |Z|=191  R_full*=8.327e-17  witnesses=116
+  f5 N=5000  matched  |S|=109 |Z|=191  R_full*=8.327e-17  witnesses=121
+  f9 N=500   base     |S|=88 |Z|=212  R_full*=0.0001435  witnesses=118
+  f9 N=500   matched  |S|=88 |Z|=212  R_full*=0.0001435  witnesses=114
+  f9 N=5000  base     |S|=102 |Z|=198  R_full*=0.0006709  witnesses=129
+  f9 N=5000  matched  |S|=102 |Z|=198  R_full*=0.0006709  witnesses=113
+
+== oracle optima: agreement between two independent simplex solves ==
+target    N    bank  R_full_star  R_full_star_alt_start  abs_difference_between_solves  R_full_at_or_below_floor
+    f0  500    base     8.02e-11               8.02e-11                              0                     False
+    f0  500 matched     8.02e-11               8.02e-11                              0                     False
+    f0 5000    base    6.045e-13              6.045e-13                      5.551e-17                     False
+    f0 5000 matched    6.045e-13              6.045e-13                      5.551e-17                     False
+    f2  500    base     0.002085               0.002085                              0                     False
+    f2  500 matched     0.002085               0.002085                              0                     False
+    f2 5000    base      0.00315                0.00315                       1.11e-16                     False
+    f2 5000 matched      0.00315                0.00315                       1.11e-16                     False
+    f5  500    base    3.243e-11              3.243e-11                              0                     False
+    f5  500 matched    3.243e-11              3.243e-11                              0                     False
+    f5 5000    base    8.327e-17              8.327e-17                              0                      True
+    f5 5000 matched    8.327e-17              8.327e-17                              0                      True
+    f9  500    base    0.0001435              0.0001435                              0                     False
+    f9  500 matched    0.0001435              0.0001435                              0                     False
+    f9 5000    base    0.0006709              0.0006709                              0                     False
+    f9 5000 matched    0.0006709              0.0006709                              0                     False
+
+== ambiguity witnesses: largest |Delta ISE| found, by family and moment budget ==
+moment_tol                   0.00      0.01      0.10
+bank    family                                       
+base    F1_face         2.489e-07 2.489e-07 2.489e-07
+        F2_transfer     1.248e-01 1.292e-01 3.002e-01
+        F3_greedy_multi       NaN 3.478e-03 7.516e-02
+matched F1_face         3.567e-06 1.840e-05 1.840e-05
+        F2_transfer     2.346e-02 1.700e-01 4.148e-01
+        F3_greedy_multi       NaN 9.697e-04 1.304e-02
+
+== relative to the exact risk at the optimum ==
+moment_tol                   0.00      0.01      0.10
+bank    family                                       
+base    F1_face         5.381e-02 8.309e-02 8.309e-02
+        F2_transfer     4.439e+13 5.660e+13 1.450e+14
+        F3_greedy_multi       NaN 8.590e+07 3.837e+09
+matched F1_face         3.186e-01 6.605e-01 6.605e-01
+        F2_transfer     1.102e+13 1.981e+13 8.392e+13
+        F3_greedy_multi       NaN 3.897e+08 5.013e+09
+
+== best witness per (bank, moment budget) ==
+   bank  moment_tol target   N      family  activates_zero_coordinate  abs_delta_ise  base_ise  rel_delta_ise  rel_delta_weighted_moment
+   base   0.000e+00     f2 500 F2_transfer                       True      1.248e-01 2.085e-03      5.982e+01                  0.000e+00
+   base   1.000e-02     f2 500 F2_transfer                       True      1.292e-01 2.085e-03      6.195e+01                  1.000e-02
+   base   1.000e-01     f9 500 F2_transfer                       True      3.002e-01 1.435e-04      2.092e+03                  1.000e-01
+matched   0.000e+00     f2 500 F2_transfer                       True      2.346e-02 2.085e-03      1.125e+01                  0.000e+00
+matched   1.000e-02     f9 500 F2_transfer                       True      1.700e-01 1.435e-04      1.184e+03                  1.000e-02
+matched   1.000e-01     f9 500 F2_transfer                       True      4.148e-01 1.435e-04      2.890e+03                  7.265e-02
+
+wrote C:\dev\Adaptive_KDE_project\Adaptive_KDE\python\followup\results\verification

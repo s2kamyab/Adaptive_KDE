@@ -1,0 +1,35 @@
+
+======== BEGIN RUN main  2026-09-22 17:44:06 ========
+suite=main tier=full
+  targets     : 15  ['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'f13', 'f14']
+  sample sizes: [50, 100, 200, 500, 1000, 5000]
+  replicates  : 30
+  estimators  : 10  ['akde', 'spades', 'spades_simplex', 'song', 'kde_sj', 'kde_lscv', 'abramson', 'kde_botev', 'gmm_em', 'thin_kt']
+  total fits  : 27,000
+  output      : results\main_full
+
+[Parallel(n_jobs=14)]: Using backend LokyBackend with 14 concurrent workers.
+[Parallel(n_jobs=14)]: Done   4 tasks      | elapsed: 84.3min
+[Parallel(n_jobs=14)]: Done  15 out of  38 | elapsed: 176.0min remaining: 269.8min
+[Parallel(n_jobs=14)]: Done  19 out of  38 | elapsed: 415.5min remaining: 415.5min
+[Parallel(n_jobs=14)]: Done  23 out of  38 | elapsed: 422.9min remaining: 275.8min
+[Parallel(n_jobs=14)]: Done  27 out of  38 | elapsed: 431.7min remaining: 175.9min
+[Parallel(n_jobs=14)]: Done  31 out of  38 | elapsed: 455.0min remaining: 102.7min
+[Parallel(n_jobs=14)]: Done  35 out of  38 | elapsed: 457.8min remaining: 39.2min
+[Parallel(n_jobs=14)]: Done  38 out of  38 | elapsed: 460.7min finished
+
+completed: 27,000 rows, 0 failures
+
+written to results\main_full\all_results.csv
+======== END   RUN main  rc=0  27649s ========
+
+======== BEGIN RUN ablation  2026-09-23 01:24:55 ========
+suite=ablation tier=full
+  targets     : 15  ['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'f13', 'f14']
+  sample sizes: [100, 1000]
+  replicates  : 30
+  estimators  : 11  ['akde_identity', 'akde_diagonal', 'akde_ridge', 'akde_trunc_pinv', 'akde_single_scale', 'akde_no_sparsity', 'akde_single_stage', 'akde_matched_meas', 'akde_M300', 'akde_M600', 'akde_M1500']
+  total fits  : 9,900
+  output      : results\ablation_full
+
+[Parallel(n_jobs=14)]: Using backend LokyBackend with 14 concurrent workers.

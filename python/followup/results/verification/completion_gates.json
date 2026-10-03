@@ -1,0 +1,71 @@
+{
+  "gates": [
+    {
+      "gate": "counts: raw rows == tidy rows == saved fitted models",
+      "pass": true,
+      "detail": "rows 8100, tidy 8100, npz 8100"
+    },
+    {
+      "gate": "saved model ISE == row ISE (40 random fits)",
+      "pass": true,
+      "detail": "max relative difference 1.181e-13"
+    },
+    {
+      "gate": "ISE recomputed from stored mixture == row ISE",
+      "pass": true,
+      "detail": "max relative difference 3.409e-14"
+    },
+    {
+      "gate": "analytic ISE == adaptive quadrature",
+      "pass": true,
+      "detail": "max relative difference 3.727e-14"
+    },
+    {
+      "gate": "fitted models are densities (60 random fits)",
+      "pass": true,
+      "detail": "max |mass-1| 4.441e-16, min weight 0.000e+00"
+    },
+    {
+      "gate": "dataset regenerated from seed reproduces a saved row",
+      "pass": true,
+      "detail": "f0 N=1000 rep=0 rel 3.14e-14; f9 N=200 rep=3 rel 4.06e-16"
+    },
+    {
+      "gate": "fixed-benchmark exp(T) recomputed independently",
+      "pass": true,
+      "detail": "max relative difference 6.756e-16"
+    },
+    {
+      "gate": "figure 1 curves == curves recomputed from saved models",
+      "pass": true,
+      "detail": "max absolute difference 0.000e+00"
+    },
+    {
+      "gate": "figure 1 annotated ISE == confirmation row ISE",
+      "pass": true,
+      "detail": "max relative difference 0.000e+00"
+    },
+    {
+      "gate": "package file manifest hashes verify (40 random files)",
+      "pass": true,
+      "detail": "40 files checked, 0 mismatched"
+    },
+    {
+      "gate": "package contains no caches or VCS directories",
+      "pass": true,
+      "detail": "9160 files total"
+    },
+    {
+      "gate": "earlier 27,000-fit benchmark preserved byte-identically",
+      "pass": true,
+      "detail": "sha256 5cfbf6c3a1fef3bf"
+    },
+    {
+      "gate": "live akde package == frozen V2 snapshot",
+      "pass": true,
+      "detail": "sha256 a6afd28555d96e22"
+    }
+  ],
+  "n_gates": 13,
+  "n_failed": 0
+}

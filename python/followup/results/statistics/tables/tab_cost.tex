@@ -1,0 +1,14 @@
+\begin{tabular}{lrrrrrr}
+\toprule
+& \multicolumn{3}{c}{Mean fit time (s)} & \multicolumn{3}{c}{Mean active support} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Method & 200 & 1000 & 5000 & 200 & 1000 & 5000 \\
+\midrule
+AKDE-M (matched) & 2.01 & 2.45 & 5.2 & 44 & 51 & 56 \\
+AKDE-V2 (ablation) & 2.09 & 2.42 & 3.06 & 34 & 46 & 53 \\
+SPADES-simplex & 0.154 & 0.296 & 2.06 & 44 & 58 & 66 \\
+KDE (SJ) & 0.00192 & 0.00187 & 0.0021 & 200 & 1000 & 5000 \\
+Abramson KDE & 0.024 & 0.789 & 20.2 & 200 & 1000 & 5000 \\
+GMM (EM) & 1.63 & 2.06 & 4.52 & 3 & 6 & 7 \\
+\bottomrule
+\end{tabular}

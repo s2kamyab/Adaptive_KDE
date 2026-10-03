@@ -1,0 +1,14 @@
+{
+  "source": "saved Stage-C fitted models; nothing refitted",
+  "n_query_points": 10000,
+  "batch": 2000,
+  "warmup_calls": 2,
+  "timing_repeats": 7,
+  "timing_repeats_note": "REPEATS are timing repeats for one fixed fitted model. They reduce timer noise only. The statistical unit remains the fitted model (one per replicate); repeats are never treated as independent statistical replications.",
+  "identical_queries": true,
+  "platform": "Windows-10-10.0.26200-SP0",
+  "processor": "Intel64 Family 6 Model 170 Stepping 4, GenuineIntel",
+  "python": "3.10.0",
+  "blas_threads": "1 (pinned in followup/__init__.py before numpy import)",
+  "fit_cost_reported_separately": "cold end-to-end fit time is the wall_time_s column of stage_c/all_rows.csv and is reported in its own table"
+}

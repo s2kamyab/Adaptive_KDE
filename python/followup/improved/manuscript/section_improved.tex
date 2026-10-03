@@ -1,0 +1,309 @@
+\section{A repaired estimator}
+\label{sec:repaired}
+
+The diagnoses of Sections~\ref{sec:results}--\ref{sec:bandwidth} point at
+specific causes: a weighting matrix that is not the metric the error is
+scored in, a first stage that does not converge, a penalty grid whose lower
+end produces catastrophic fits, and a dictionary whose scales are anchored to
+a rule-of-thumb bandwidth and whose widest atoms are never used. This section
+implements the corresponding repairs as switches of one estimator, selects a
+configuration on development seeds by a rule fixed in advance, and confirms
+it on the confirmation seeds of Section~\ref{sec:setup} against the saved
+fits of every comparator. Every number below is generated from the saved
+rows (\texttt{followup/improved/}); the protocol was locked before the
+development run. It is a prospective protocol, not a preregistration.
+
+\subsection{Repairs}
+
+\paragraph{Metric-consistent weighting.} With matched readings, Proposition~3
+shows that $\Omega = G^{-1}$ turns the moment criterion into the
+integrated-square loss. We therefore replace the inverse reading covariance
+by $\Omega = (G + \epsilon I)^{-1}$, $\epsilon = 10^{-8}\,\overline{G_{ii}}$,
+which removes $\rho$ and its grid. Whitening with the Cholesky factor of
+$G$ gives $\|Au - b\|^2$ with $A = L^{-1}G$, $b = L^{-1}s$, so the first
+stage is a non-negative lasso in residual space.
+
+\paragraph{A converged first stage.} Stage one is solved by FISTA with
+adaptive restart to a relative KKT residual of $10^{-8}$ (at most $20{,}000$
+iterations), replacing the $500$-sweep coordinate descent; the achieved
+residual is recorded on every fit.
+
+\paragraph{No selection stage at all.} Because the simplex constraint already
+yields sparse solutions, we also fit the integrated-square loss
+$\tfrac12 w'Gw - s'w$ directly over the probability simplex on the full
+dictionary by fully corrective Frank--Wolfe (each round adds the most
+violating atom and re-solves exactly on the working set). This variant has
+no $\lambda$, no $\rho$ and no $\tau$.
+
+\paragraph{Scale-aware penalty, extended grid, one-SE rule.} For the
+two-stage variants we tried a per-atom penalty $\lambda_i \propto
+\sqrt{G_{ii}}$ (narrow atoms, with larger $L_2$ norm, must earn their place);
+an eight-point $\lambda$ path extended to $3\times10^{-5}$ with the one-SE
+rule (sparsest $\lambda$ within one standard error of the best validation
+score) and five folds.
+
+\paragraph{CV-anchored scales.} Instead of $\{0.05,\dots,4\}\times
+h_{\mathrm{Silverman}}$, a base bandwidth $h_{\mathrm{cv}}$ is chosen by the
+same held-out $J$ score from nine candidates on $[0.05h, 4h]$ and the
+dictionary offers $\{\tfrac14, \tfrac12, 1, 2, 4\}\times h_{\mathrm{cv}}$ at
+the same $60$ centres. This adds one tuned hyperparameter and is what the
+single-scale ablation of Section~\ref{sec:bandwidth} was already doing.
+
+\paragraph{Post-fit merge.} Near-duplicate atoms are greedily replaced by
+their moment-matched Gaussian while the \emph{training} loss rises by less
+than $1\%$, followed by a simplex refit of the weights; the truth is never
+consulted.
+
+\subsection{Development ablation and selection}
+
+Ten variants were run on the development seeds of Section~\ref{sec:setup}
+(four Marron--Wand targets, $N\in\{500,5000\}$, five datasets) and on two
+targets of the heterogeneity family of Section~\ref{sec:bandwidth}, paired
+with the confirmed finalist AKDE-M on identical data and folds
+(Table~\ref{tab:imp-dev}, Figure~\ref{fig:imp-dev}). The selection rule,
+fixed in the locked protocol, was the equal-weight geometric-mean paired ISE
+ratio against AKDE-M over the eight Marron--Wand development cells, subject
+to three gates (ratio $\le 1$ on the heterogeneity cells; both stages at
+tolerance in at least $90\%$ of fits; no errors), with ties within $10\%$
+broken by fewer tuned hyperparameters and then lower fit time.
+
+Three findings shaped the choice. First, the Gram-weighted two-stage
+variant, the identity-weighted variant and the full-simplex fit all reach
+ratios of $\irDevIOneGramFista$, $\irDevITwoIdentityFista$ and $\irDevC$ against AKDE-M,
+and the full-simplex fit reproduces SPADES-simplex to solver precision: the
+covariance weighting was costing $15$--$16\%$ and the Frank--Wolfe simplex
+fit matches the two-stage lasso with no tuning at all. Second, anchoring the
+dictionary scales to a validated bandwidth is by far the largest single
+repair: $\irDevR$ $[\irDevLoR, \irDevHiR]$ for the full-simplex fit with
+CV-anchored scales. The scale-aware penalty reaches a similar ratio
+($\irDevIFiveGramColnorm$) at nine times the cost, and combining both
+reaches $\irDevIOneZeroGramColnormCvanchor$ but fails the convergence gate
+and costs $\irDevWallIOneZeroGramColnormCvanchor$~s per fit. Third, the
+extended-grid/one-SE rule ($\irDevISixGramExtOneseFivef$) and the merge step
+($\irDevIEightSimplexMerge$ alone, $\irDevINineSimplexCvanchorMerge$ with
+anchoring) do not help accuracy; the merge cuts the component count by half or more at a
+measurable accuracy cost and is kept as an optional post-processing step,
+not as part of the estimator. The locked rule selects the full-simplex fit
+with CV-anchored scales, called \textbf{AKDE-R} below, and its
+parameter-free core (the same fit on the Silverman-anchored dictionary,
+\textbf{AKDE-R core}) as the ablation to confirm.
+
+\begin{table}[htbp]
+\centering
+\caption{Development ablation (development seeds; not confirmation). Ratio:
+equal-weight-per-cell geometric mean of the paired ISE ratio against AKDE-M
+over the eight Marron--Wand development cells, with a $95\%$ bootstrap
+interval; hr: the same over the four heterogeneity-family cells. ``At tol'':
+fraction of fits whose first and second stage reached their KKT tolerances
+(stage one is not applicable to the full-simplex variants). Components and
+fit time are means over the $48$ development fits.}
+\label{tab:imp-dev}
+\scriptsize
+\input{improved_dev_ablation.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{improved_dev_ablation.pdf}
+\caption{Development ablation. Left: paired geometric-mean ISE ratio of
+each variant against AKDE-M on the Marron--Wand development cells (circles)
+and on the heterogeneity-family development cells (squares), with $95\%$
+bootstrap intervals; values below one favour the variant. Middle and right:
+mean component count and mean fit time. Development results only.}
+\label{fig:imp-dev}
+\end{figure}
+
+\subsection{Confirmation}
+
+AKDE-R and its core were fitted to the $1{,}350$ confirmation datasets of
+Section~\ref{sec:setup} ($15$ targets, $N\in\{200,1000,5000\}$, $R=30$) and
+compared with the saved Stage-C fits of AKDE-M, AKDE-V2, SPADES-simplex, the
+Sheather--Jones and Abramson estimators and the EM mixture on the identical
+observations. All $2{,}700$ new fits completed, all are valid densities, and
+the second-stage KKT residual is below $10^{-7}$ in every fit (the
+Frank--Wolfe solve has no first stage). Table~\ref{tab:imp-bench} gives the
+benchmark mean $\pm$ pooled SD in the format of Table~\ref{tab:benchmark_sd},
+Table~\ref{tab:imp-ratio} the fixed-benchmark paired ratios, and
+Figure~\ref{fig:imp-acc} the per-target picture.
+
+\begin{table}[htbp]
+\centering
+\caption{Integrated squared error across the fixed benchmark, arithmetic mean
+$\pm$ pooled sample SD over the $450$ fits per method and sample size (the
+format of Table~\ref{tab:benchmark_sd}; the comparator rows are the same
+fits). The SD includes between-target and between-dataset variation and is
+not a confidence interval.}
+\label{tab:imp-bench}
+\small
+\input{improved_benchmark_mean_sd.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Fixed-benchmark paired geometric-mean ISE ratio $\exp(T)$ of the
+repaired estimator against each reference, with $95\%$ bootstrap intervals
+from within-target resampling ($B=10{,}000$) and, in parentheses, the number
+of the $15$ targets on which the repaired estimator is better. Values below
+one favour the repaired estimator. Bootstrap intervals, not replicate SDs.}
+\label{tab:imp-ratio}
+\scriptsize
+\input{improved_fixed_benchmark.tex}
+\end{table}
+
+\paragraph{Against AKDE-M.} AKDE-R attains $\exp(T) = \irExpTRVsMNSmall$
+$[\irExpTLoRVsMNSmall, \irExpTHiRVsMNSmall]$, $\irExpTRVsMNMid$
+$[\irExpTLoRVsMNMid, \irExpTHiRVsMNMid]$ and $\irExpTRVsMNLarge$
+$[\irExpTLoRVsMNLarge, \irExpTHiRVsMNLarge]$ against AKDE-M at
+$N=200$, $1000$, $5000$, improving $\irFavRVsMNSmall$, $\irFavRVsMNMid$
+and $\irFavRVsMNLarge$ of the $15$ targets. The benchmark mean ISE falls
+from $\irPooledMNSmall$, $\irPooledMNMid$, $\irPooledMNLarge$ to
+$\irPooledRNSmall$, $\irPooledRNMid$, $\irPooledRNLarge$. The core
+alone, which differs from AKDE-M only in the criterion and the solver,
+accounts for $\irExpTCVsMNSmall$, $\irExpTCVsMNMid$, $\irExpTCVsMNLarge$
+of that; the rest is the anchoring of the scales.
+
+\paragraph{Against SPADES-simplex and the kernel estimators.} The core is
+indistinguishable from SPADES-simplex ($\exp(T) = \irExpTCVsSpadesNSmall$,
+$\irExpTCVsSpadesNMid$, $\irExpTCVsSpadesNLarge$), as Proposition~3
+predicts, so the identity is now an empirical fact on $1{,}350$ datasets.
+AKDE-R is ahead of SPADES-simplex by $\irExpTRVsSpadesNSmall$,
+$\irExpTRVsSpadesNMid$ and $\irExpTRVsSpadesNLarge$ on the same
+$60$ centres, which is the gain from choosing the scales by validation; a
+SPADES adaptation given the same anchored dictionary would be expected to
+match it. Against the Sheather--Jones estimator the ratio is
+$\irExpTRVsSjNSmall$ $[\irExpTLoRVsSjNSmall, \irExpTHiRVsSjNSmall]$,
+$\irExpTRVsSjNMid$ and $\irExpTRVsSjNLarge$, with the intervals
+excluding one: the repaired estimator remains about $30\%$ behind the kernel
+estimator in paired geometric-mean ISE, down from the $2.6$--$4.9\times$ of
+Section~\ref{sec:results}, and it is better than the kernel estimator on
+$\irFavRVsSjNSmall$, $\irFavRVsSjNMid$ and $\irFavRVsSjNLarge$ of the
+$15$ targets. It is behind the Abramson estimator by
+$\irExpTRVsAbrNSmall$--$\irExpTRVsAbrNLarge$ and the EM mixture by
+$\irExpTRVsGmmNSmall$--$\irExpTRVsGmmNLarge$.
+
+\paragraph{Reliability.} AKDE-R produced $\irLargeR$ large-error fits
+($\irLargeFracR\%$, worst $\irWorstR\times$ its cell median) against
+$\irLargeM$ for AKDE-M (worst $\irWorstM\times$); the core, like
+SPADES-simplex, produced none. The large-error mechanism of
+Section~\ref{sec:results} (the lower end of the $\lambda$ grid) no longer
+exists because there is no $\lambda$; all seven remaining cases occur at
+$N=200$ and none of them selected a base bandwidth at the edge of its grid.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{improved_accuracy_vs_N.pdf}
+\caption{Accuracy of the repaired estimator on the confirmation benchmark.
+Left: equal-weight-per-target benchmark mean ISE with $95\%$ bootstrap
+intervals. Middle: fixed-benchmark paired ratios $\exp(T)$ of AKDE-R and its
+core against AKDE-M, SPADES-simplex and the Sheather--Jones estimator
+(values below one favour the repaired estimator). Right: per-target paired
+ratios of AKDE-R against AKDE-M with $95\%$ intervals. Thirty datasets per
+cell; targets are never resampled.}
+\label{fig:imp-acc}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{improved_fitted_densities.pdf}
+\caption{Fitted densities on confirmation replication $0$ (the first locked
+seed, no selection after inspection) for four targets at $N=200$ and $5000$:
+truth, AKDE-M, AKDE-R, SPADES-simplex and the Sheather--Jones estimator on
+identical observations. Annotations give ISE and component count.}
+\label{fig:imp-fits}
+\end{figure}
+
+\subsection{Compactness and cost}
+
+Table~\ref{tab:imp-cost} and Figure~\ref{fig:imp-cost} give the operating
+points. AKDE-R stores $\irCompRNLarge$ components on average at $N=5000$
+against $\irCompMNLarge$ for AKDE-M, and its query cost
+($\irQueryRNLarge\,\mu$s per point) remains two orders of magnitude below
+the kernel estimators. Its fitting cost ($\irWallRNLarge$~s at $N=5000$
+including the nine-candidate bandwidth search) is comparable to AKDE-M's
+($\irWallMNLarge$~s); the core fits in $\irWallCNLarge$~s because it has
+nothing to tune. With the optional merge step the component count halves
+again at a measurable accuracy cost (development evidence,
+Table~\ref{tab:imp-dev}).
+
+\begin{table}[htbp]
+\centering
+\caption{Compactness and cost on the confirmation benchmark, mean $\pm$ SD
+across the $450$ fits per method and sample size (query latency: mean $\pm$
+SD across the timed models of the median over seven timing repeats; for the
+comparators see Table~\ref{tab:cost}).}
+\label{tab:imp-cost}
+\small
+\input{improved_cost.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{improved_compactness.pdf}
+\caption{Validation-selected operating points on the confirmation benchmark
+(left: mean ISE against mean component count per cell; not a Pareto
+frontier), query latency against $N$ (middle; comparator latencies from the
+package's saved measurement on the same procedure) and mean ISE against mean
+fit time (right).}
+\label{fig:imp-cost}
+\end{figure}
+
+\subsection{The heterogeneity family revisited}
+
+On the family $f_r$ of Section~\ref{sec:bandwidth} (same $160$ datasets,
+comparator rows reused), AKDE-R improves on AKDE-M by paired factors of
+$\irHrRVsMROneNFiveH$ ($r=1$) to $\irHrRVsMREightNFiveH$ ($r=8$) at $N=500$ and
+$\irHrRVsMROneNLarge$ to $\irHrRVsMREightNLarge$ at $N=5000$
+(Table~\ref{tab:imp-hr}, Figure~\ref{fig:imp-hr}). Against the single-scale
+ablation of that section, which already used a validated bandwidth, it is
+within a factor of $2.6$ in every cell and better in three of eight; the
+multiscale dictionary, once anchored, is neither clearly better nor clearly
+worse than one validated bandwidth on this family. Against the
+Sheather--Jones estimator the ratios are $\irHrRVsSjRFourNLarge$ and
+$\irHrRVsSjREightNLarge$ at $r=4,8$, $N=5000$, and $\irHrRVsSjROneNFiveH$
+at $r=1$, $N=500$: the kernel estimator still wins where the density is
+smooth and the sample small.
+
+\begin{table}[htbp]
+\centering
+\caption{Total ISE on the heterogeneity family, mean $\pm$ SD across $20$
+datasets per cell; comparator rows are the saved bandwidth-flexibility fits
+on the identical datasets.}
+\label{tab:imp-hr}
+\small
+\input{improved_hr.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{improved_hr_error_vs_r.pdf}
+\caption{The repaired estimator on the heterogeneity family. Left and middle:
+total and narrow-region ISE, mean $\pm$ SD across $20$ datasets per cell.
+Right: paired geometric-mean ratios of AKDE-R against AKDE-M, the
+single-scale ablation and the Sheather--Jones estimator with $95\%$
+bootstrap intervals.}
+\label{fig:imp-hr}
+\end{figure}
+
+\subsection{What the repairs establish, and what they do not}
+
+The repaired estimator keeps everything the original one was valued for: a
+convex fit, a valid density by construction, a few dozen atoms and
+microsecond queries. It removes the three numerical pathologies documented
+earlier (a non-converging first stage, a weighting that is not the scoring
+metric, a penalty grid edge that produces catastrophic fits) and replaces
+three tuned hyperparameters by one. Its accuracy is $2$--$4\times$ better than
+AKDE-M's and $1.7$--$3\times$ better than the SPADES adaptation's on the
+original dictionary, and the gap to a Sheather--Jones kernel estimator is now
+about $30\%$ rather than several fold. It is still behind every conventional
+comparator on paired geometric-mean ISE; the compactness advantage, not
+accuracy, remains the reason to use it. The gain is almost entirely
+attributable to choosing the dictionary scales by validation, which any
+dictionary method including SPADES can do; the moment-matching framing
+contributed the diagnosis, not the gain. Two limitations are specific to the repaired estimator. The validated base
+bandwidth sits at the top of its nine-point grid ($4h_{\mathrm{Silverman}}$)
+in $57\%$ of the confirmation fits, so the anchor grid is too narrow at the
+wide end and a wider grid may improve it further; it was not widened because
+the protocol was locked. And development and confirmation used disjoint
+seeds with a selection rule fixed in advance, but the repairs themselves were
+chosen with the earlier results in hand, so this is a confirmed follow-up,
+not an independent replication.

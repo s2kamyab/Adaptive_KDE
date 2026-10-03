@@ -1,0 +1,4 @@
+{
+  "bands": "pointwise 10th-90th percentile across independent datasets",
+  "not": "NOT confidence bands and NOT simultaneous coverage"
+}

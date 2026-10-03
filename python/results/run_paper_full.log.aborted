@@ -1,0 +1,40 @@
+
+======== BEGIN RUN main  2026-09-22 09:10:57 ========
+suite=main tier=full
+  targets     : 15  ['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'f13', 'f14']
+  sample sizes: [50, 100, 200, 500, 1000, 5000]
+  replicates  : 30
+  estimators  : 10  ['akde', 'spades', 'spades_simplex', 'song', 'kde_sj', 'kde_lscv', 'abramson', 'kde_botev', 'gmm_em', 'thin_kt']
+  total fits  : 27,000
+  output      : results\main_full
+
+[Parallel(n_jobs=14)]: Using backend LokyBackend with 14 concurrent workers.
+[Parallel(n_jobs=14)]: Done   4 tasks      | elapsed: 153.3min
+[Parallel(n_jobs=14)]: Done  13 tasks      | elapsed: 205.6min
+[Parallel(n_jobs=14)]: Done  22 tasks      | elapsed: 312.7min
+[Parallel(n_jobs=14)]: Done  33 tasks      | elapsed: 373.9min
+[Parallel(n_jobs=14)]: Done  44 tasks      | elapsed: 443.5min
+======== END   RUN main  rc=127  29979s ========
+
+======== BEGIN RUN ablation  2026-09-22 17:30:36 ========
+suite=ablation tier=full
+  targets     : 15  ['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'f13', 'f14']
+  sample sizes: [50, 100, 200, 500, 1000, 5000]
+  replicates  : 30
+  estimators  : 11  ['akde_identity', 'akde_diagonal', 'akde_ridge', 'akde_trunc_pinv', 'akde_single_scale', 'akde_no_sparsity', 'akde_single_stage', 'akde_matched_meas', 'akde_M300', 'akde_M600', 'akde_M1500']
+  total fits  : 29,700
+  output      : results\ablation_full
+
+[Parallel(n_jobs=14)]: Using backend LokyBackend with 14 concurrent workers.
+======== END   RUN ablation  rc=127  262s ========
+
+======== BEGIN RUN stress  2026-09-22 17:34:59 ========
+suite=stress tier=full
+  targets     : 3  ['s_outlier', 's_rare_spike', 's_twin_spike']
+  sample sizes: [50, 100, 200, 500, 1000, 5000]
+  replicates  : 30
+  estimators  : 10  ['akde', 'spades', 'spades_simplex', 'song', 'kde_sj', 'kde_lscv', 'abramson', 'kde_botev', 'gmm_em', 'thin_kt']
+  total fits  : 5,400
+  output      : results\stress_full
+
+[Parallel(n_jobs=14)]: Using backend LokyBackend with 14 concurrent workers.

@@ -1,0 +1,21 @@
+Stage C (LOCKED): 15 targets x 3 sizes x 30 reps x 6 methods = 8100 fits
+finalist: A6_moment_matched_m300 (2026-09-28T02:31:15+00:00)
+45 cells to run, 0 cached
+[Parallel(n_jobs=12)]: Using backend LokyBackend with 12 concurrent workers.
+C:\dev\Adaptive_KDE_project\Adaptive_KDE\python\followup\akde_followup\variants.py:211: RuntimeWarning: divide by zero encountered in log
+  * np.log(pos / pos.sum()))))
+C:\dev\Adaptive_KDE_project\Adaptive_KDE\python\followup\akde_followup\variants.py:210: RuntimeWarning: invalid value encountered in multiply
+  "cov_effective_rank": (float(np.exp(-np.sum((pos / pos.sum())
+[Parallel(n_jobs=12)]: Done  32 out of  45 | elapsed: 30.7min remaining: 12.5min
+[Parallel(n_jobs=12)]: Done  42 out of  45 | elapsed: 33.7min remaining:  2.4min
+[Parallel(n_jobs=12)]: Done  45 out of  45 | elapsed: 35.0min finished
+
+8100 rows, 0 errors
+N                  200       1000      5000
+variant                                    
+abramson       0.014676 0.0040399 0.0014115
+finalist       0.061079  0.013585 0.0031724
+gmm_em         0.011736  0.004137 0.0016131
+kde_sj         0.012069 0.0048247 0.0018483
+spades_simplex 0.050264  0.012777 0.0030534
+v2_akde         0.11935   0.07093   0.05513

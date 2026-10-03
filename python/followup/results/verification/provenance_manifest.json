@@ -1,0 +1,225 @@
+{
+  "generated_utc": "2026-09-28T05:53:17+00:00",
+  "project_root": "C:\\dev\\Adaptive_KDE_project",
+  "environment": {
+    "timestamp_utc": "2026-09-28T05:53:18+00:00",
+    "python": "3.10.0",
+    "executable": "C:\\dev\\Adaptive_KDE_project\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 170 Stepping 4, GenuineIntel",
+    "hostname": "Shima",
+    "user": "shima",
+    "logical_cpus": 22,
+    "modules": {
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "pandas": "2.3.3",
+      "sklearn": "1.7.2",
+      "numba": "0.67.0",
+      "joblib": "1.6.0",
+      "matplotlib": "3.10.9",
+      "statsmodels": null
+    },
+    "solver_backend": "numba-jit",
+    "numba_threads": 22,
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1",
+      "NUMBA_NUM_THREADS": null,
+      "PYTHONHASHSEED": null
+    },
+    "numpy_blas": {
+      "name": "scipy-openblas",
+      "version": "0.3.29",
+      "pc file dir": null
+    }
+  },
+  "code": {
+    "files": {
+      "akde/__init__.py": "0f6b5194436b5443a1f27ebd5c08a8af93cc92222e46b9cd75ca81fd9931dfe6",
+      "akde/analysis.py": "8f991dbc9dbcb1e8c1b99960683ec6b9086dc148cad0d0f9f2a0af50e6fd4c86",
+      "akde/bandwidths.py": "11607969911dd4e1bcf04ba087c9381ca1fe90c5a3575d77fd8bec62c836b75e",
+      "akde/bootstrap.py": "8d9b233745e2a4622cb9f90922b40651736640f28a2c00c1a54cbedc09497b10",
+      "akde/densities.py": "4e4fc8bc43aca10ecaba653185117d4a4ddc0aab023bc94f22ec7e0368f1f3c4",
+      "akde/dictionary.py": "35866154a4cfd6dea2ac7664db8ba3b10f757bdccae4efcf7625e3589399f385",
+      "akde/estimators/__init__.py": "b306d83a0e9ad9ea12f5ed051249d4afaca737f027c321cfd31cf7f52aa26e49",
+      "akde/estimators/akde.py": "6144e67e888ef004a6e336a7c27739d0681d2c9475c04cd8e06a9c019a3b29d3",
+      "akde/estimators/base.py": "ee1373ba5faf54ad2d7bb5dc8eac305f781f951de2bbb64a3ef0c486b8a0175d",
+      "akde/estimators/emgmm.py": "2dfea811b27e00f695b60a2f71c31c40f92fdb79b6a0dc86a76b4a0d00b2e4ee",
+      "akde/estimators/kde.py": "1e14e4f9df6b8ffc406f5cde9c8bff017651bdfe9e17e7e762e15cc695ab2e0c",
+      "akde/estimators/song.py": "0c8c9669ac2c892b9d64252778ac29428ce16ae1f2f5e0a91024277ddec8c3a5",
+      "akde/estimators/spades.py": "474651b3ee787a0cbb3d777c0a7035d2ac9d905353a0bb4a7193dd82827ef6ab",
+      "akde/estimators/thinning.py": "ec6da19fd3c104b668b3b0f1b81bb8a103a6d948733189e0821152624529e51d",
+      "akde/gaussops.py": "864ad59bf80643e28c8cfb784979acadd76ea080a87f2647769933c01d4b8fa6",
+      "akde/metrics.py": "82d2de1d59144f5e2ac237715c682338e855740bb78b12406f66bb67161312ff",
+      "akde/model.py": "14b0b66d5f1823c4f8d6ec5a27d40cd4c229ad9c622b85bf264415d236bb1031",
+      "akde/registry.py": "9cbf1bddaad5aa18e0e784ca00ba949eee8d1b699e4c4f80f470a1cf5b1d205a",
+      "akde/runner.py": "48d02a3c974273892396ab26d1ce2f7cf26499c0362f42224c4c14acd86b4277",
+      "akde/solvers.py": "095c3cc08fea8f31d2264c395066abfee7eef37d426d5e79d4c853601630bc8b",
+      "followup/akde_followup/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "followup/akde_followup/comparators.py": "647bbbf99994e1ff7b32426209e47e94f420a484eebc98d7ad48ad280ca9a2cf",
+      "followup/akde_followup/figdata.py": "bd59d386a6c7efb13834ad8840150a2783e34cb6bcca2c1d5e943b2199af75a7",
+      "followup/akde_followup/manifest.py": "e446bf8b11f08f9884381d285aa1197a255317de0d98cfadef4b0ca73fdd5de4",
+      "followup/akde_followup/oracle.py": "dfd5537f8f3d932e9666ddfc5e219abd606def540327b51b49f2072c684dd282",
+      "followup/akde_followup/plotting.py": "e0f503314f15b580c89b798a186948bc535e6ce042d62f92aca75d9a0dea6eb5",
+      "followup/akde_followup/report.py": "a2a7792dbf3e39651f34df4f36a8c874de3f505e93669767ace5a4338e804f25",
+      "followup/akde_followup/runner.py": "a281a0e97c01aa864cf816ecf1eef7f108d690d6016f540fcfb14f7c7edc03ba",
+      "followup/akde_followup/seeds.py": "8f1e412aa5f5bcd5a4b79a18a88c6ab9c366606c19beb1d8e42073bad63cd27f",
+      "followup/akde_followup/stage1.py": "bd1377293d3a149344be336dec37fba7ec1d194ff69ff6680e6dddd3ef02f505",
+      "followup/akde_followup/variants.py": "d45fd931d90f84d884ad787a6dc0cedfc5260ee9717b8fc131ccc0d3a54a1d10",
+      "followup/scripts/analyse_stage_a.py": "687d06af7a120c00cb2154d5ca9244bd3b37aaa8ec1bf565bcf1b6ab6a78c582",
+      "followup/scripts/analyse_stage_c.py": "38a312eaf28d1bfdbee509a714f5d79dc4fa8bb5d71dad7cc406f2618c99ad50",
+      "followup/scripts/audit_tables.py": "c11b51d909100dc574663299e539ed6329f411e49e2a17dcb21d0c33d13523a0",
+      "followup/scripts/check_v2_identity.py": "10c4940caffe0c918016e7da81805f269ea1b1853aa0653da8a31ab2c47ffaf0",
+      "followup/scripts/check_v2_repro.py": "634573e8c2ccc086473c2bdc48982dd61ac9b21d3fa1a54bcc0d7aad4a7cd992",
+      "followup/scripts/choose_replication.py": "ed339885c01cbb4010fdb6795dff04bea1c739bd9c3a0cd4169f35fc6cadccf0",
+      "followup/scripts/compare_stage1_solvers.py": "43077326824ccef1681855761ac105baa9aece831cb759a5d8135779e1a0e4cc",
+      "followup/scripts/make_figures.py": "6b9a24c03ecb2db4cb02b44061cf2825888fb115a651e2b5d03791c95e87eafe",
+      "followup/scripts/probe_criterion_geometry.py": "46e8ca0dd50922f0d9b515a9afbd21a1bc19354047d77ae87f16b71f4be9d076",
+      "followup/scripts/probe_scale_mismatch.py": "a93724d9c7881bfb74f3ed448d7963a03fd3283edcc463948eda62b6da6df074",
+      "followup/scripts/profile_cost.py": "0a2782891c582e217911a8731357ad402750112634e00535024307366f7c1319",
+      "followup/scripts/run_dev_references.py": "9fd48233706ed2db5527a95a6ba1cab5903d9fb2ea519e45a96ebf3d3cafca28",
+      "followup/scripts/run_oracle_controls.py": "45cdede316cc077881e16fa613d570a2234bc5be43164bd8ccaa75d490dd202f",
+      "followup/scripts/run_stage_a.py": "8656b0be9fb3a4405356e6c1bf4aa296fa34bce0f14385c9402b623f2cac6bad",
+      "followup/scripts/run_stage_b.py": "4eccf606b1f086ef3095b7a973974969c62fddfd7e6b74ef75bb293c8389c07a",
+      "followup/scripts/run_stage_b_extra.py": "97c030e48a0e10d1cd4c500d058d1e0efc17b54350cadf37fbafcf6bd7a5e100",
+      "followup/scripts/run_stage_c.py": "002a683711e5a79babaf21e4bcbde5fcd97e008a005f79b0cb4d598bc838886f",
+      "followup/scripts/smoke_followup.py": "59dbec0dc528301616766aa0bf91243a2858bdbd9d0ca057a1f82d6c31879c10",
+      "followup/scripts/verify_impl.py": "10307b81cab5dacfe60c6d1b32464b34e88d5310b4502e7217b12ba5b586e2d9",
+      "followup/verify/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "followup/verify/inventory.py": "7c98551c18c365038e9bd9aca8d1164196b464ab3d20a5f00bca2046ddeb756c"
+    },
+    "combined": "55550dbc5045924c616c7dd90f945c5d7369bdd0c6fe2caffef83b9562fc117b"
+  },
+  "inventory_sha256": "6e3d13d0fa2c546569292e46434dd80377a50336093d39de60ce463e0ec7f639",
+  "grid_verification": {
+    "source": "Adaptive_KDE\\python\\followup\\results\\stage_c\\all_rows.csv",
+    "sha256": "9d1b2e538d72e60ffcf0081acb7a53d32202e11d7d5b51b10271d085ac7083b9",
+    "n_rows": 8100,
+    "n_targets": 15,
+    "targets": [
+      "f0",
+      "f1",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14",
+      "f2",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9"
+    ],
+    "sample_sizes": [
+      200,
+      1000,
+      5000
+    ],
+    "n_replications": 30,
+    "replications": [
+      0,
+      29
+    ],
+    "n_methods": 6,
+    "methods": [
+      "abramson",
+      "finalist",
+      "gmm_em",
+      "kde_sj",
+      "spades_simplex",
+      "v2_akde"
+    ],
+    "expected_rows": 8100,
+    "grid_complete": true,
+    "n_missing_cells": 0,
+    "n_duplicate_keys": 0,
+    "statuses": {
+      "execution": {
+        "n_rows": 8100,
+        "n_execution_failures": 0,
+        "n_ise_nonfinite": 0,
+        "n_ise_nonpositive": 0
+      },
+      "density_feasibility": {
+        "n_valid_density": 8100,
+        "n_invalid_density": 0,
+        "max_abs_mass_error": 8.881784197001252e-16,
+        "n_fallback_used": 0,
+        "n_support_capped": 0
+      },
+      "optimisation_convergence": {
+        "v2_akde": {
+          "n_fits": 1350,
+          "n_stage1_converged": 8,
+          "frac_stage1_converged": 0.005925925925925926,
+          "median_stage1_rel_kkt": 9.709581930391373e-05,
+          "max_stage1_rel_kkt": 0.0013490104102013,
+          "median_stage2_rel_kkt": 4.234035702898659e-13,
+          "max_stage2_rel_kkt": 0.0040391417321343
+        },
+        "finalist": {
+          "n_fits": 1350,
+          "n_stage1_converged": 76,
+          "frac_stage1_converged": 0.056296296296296296,
+          "median_stage1_rel_kkt": 3.88420811852758e-06,
+          "max_stage1_rel_kkt": 0.0001121958680984,
+          "median_stage2_rel_kkt": 4.0480972046637226e-14,
+          "max_stage2_rel_kkt": 0.0063764617744267
+        },
+        "spades_simplex": {
+          "n_fits": 1350,
+          "n_stage1_converged": 379,
+          "frac_stage1_converged": 0.28074074074074074,
+          "median_stage1_rel_kkt": 6.246955962144211e-07,
+          "max_stage1_rel_kkt": 8.117873069184674e-05,
+          "median_stage2_rel_kkt": 3.002155815612362e-16,
+          "max_stage2_rel_kkt": 2.414675665731436e-05
+        }
+      }
+    }
+  },
+  "pairing_and_seeds": {
+    "pairing_dataset_stream_method_independent": true,
+    "seed_keys_checked": 21600,
+    "seed_keys_unique": true,
+    "seed_first_draws_unique": true,
+    "dev_confirmation_disjoint": true,
+    "v2_disjoint_from_followup": true,
+    "dataset_level_pairs_checked": 135,
+    "dataset_level_collisions": 0,
+    "namespaces": {
+      "v2_main": {
+        "id": 0,
+        "master": null
+      },
+      "development": {
+        "id": 11,
+        "master": 20260927
+      },
+      "confirmation": {
+        "id": 23,
+        "master": 20260928
+      },
+      "figure_dev": {
+        "id": 31,
+        "master": 20260929
+      }
+    }
+  },
+  "protocol_evidence": {
+    "protocol_file_mtime_utc": "2026-09-28T02:32:43+00:00",
+    "finalist_frozen_utc_claimed": "2026-09-28T02:31:15+00:00",
+    "replication_decided_utc_claimed": "2026-09-28T02:31:24+00:00",
+    "first_confirmation_shard_mtime_utc": "2026-09-28T02:50:11+00:00",
+    "caveat": "Filesystem mtimes and content hashes establish ORDERING ON THIS MACHINE ONLY. They do not constitute third-party timestamping, and a hash does not by itself prove prospective locking. The freeze is supported by: (i) finalist.json and replication_choice.json both carry UTC stamps earlier than the first confirmation shard; (ii) the confirmation code reads the finalist from finalist.json rather than choosing it; (iii) the confirmation seed namespace is disjoint from development. It is NOT supported by any external registry, and is described in the manuscript as pre-specified, not preregistered.",
+    "freeze_precedes_first_confirmation_shard": true
+  }
+}

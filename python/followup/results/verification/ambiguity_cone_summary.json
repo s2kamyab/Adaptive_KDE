@@ -1,0 +1,38 @@
+{
+  "config_version": "frozen-2026-09-28-a",
+  "moment_tolerances": [
+    0.0,
+    0.01,
+    0.1
+  ],
+  "interpretation": "Every entry is a WITNESS: a feasible direction in the tangent cone T(w) = {v : 1'v = 0, v_i >= 0 where w_i = 0} together with an explicit nonnegative step. The reported |Delta ISE| is a LOWER BOUND on the ambiguity achievable within the stated weighted-moment budget. No global upper bound is claimed; the search is not exhaustive over T(w).",
+  "max_abs_delta_ise_by_bank_tol": {
+    "0.0": {
+      "base": 0.12475364348248424,
+      "matched": 0.02346214829015159
+    },
+    "0.01": {
+      "base": 0.12918427979741873,
+      "matched": 0.16997367722154696
+    },
+    "0.1": {
+      "base": 0.30023695148378793,
+      "matched": 0.41484087184333196
+    }
+  },
+  "max_rel_delta_ise_by_bank_tol": {
+    "0.0": {
+      "base": 44393941993320.14,
+      "matched": 11017255425100.234
+    },
+    "0.01": {
+      "base": 56601592167522.75,
+      "matched": 19806046314577.848
+    },
+    "0.1": {
+      "base": 144961901023142.16,
+      "matched": 83922858161265.73
+    }
+  },
+  "fraction_of_best_witnesses_activating_a_zero_coordinate": 1.0
+}

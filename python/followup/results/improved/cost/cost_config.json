@@ -1,0 +1,9 @@
+{
+  "n_query_points": 10000,
+  "batch": 2000,
+  "warmup": 2,
+  "timing_repeats": 7,
+  "per_model": "median over timing repeats; repeats are not replications",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "processor": "Intel64 Family 6 Model 170 Stepping 4, GenuineIntel"
+}

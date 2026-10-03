@@ -1,0 +1,12 @@
+Stage A: 4 targets x 2 sizes x 5 reps x 8 variants = 320 final fits
+[Parallel(n_jobs=8)]: Using backend LokyBackend with 8 concurrent workers.
+[Parallel(n_jobs=8)]: Done   3 out of   8 | elapsed:  2.6min remaining:  4.3min
+[Parallel(n_jobs=8)]: Done   5 out of   8 | elapsed:  3.2min remaining:  1.9min
+[Parallel(n_jobs=8)]: Done   8 out of   8 | elapsed:  3.6min finished
+
+320 rows, 320 errors
+
+median ISE by variant and N:
+Empty DataFrame
+Columns: []
+Index: []

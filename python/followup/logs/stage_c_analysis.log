@@ -1,0 +1,137 @@
+rows 8100  failures 0  replicates 30  methods ['abramson', 'finalist', 'gmm_em', 'kde_sj', 'spades_simplex', 'v2_akde']
+
+non-positive or non-finite ISE rows: 0 (excluded from log ratios, listed in analysis/nonpositive_ise.csv)
+
+== median ISE pooled over 15 targets ==
+N                  200       1000      5000
+variant                                    
+abramson       0.014676 0.0040399 0.0014115
+finalist       0.061079  0.013585 0.0031724
+gmm_em         0.011736  0.004137 0.0016131
+kde_sj         0.012069 0.0048247 0.0018483
+spades_simplex 0.050264  0.012777 0.0030534
+v2_akde         0.11935   0.07093   0.05513
+
+== mean ISE pooled over 15 targets ==
+N                  200       1000      5000
+variant                                    
+abramson        0.01819 0.0057302 0.0016692
+finalist        0.07267  0.014809  0.011584
+gmm_em         0.019154 0.0058599 0.0019403
+kde_sj         0.019841 0.0066393 0.0026023
+spades_simplex 0.057007  0.013606 0.0038984
+v2_akde         0.27308   0.18723  0.066398
+
+== PRIMARY: finalist vs original V2 AKDE, per (target, N) ==
+target  mw                mw_name    N  R  geom_mean_ratio    t_lo    t_hi  mean_logratio  se_logratio  median_ratio  n_better     p_raw    p_holm
+    f0   1               Gaussian  200 30           0.4486    0.35   0.575        -0.8016       0.1213        0.4971        29 3.064e-07 1.532e-06
+    f1   2        Skewed unimodal  200 30           0.3304    0.26  0.4198         -1.107       0.1171         0.378        30 2.299e-10 2.069e-09
+    f2   3        Strongly skewed  200 30           0.2266  0.1469  0.3494         -1.485       0.2118         0.324        30 1.041e-07 7.285e-07
+    f3   4      Kurtotic unimodal  200 30           0.5228    0.41  0.6667        -0.6485       0.1188         0.575        28 7.123e-06 2.849e-05
+    f4   5                Outlier  200 30           0.7147  0.5447  0.9378        -0.3358       0.1328        0.6469        21   0.01713   0.01713
+    f5   6                Bimodal  200 30           0.5747  0.5162  0.6397         -0.554      0.05244        0.5929        30 1.872e-11 2.246e-10
+    f6   7      Separated bimodal  200 30           0.3153  0.1985  0.5006         -1.154       0.2261        0.4373        28 1.891e-05 3.782e-05
+    f7   8         Skewed bimodal  200 30           0.5083   0.394  0.6557        -0.6767       0.1245        0.5483        29 7.601e-06 2.849e-05
+    f8   9               Trimodal  200 30           0.6415  0.5866  0.7015         -0.444      0.04375        0.6475        28 4.728e-11 4.728e-10
+    f9  10                   Claw  200 30           0.2209    0.14  0.3486          -1.51        0.223        0.3275        30 1.967e-07  1.18e-06
+   f10  11            Double claw  200 30           0.6156  0.5587  0.6783        -0.4851       0.0474        0.5903        29 3.896e-11 4.285e-10
+   f11  12        Asymmetric claw  200 30           0.5509  0.4915  0.6175        -0.5962      0.05576        0.5739        30 1.418e-11 1.843e-10
+   f12  13 Asymmetric double claw  200 30           0.6246  0.5871  0.6645        -0.4707      0.03029        0.6134        30 1.343e-15 2.014e-14
+   f13  14            Smooth comb  200 30           0.4382  0.3487  0.5505        -0.8251       0.1116        0.4995        30 3.811e-08 3.049e-07
+   f14  15          Discrete comb  200 30           0.4576   0.408  0.5132        -0.7818      0.05611        0.4273        30 2.214e-14   3.1e-13
+    f0   1               Gaussian 1000 30           0.1516  0.1284  0.1792         -1.886      0.08153        0.1494        30 3.064e-20 4.289e-19
+    f1   2        Skewed unimodal 1000 30           0.1077 0.08828  0.1314         -2.228      0.09729        0.1054        30 4.039e-20 5.251e-19
+    f2   3        Strongly skewed 1000 30           0.1387  0.1021  0.1883         -1.976       0.1497        0.1244        30 8.638e-14 6.046e-13
+    f3   4      Kurtotic unimodal 1000 30           0.4356  0.3211  0.5907        -0.8311        0.149        0.5042        28 5.096e-06 1.019e-05
+    f4   5                Outlier 1000 30           0.2274  0.1213  0.4266         -1.481       0.3075        0.3037        28  4.23e-05  4.23e-05
+    f5   6                Bimodal 1000 30           0.1486 0.09002  0.2454         -1.906       0.2452         0.217        30 1.425e-08 4.428e-08
+    f6   7      Separated bimodal 1000 30           0.1162 0.09088  0.1485         -2.153         0.12        0.1124        30 3.081e-17 2.773e-16
+    f7   8         Skewed bimodal 1000 30            0.135 0.09683  0.1882         -2.003       0.1625        0.1506        30 4.703e-13 2.822e-12
+    f8   9               Trimodal 1000 30           0.1476 0.09087  0.2397         -1.913       0.2371        0.2061        30 6.715e-09 3.358e-08
+    f9  10                   Claw 1000 30           0.2549  0.2116  0.3069         -1.367      0.09088        0.2274        30 3.124e-15 2.499e-14
+   f10  11            Double claw 1000 30            0.217  0.1843  0.2553         -1.528      0.07965        0.2135        30 5.065e-18 5.065e-17
+   f11  12        Asymmetric claw 1000 30           0.1724  0.1465   0.203         -1.758       0.0798        0.1778        30 1.183e-19 1.302e-18
+   f12  13 Asymmetric double claw 1000 30           0.1271 0.07438  0.2172         -2.063        0.262        0.2056        30 1.107e-08 4.428e-08
+   f13  14            Smooth comb 1000 30           0.2279  0.1994  0.2605         -1.479       0.0653        0.2375        30   5.5e-20   6.6e-19
+   f14  15          Discrete comb 1000 30           0.1876  0.1701  0.2069         -1.674      0.04784        0.1865        30 2.874e-25 4.312e-24
+    f0   1               Gaussian 5000 30          0.06459 0.03062  0.1363          -2.74        0.365       0.02998        25 2.844e-08 1.138e-07
+    f1   2        Skewed unimodal 5000 30           0.1169 0.07503  0.1823         -2.146        0.217       0.08369        30 8.456e-11 4.228e-10
+    f2   3        Strongly skewed 5000 30          0.09727 0.06849  0.1382          -2.33       0.1716        0.1231        30 4.223e-14 2.534e-13
+    f3   4      Kurtotic unimodal 5000 30           0.5456  0.4274  0.6964        -0.6059       0.1194        0.5261        29  2.05e-05 4.099e-05
+    f4   5                Outlier 5000 30           0.2854  0.1809  0.4502         -1.254       0.2229        0.4065        26 4.464e-06 1.339e-05
+    f5   6                Bimodal 5000 30          0.03298 0.02796 0.03891         -3.412       0.0808        0.0288        30 1.356e-27 1.898e-26
+    f6   7      Separated bimodal 5000 30          0.01323 0.01149 0.01523         -4.325      0.06894       0.01312        30 1.578e-32 2.367e-31
+    f7   8         Skewed bimodal 5000 30          0.02985 0.02503 0.03559         -3.512      0.08606       0.03129        30 3.591e-27 4.669e-26
+    f8   9               Trimodal 5000 30          0.03258  0.0273 0.03887         -3.424       0.0864       0.03324        30 8.253e-27 9.904e-26
+    f9  10                   Claw 5000 30           0.1847 0.08687  0.3928         -1.689       0.3689       0.08523        24 8.163e-05 8.163e-05
+   f10  11            Double claw 5000 30          0.04633 0.03928 0.05465         -3.072      0.08073       0.04948        30 2.633e-26 2.896e-25
+   f11  12        Asymmetric claw 5000 30          0.06567 0.05291 0.08149         -2.723       0.1056       0.06267        30 1.501e-21 1.351e-20
+   f12  13 Asymmetric double claw 5000 30          0.05578 0.04655 0.06686         -2.886      0.08852       0.06111        30   2.1e-24   2.1e-23
+   f13  14            Smooth comb 5000 30           0.2034  0.1751  0.2362         -1.593       0.0732        0.2008        30 1.651e-19 1.321e-18
+   f14  15          Discrete comb 5000 30           0.1699  0.1428   0.202         -1.773      0.08477        0.1665        30 4.885e-19 3.419e-18
+
+== benchmark-wide, equal weight per target (ratio < 1 favours the finalist) ==
+     reference    N  n_targets  geom_mean_ratio_equal_weight  ci_lo  ci_hi  n_targets_better  worst_target_ratio  best_target_ratio                                         interval
+       v2_akde  200         15                        0.4531 0.3698 0.5551                15              0.7147             0.2209 Student-t over the 15 per-target mean log ratios
+       v2_akde 1000         15                        0.1738  0.142 0.2128                15              0.4356             0.1077 Student-t over the 15 per-target mean log ratios
+       v2_akde 5000         15                       0.08217 0.0473 0.1428                15              0.5456            0.01323 Student-t over the 15 per-target mean log ratios
+spades_simplex  200         15                         1.226  1.189  1.265                 0               1.366              1.134 Student-t over the 15 per-target mean log ratios
+spades_simplex 1000         15                         1.073  1.035  1.113                 1               1.301             0.9763 Student-t over the 15 per-target mean log ratios
+spades_simplex 5000         15                         1.147   0.97  1.356                 4               2.554             0.9378 Student-t over the 15 per-target mean log ratios
+        kde_sj  200         15                          4.94  3.078  7.927                 0                16.1              1.358 Student-t over the 15 per-target mean log ratios
+        kde_sj 1000         15                         3.309  2.083  5.256                 0                12.1              1.011 Student-t over the 15 per-target mean log ratios
+        kde_sj 5000         15                         2.593  1.594  4.218                 2               15.21             0.6957 Student-t over the 15 per-target mean log ratios
+      abramson  200         15                         4.973  3.392  7.292                 0               15.73              1.761 Student-t over the 15 per-target mean log ratios
+      abramson 1000         15                         3.551  2.459  5.129                 0                9.99              1.326 Student-t over the 15 per-target mean log ratios
+      abramson 5000         15                         3.215  2.244  4.607                 0               13.45              1.448 Student-t over the 15 per-target mean log ratios
+        gmm_em  200         15                         5.955  3.318  10.69                 0                54.2              1.331 Student-t over the 15 per-target mean log ratios
+        gmm_em 1000         15                         4.405  2.435  7.966                 0               60.93               1.21 Student-t over the 15 per-target mean log ratios
+        gmm_em 5000         15                          4.21   1.83  9.682                 0               292.3              1.073 Student-t over the 15 per-target mean log ratios
+
+== primary family, Holm-adjusted within each N (alpha=0.05) ==
+      n_comparisons  finalist_better_and_significant  finalist_worse_and_significant  not_significant
+N                                                                                                    
+200              15                               15                               0                0
+1000             15                               15                               0                0
+5000             15                               15                               0                0
+A non-significant cell is NOT evidence of equivalence; it means the study at R=30 cannot resolve that cell.
+
+== cold end-to-end wall time (s) and final support size, medians ==
+               cold_wall_median              support_median                  
+N                          200   1000   5000           200      1000     5000
+variant                                                                      
+abramson                  0.025 0.786 20.360        200.000 1000.000 5000.000
+finalist                  2.043 2.379  4.671         45.000   52.000   57.000
+gmm_em                    1.687 2.007  4.474          3.000    3.000    4.000
+kde_sj                    0.002 0.002  0.002        200.000 1000.000 5000.000
+spades_simplex            0.153 0.262  1.007         45.000   59.000   68.000
+v2_akde                   2.103 2.401  3.052         35.000   48.000   55.000
+
+== validity / solver diagnostics ==
+       variant    N   n  frac_valid  max_mass_error  stage1_conv_rate  fallback_rate  support_cap_rate  med_stage1_kkt  med_stage2_kkt  med_cov_rank_numeric  med_cov_effective_rank  med_omega_cond
+      abramson  200 450           1        2.22e-16                 0              0                 0             NaN             NaN                   NaN                     NaN             NaN
+      abramson 1000 450           1       4.441e-16                 0              0                 0             NaN             NaN                   NaN                     NaN             NaN
+      abramson 5000 450           1        2.22e-16                 0              0                 0             NaN             NaN                   NaN                     NaN             NaN
+      finalist  200 450           1       4.441e-16           0.09111              0                 0       1.562e-05       2.873e-14                    93                   29.35           29.03
+      finalist 1000 450           1       5.551e-16           0.03111              0                 0       4.108e-06       3.823e-14                   123                   36.92           22.08
+      finalist 5000 450           1       6.661e-16           0.04667              0                 0        2.11e-06       8.526e-14                   168                   40.86            22.2
+        gmm_em  200 450           1        2.22e-16                 0              0                 0             NaN             NaN                   NaN                     NaN             NaN
+        gmm_em 1000 450           1        2.22e-16                 0              0                 0             NaN             NaN                   NaN                     NaN             NaN
+        gmm_em 5000 450           1       4.441e-16                 0              0                 0             NaN             NaN                   NaN                     NaN             NaN
+        kde_sj  200 450           1        2.22e-16                 0              0                 0             NaN             NaN                   NaN                     NaN             NaN
+        kde_sj 1000 450           1       4.441e-16                 0              0                 0             NaN             NaN                   NaN                     NaN             NaN
+        kde_sj 5000 450           1        2.22e-16                 0              0                 0             NaN             NaN                   NaN                     NaN             NaN
+spades_simplex  200 450           1       6.661e-16            0.4267              0                 0       3.964e-08       3.023e-16                   NaN                     NaN             NaN
+spades_simplex 1000 450           1       6.661e-16            0.3222              0                 0       1.961e-07       2.657e-16                   NaN                     NaN             NaN
+spades_simplex 5000 450           1       8.882e-16           0.09333              0                 0       2.723e-06       3.988e-16                   NaN                     NaN             NaN
+       v2_akde  200 450           1       4.441e-16          0.004444              0                 0       0.0003146        3.52e-13                    69                   17.72           470.3
+       v2_akde 1000 450           1       4.441e-16          0.004444              0                 0       0.0001223       4.437e-13                    85                    25.4           372.4
+       v2_akde 5000 450           1       7.772e-16          0.008889              0                 0        5.14e-05        5.79e-13                   153                   34.65            45.9
+
+== interval plausibility (primary family) ==
+median |skew| of the paired log ratio : 0.613
+cells with Shapiro p < 0.05           : 22 of 45
+median relative gap t vs bootstrap    : lo 0.009, hi 0.015
+cells meeting the log(1.25) half-width target: 22 of 45 (49%)
+
+wrote C:\dev\Adaptive_KDE_project\Adaptive_KDE\python\followup\results\stage_c\analysis

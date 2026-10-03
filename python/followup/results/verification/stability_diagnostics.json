@@ -1,0 +1,223 @@
+{
+  "boundary_selection": [
+    {
+      "method": "finalist",
+      "N": 200,
+      "n": 450,
+      "lam_at_lower_edge": 0.5711111111111111,
+      "lam_at_upper_edge": 0.0,
+      "rho_at_lower_edge": 0.0,
+      "rho_at_upper_edge": 1.0
+    },
+    {
+      "method": "finalist",
+      "N": 1000,
+      "n": 450,
+      "lam_at_lower_edge": 0.25555555555555554,
+      "lam_at_upper_edge": 0.0,
+      "rho_at_lower_edge": 0.0,
+      "rho_at_upper_edge": 0.9888888888888889
+    },
+    {
+      "method": "finalist",
+      "N": 5000,
+      "n": 450,
+      "lam_at_lower_edge": 0.22666666666666666,
+      "lam_at_upper_edge": 0.0,
+      "rho_at_lower_edge": 0.0,
+      "rho_at_upper_edge": 0.7155555555555555
+    },
+    {
+      "method": "v2_akde",
+      "N": 200,
+      "n": 450,
+      "lam_at_lower_edge": 0.22,
+      "lam_at_upper_edge": 0.0,
+      "rho_at_lower_edge": 0.0,
+      "rho_at_upper_edge": 0.36444444444444446
+    },
+    {
+      "method": "v2_akde",
+      "N": 1000,
+      "n": 450,
+      "lam_at_lower_edge": 0.3622222222222222,
+      "lam_at_upper_edge": 0.0,
+      "rho_at_lower_edge": 0.0,
+      "rho_at_upper_edge": 0.3688888888888889
+    },
+    {
+      "method": "v2_akde",
+      "N": 5000,
+      "n": 450,
+      "lam_at_lower_edge": 0.42,
+      "lam_at_upper_edge": 0.09777777777777778,
+      "rho_at_lower_edge": 0.0,
+      "rho_at_upper_edge": 0.5644444444444444
+    }
+  ],
+  "catastrophic_replicates": [
+    {
+      "method": "abramson",
+      "N": 200,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0022222222222222222,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 6.928367049818648,
+      "benchmark_mean_over_median": 1.239459894084812
+    },
+    {
+      "method": "abramson",
+      "N": 1000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 4.6493178245130125,
+      "benchmark_mean_over_median": 1.418411987238961
+    },
+    {
+      "method": "abramson",
+      "N": 5000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 4.6877827032618065,
+      "benchmark_mean_over_median": 1.1825246244880105
+    },
+    {
+      "method": "finalist",
+      "N": 200,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0022222222222222222,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 7.226550383281185,
+      "benchmark_mean_over_median": 1.1897820513984987
+    },
+    {
+      "method": "finalist",
+      "N": 1000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 2.265324363953739,
+      "benchmark_mean_over_median": 1.0901300584469624
+    },
+    {
+      "method": "finalist",
+      "N": 5000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.02666666666666667,
+      "frac_ge_20x_cell_median": 0.02666666666666667,
+      "max_ratio_to_cell_median": 168.98188556598487,
+      "benchmark_mean_over_median": 3.6516646001828246
+    },
+    {
+      "method": "gmm_em",
+      "N": 200,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.03777777777777778,
+      "frac_ge_20x_cell_median": 0.0044444444444444444,
+      "max_ratio_to_cell_median": 33.36859780379392,
+      "benchmark_mean_over_median": 1.632057167290563
+    },
+    {
+      "method": "gmm_em",
+      "N": 1000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.035555555555555556,
+      "frac_ge_20x_cell_median": 0.0044444444444444444,
+      "max_ratio_to_cell_median": 34.16321178989104,
+      "benchmark_mean_over_median": 1.4164771144576895
+    },
+    {
+      "method": "gmm_em",
+      "N": 5000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.008888888888888889,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 11.966049307725607,
+      "benchmark_mean_over_median": 1.2028068659146278
+    },
+    {
+      "method": "kde_sj",
+      "N": 200,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 3.635889956328065,
+      "benchmark_mean_over_median": 1.6440027209744006
+    },
+    {
+      "method": "kde_sj",
+      "N": 1000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 3.38867095800323,
+      "benchmark_mean_over_median": 1.3761093697225701
+    },
+    {
+      "method": "kde_sj",
+      "N": 5000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 3.3926590657650113,
+      "benchmark_mean_over_median": 1.4079007375733568
+    },
+    {
+      "method": "spades_simplex",
+      "N": 200,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 3.181183504657472,
+      "benchmark_mean_over_median": 1.1341536326410881
+    },
+    {
+      "method": "spades_simplex",
+      "N": 1000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 2.3910316776759553,
+      "benchmark_mean_over_median": 1.064896284231513
+    },
+    {
+      "method": "spades_simplex",
+      "N": 5000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.0,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 3.537586714428777,
+      "benchmark_mean_over_median": 1.2767212033222877
+    },
+    {
+      "method": "v2_akde",
+      "N": 200,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.04,
+      "frac_ge_20x_cell_median": 0.022222222222222223,
+      "max_ratio_to_cell_median": 38.59843374401764,
+      "benchmark_mean_over_median": 2.288147406821015
+    },
+    {
+      "method": "v2_akde",
+      "N": 1000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.042222222222222223,
+      "frac_ge_20x_cell_median": 0.03333333333333333,
+      "max_ratio_to_cell_median": 76.71143671808152,
+      "benchmark_mean_over_median": 2.639561456896821
+    },
+    {
+      "method": "v2_akde",
+      "N": 5000,
+      "n": 450,
+      "frac_ge_5x_cell_median": 0.013333333333333334,
+      "frac_ge_20x_cell_median": 0.0,
+      "max_ratio_to_cell_median": 19.257626257909347,
+      "benchmark_mean_over_median": 1.2043883301543965
+    }
+  ],
+  "note": "A catastrophic replicate is one whose ISE exceeds 5x (resp. 20x) the median ISE of its own (target, N) cell. The lambda grid endpoints are 3e-4 and 0.7; the rho grid endpoints are 1e-6 and 1."
+}

@@ -1,0 +1,43 @@
+160 fits: targets=['f5', 'f9'] sizes=[500, 5000] m=[99, 300, 600, 1200] reps=10 jobs=5
+[Parallel(n_jobs=5)]: Using backend LokyBackend with 5 concurrent workers.
+[Parallel(n_jobs=5)]: Done   8 tasks      | elapsed:  2.9min
+[Parallel(n_jobs=5)]: Done  62 tasks      | elapsed: 83.2min
+[Parallel(n_jobs=5)]: Done 160 out of 160 | elapsed: 413.9min finished
+
+=== median ISE by (N, m), pooled over targets ===
+N       500      5000
+m                    
+99     1.409  0.07516
+300  0.04579  0.07321
+600   0.1749 0.003671
+1200 0.08194  0.01246
+
+=== log-log slope of median ISE in N, per m ===
+(more negative = converging; ~0 = plateau)
+  m=   99  slope -1.273
+  m=  300  slope +0.204
+  m=  600  slope -1.678
+  m= 1200  slope -0.818
+
+=== per target ===
+N              500      5000
+target m                    
+f5     99     1.516   0.0429
+       300  0.04132   0.0748
+       600   0.2388 0.003671
+       1200   0.216  0.04982
+f9     99     1.201   0.3003
+       300  0.09694  0.06465
+       600  0.09703 0.003462
+       1200 0.08194 0.006125
+
+=== conditioning and cost ===
+     cov_rank_numeric       n_active      omega_cond       wall_s      
+N                500   5000     500  5000       500   5000   500   5000
+m                                                                      
+99                 56    85       16   33  1.408e+04 98.91  259.5   135
+300                80 153.5    101.5   75      43.46 29.49  431.7 166.2
+600             111.5   167     48.5 55.5        839 565.3  340.7 324.4
+1200              112 225.5       43 44.5      178.8  1130  652.5 858.3
+
+written to results\moment_count\raw.csv

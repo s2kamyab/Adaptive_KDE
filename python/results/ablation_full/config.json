@@ -1,0 +1,47 @@
+{
+  "name": "ablation_full",
+  "targets": [
+    "f0",
+    "f1",
+    "f2",
+    "f3",
+    "f4",
+    "f5",
+    "f6",
+    "f7",
+    "f8",
+    "f9",
+    "f10",
+    "f11",
+    "f12",
+    "f13",
+    "f14"
+  ],
+  "sample_sizes": [
+    100,
+    1000
+  ],
+  "n_reps": 30,
+  "estimators": [
+    "akde_identity",
+    "akde_diagonal",
+    "akde_ridge",
+    "akde_trunc_pinv",
+    "akde_single_scale",
+    "akde_no_sparsity",
+    "akde_single_stage",
+    "akde_matched_meas",
+    "akde_M300",
+    "akde_M600",
+    "akde_M1500"
+  ],
+  "seed": 20260915,
+  "out_dir": "results",
+  "n_jobs": 14,
+  "dict_n_loc": 150,
+  "dict_n_scale": 10,
+  "n_test": 2000,
+  "compute_iae": true,
+  "compute_hellinger": true,
+  "n_folds": 5
+}

@@ -1,0 +1,2684 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+
+\graphicspath{{./}}
+\input{bandwidth_flexibility_numbers.tex}  % generated numbers for Section~\ref{sec:bandwidth}
+
+\title{Measurement Design for Sparse Moment-Based Density Estimation}
+\author{Shima Kamyab, Reza Boostani, Behrooz Nasihatkon,}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We propose a two-stage method for estimating univariate probability densities using a small mixture of Gaussian components with different locations and bandwidths. The first stage selects components through nonnegative, sparsity-penalized moment matching, with discrepancies weighted by their estimated covariance. The second stage refits the selected components under nonnegativity and unit-sum constraints, ensuring that the resulting estimate is a valid probability density. The method uses the same Gaussian functions to represent the density and measure its agreement with the observed data. We show that this choice connects the population moment residual directly to the gradient of the integrated squared error, providing a mathematical basis for the measurement design. Experiments on 15 Marron–Wand benchmark densities, with sample sizes ranging from 200 to 5,000, evaluate estimation accuracy, computational cost, and model compactness. At 5,000 observations, the proposed method evaluates the fitted density approximately 127 times faster than the Sheather–Jones kernel density estimator, using a model approximately 89 times smaller under the tested implementation. This computational advantage comes with an accuracy trade-off: its paired geometric-mean integrated squared error is 2.6–4.9 times that of the Sheather–Jones estimator and 7–23\% higher than that of a density-valid SPADES adaptation. Occasional large estimation errors and incomplete optimization convergence remain limitations. A controlled follow-up experiment on a family of two-component mixtures whose narrow component is 1 to 8 times narrower than the broad one tests whether the multiscale dictionary itself helps: it does not. A single-scale ablation with one cross-validated bandwidth on the same centres attains lower integrated squared error in seven of eight target--sample-size cells (paired geometric-mean ratios of 1.9--13.8) and is inconclusive in the eighth, a size-matched single-scale control shows the atom count is not the cause, and the widest dictionary scale is never selected; density-valid SPADES behaves the same way on the same dictionary. These findings demonstrate the method’s potential for applications requiring compact density representations and repeated density evaluation, locate its accuracy deficit in the dictionary-plus-sparse-selection design rather than in the moment criterion alone, and identify opportunities to improve accuracy and numerical reliability.
+
+\end{abstract}
+
+\noindent\textbf{Keywords:} density estimation, method of moments, sparse
+mixture models, measurement design, kernel density estimation.
+
+\section{Introduction}
+\label{sec:intro}
+
+Nonparametric density estimation underpins classification, clustering,
+anomaly detection and level-set estimation \cite{sheather1991,botev2010}. Two
+broad families dominate practice. Kernel density estimators place a kernel at
+every observation; they are simple, accurate and essentially free to fit, but
+the fitted model \emph{is} the sample, so memory and query cost grow linearly
+with $N$. Sparse mixture estimators instead select a small number of
+components from a dictionary; they pay a fitting cost once and then evaluate
+in time independent of $N$. SPADES \cite{spades,bunea2007} is the canonical
+$\ell_1$-penalised member of this family, minimising an empirical
+integrated-square loss over a fixed dictionary.
+
+This paper concerns a moment-based member of that family. Instead of an
+integrated-square loss, the density is fitted by matching a vector of
+\emph{measurement functionals}, integrals of the density against a bank of
+kernels, to their empirical counterparts, with a covariance weighting in the
+spirit of the generalised method of moments \cite{hansen1982,hall2005}. The
+construction is attractive for three reasons: the measurement family need not
+coincide with the representation dictionary, each stage is a convex quadratic
+program, and the output is a genuine probability density.
+
+The estimator as previously configured did not perform well. Our contribution
+is to identify why, to correct it, and to report the corrected estimator's
+strengths and remaining weaknesses under a locked evaluation.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+\item \textbf{A matched measurement design for sparse density estimation.}
+We use the same Gaussian functions for moment measurement and density
+representation, aligning the measurement family with the dictionary's
+locations and bandwidths. This construction connects the population moment
+residual directly to the gradient of the integrated squared error, providing
+a mathematical basis for the design. 
+%Experiments on $15$ Marron--Wand
+% benchmark densities at $N = 200$, $1000$, and $5000$ evaluate its accuracy
+% and its sensitivity to the choice of measurement family
+% (Section~\ref{sec:results}, Figure~\ref{fig:accuracy}).
+\item \textbf{A mathematical characterization of matched moment fitting.}
+We establish the connection between moment matching and integrated squared
+error: when $k_j = b_j$, the design matrix equals the dictionary's Gram
+matrix, and the population moment residual equals one half of the exact
+risk gradient (Proposition~\ref{prop:matched}). We further characterize
+the conditions under which the weighting matrix affects the unconstrained
+moment-fitting solution, supported by an analytic counterexample
+(Proposition~\ref{prop:omega}).
+\item \textbf{Oracle analysis of residual estimation error.}
+We use population moments and the population covariance to assess the
+error that remains after removing sampling noise from the measured
+moments, conditional on the sample-built dictionary. Under the matched
+measurement design, the population-moment fit retains an excess above
+the dictionary's minimum achievable ISE corresponding to approximately
+$0.001$--$17\%$ of the total estimation error in the tested conditions.
+This analysis helps distinguish moment-sampling effects from residual
+effects of the fitting criterion, constraints, and numerical optimisation
+(Section~\ref{sec:mechanism}, Figure~\ref{fig:mechanism}).
+\item \textbf{Compact density representations with fast evaluation.}
+The proposed estimator represents the fitted density using a small
+Gaussian mixture, reducing storage requirements and evaluation time.
+At $N=5000$, it evaluates the density in $1.17\,\mu$s per query point,
+compared with $147.8\,\mu$s for the Sheather--Jones estimator, and uses
+a serialised model of $1{,}344$ bytes compared with $120{,}000$ bytes.
+These measurements, obtained under identical query conditions,
+demonstrate approximately $127$-fold faster evaluation and $89$-fold
+lower model storage under the tested implementation
+(Section~\ref{sec:cost}, Figure~\ref{fig:cost}).
+\item \textbf{A systematic assessment of accuracy and numerical stability.}
+We evaluate the proposed estimator against conventional kernel estimators
+and a density-valid SPADES adaptation, and examine its sensitivity to
+optimisation accuracy and the iteration budget. The results identify an
+accuracy disadvantage relative to these baselines and a $2.7\%$ rate of
+catastrophic replicates at $N=5000$, as defined in
+Section~\ref{sec:results}. On the diagnostic subset, first-stage
+optimisation reaches its stated tolerance in $13.5\%$ of instances,
+and the selected support varies with the iteration budget.
+Feasible-perturbation experiments further demonstrate that moment
+discrepancy can remain unchanged or decrease while ISE increases
+by an amount comparable to the fitted error. These findings clarify
+the method's practical limitations and identify priorities for improving
+its reliability
+(Sections~\ref{sec:results}--\ref{sec:limitations}).
+\item \textbf{A controlled test of multiscale bandwidth selection.}
+On a locked family of mixtures with a narrow component $1$ to $8$ times
+narrower than the broad one ($160$ datasets, six methods, $960$ fits), a
+single-scale ablation of the estimator with one cross-validated bandwidth on
+the same $60$ centres was more accurate than the multiscale dictionary in
+seven of eight cells and inconclusive in the eighth; a size-matched
+single-scale control (300 centres) was better than the multiscale entry on all
+$40$ of its paired datasets, the widest dictionary scale received zero weight
+in every fit, and the SPADES adaptation used the same dictionary the same way.
+Multiscale selection is not what makes the estimator useful; compactness is
+(Section~\ref{sec:bandwidth}).
+\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related work}
+\label{sec:related}
+
+The proposed method connects three lines of research: sparse
+dictionary-based density estimation, moment matching with kernel
+representations, and compact probability models for efficient evaluation.
+
+\paragraph{Sparse mixture and minimum-distance density estimation.}
+Sparse density estimators approximate an unknown distribution using a
+small number of components selected from a larger dictionary. SPADES
+\cite{spades} provides a framework for this approach by combining an
+empirical integrated-square loss with an $\ell_1$ penalty. Its objective
+has the form
+\[
+    w^\top G w - 2s^\top w
+    + \sum_{i=1}^{M}\gamma_i |w_i|,
+\]
+where $G$ is the dictionary Gram matrix, $s$ contains empirical averages
+of the basis functions, and $\gamma_i$ are penalty weights. This
+formulation encourages sparse representations and admits statistical
+guarantees under appropriate assumptions. Hong et al.\
+\cite{hong2013} also investigate sparse density estimation through
+integrated-square-error minimisation, using sequential kernel selection
+to construct compact estimates.
+
+The proposed estimator shares the objective of selecting a parsimonious
+mixture, but fits its coefficients through covariance-weighted moment
+matching. Its second stage enforces nonnegativity and unit total mass
+on the selected components. Although both approaches involve quadratic
+optimisation, the moment-based refit generally differs from minimising
+the empirical integrated-square loss. A density-valid adaptation of
+SPADES therefore provides a closely related comparator for examining
+the effect of the fitting criterion on a common dictionary.
+
+\paragraph{Moment matching and kernel representations.}
+Estimation through moment conditions is a well-established alternative
+to likelihood-based inference. The generalised method of moments
+provides a framework for combining empirical moment conditions with
+a weighting matrix that accounts for their variability and dependence
+\cite{hansen1982,hall2005,chamberlain1987}. Its statistical properties
+depend on the specification of the moment conditions, the weighting
+scheme, and the assumptions governing estimation.
+
+Kernel representations extend this perspective by expressing
+distributional information through expectations of functions.
+Song et al.\ \cite{song2008} estimate mixtures by matching probability
+distributions in a reproducing kernel Hilbert space. For fixed
+components, the resulting discrepancy yields a quadratic objective
+in the mixture weights; Gaussian components and Gaussian kernels
+allow the required expectations to be evaluated analytically.
+More recently, the kernel method of moments
+\cite{kremer2023} uses maximum mean discrepancy within a framework
+for estimation under moment restrictions, allowing candidate
+distributions beyond reweightings of the observed samples.
+Compressive statistical learning
+\cite{gribonval2020} instead summarises data through a finite vector
+of empirical random-feature moments and fits models using that
+representation.
+
+Our method uses a finite collection of kernel measurements together
+with an estimated covariance weighting and a separate dictionary
+for density representation. We focus on how the relationship between
+these two families affects estimation. In particular, choosing the
+measurement functions to coincide with the dictionary atoms connects
+the population moment residual to the gradient of the integrated
+squared error (Proposition~\ref{prop:matched}). This identity provides
+an interpretation of the matched design, while the experiments
+assess its practical behaviour under sparsity selection and
+probability constraints.
+
+\paragraph{Compact density representations and efficient evaluation.}
+Reducing the storage and evaluation costs of kernel estimators is
+another motivation for sparse density models. Kernel thinning
+\cite{dwivedi2024} selects representative observations while controlling
+discrepancy in a kernel function space. Low-rank thinning
+\cite{carrell2025} develops this direction by exploiting approximate
+low-rank structure in kernel or data matrices. Coreset density
+estimation \cite{turner2021} studies how a reduced subset of observations
+can retain statistical accuracy while providing a smaller
+representation.
+
+Positive semidefinite (PSD) probability models
+\cite{rudi2021} offer a complementary approach. They represent
+nonnegative functions through PSD quadratic forms in kernel features,
+with theoretical approximation guarantees and tractable operations
+such as integration and marginalisation. Their representation differs
+from both a selected subset of observations and a sparse mixture
+with nonnegative scalar weights.
+
+The proposed estimator pursues compactness by selecting Gaussian
+components from a multiscale location--scale dictionary. This permits
+component locations and bandwidths to be chosen from the dictionary
+rather than requiring one component per observation. We therefore
+evaluate compactness through model storage and density-evaluation
+time, alongside estimation error and fitting cost. These measures
+characterise the practical trade-off without treating sparsity alone
+as evidence of computational superiority.
+
+\paragraph{Benchmarking and statistical evaluation.}
+The Marron--Wand normal-mixture family \cite{marron1992} provides
+a reproducible collection of density shapes for assessing
+nonparametric estimators. We use its $15$ targets as a fixed benchmark,
+with common datasets across methods to support paired comparisons.
+Following recommendations for simulation studies
+\cite{morris2019}, we distinguish variability across independently
+generated datasets from uncertainty in estimated performance
+summaries. Results include estimation accuracy, computational cost,
+model size, and numerical diagnostics, providing a joint assessment
+of statistical performance and practical reliability.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Method}
+% \label{sec:method}
+
+% \subsection{Representation and measurement}
+
+% Let $b_1,\dots,b_M$ be Gaussian atoms on a location--scale grid: locations on
+% an equally spaced grid spanning the padded sample range, and $q$ scales
+% geometrically spaced between $0.05$ and $4.0$ times a Silverman reference
+% bandwidth computed from the training sample. Let $k_1,\dots,k_m$ be a second
+% Gaussian bank, the \emph{measurement} family. For a weight vector $w$ write
+% $f_w = \sum_i w_i b_i$. Define
+% \begin{equation}
+% G_{ij} = \int b_i b_j, \quad
+% a_i = \int b_i f_0, \quad
+% c_0 = \int f_0^2, \quad
+% D_{ji} = \int k_j b_i,
+% \label{eq:objects}
+% \end{equation}
+% and the empirical and population moment vectors
+% \begin{equation}
+% y_j = \frac1N \sum_{n=1}^N k_j(x_n), \qquad
+% y^0_j = \int k_j f_0 .
+% \label{eq:moments}
+% \end{equation}
+% The exact risk is
+% \begin{equation}
+% R(w) = \int (f_w - f_0)^2 = w^\top G w - 2 a^\top w + c_0 .
+% \label{eq:risk}
+% \end{equation}
+% All entries of \eqref{eq:objects}--\eqref{eq:moments} are available in closed
+% form for Gaussian components through the overlap identity
+% $\int \mathcal N(x;\mu,S)\,\mathcal N(x;\nu,T)\,dx = \mathcal N(\mu;\nu,S+T)$,
+% so no quadrature is needed and ISE is computed analytically.
+
+% \subsection{Two-stage estimator}
+
+% Let $\widehat C$ be the empirical covariance of the moment vector,
+% $\widehat C = \frac{1}{N(N-1)}\sum_n (k(x_n)-y)(k(x_n)-y)^\top$, and
+% $\Omega = (\widehat C + \rho\,\bar s\,I)^{-1}$ with $\bar s$ the mean diagonal
+% of $\widehat C$. The estimator solves
+% \begin{align}
+% \text{stage 1:}\quad
+%  &\widetilde u \in \arg\min_{u \ge 0}\ \tfrac12 (Du-y)^\top \Omega (Du-y) + \lambda\,\mathbf 1^\top u,
+%  \label{eq:stage1}\\
+% \text{selection:}\quad
+%  &S = \{ i : \widetilde u_i > \tau \max_j \widetilde u_j \},
+%  \label{eq:select}\\
+% \text{stage 2:}\quad
+%  &\widehat\alpha \in \arg\min_{\alpha \ge 0,\ \mathbf 1^\top \alpha = 1}\ \tfrac12 (D_S\alpha - y)^\top \Omega (D_S\alpha - y),
+%  \label{eq:stage2}
+% \end{align}
+% and returns $\widehat f = \sum_{i \in S} \widehat\alpha_i b_i$. If
+% $\max_j \widetilde u_j = 0$ the selection rule returns the empty set; the
+% implementation then falls back to the singleton minimising the stage-1 loss
+% and records that the fallback fired. In the confirmation reported here the
+% fallback never fired and the support cap never bound.
+
+% \paragraph{Why the penalty is in stage 1 only.} On the simplex
+% $\mathbf 1^\top \alpha = 1$ the uniform $\ell_1$ penalty $\lambda \mathbf 1^\top
+% \alpha$ is the constant $\lambda$ and therefore cannot select. This is why
+% selection is performed without the unit-sum constraint and the refit carries
+% no penalty.
+
+% \paragraph{Validity.} Because each $b_i$ is a normalised density and
+% $\widehat\alpha$ lies on the simplex, $\widehat f \ge 0$ and
+% $\int \widehat f = 1$ exactly. This is a construction, not an estimate: over
+% the $8{,}100$ confirmation fits the maximum deviation of the total mass from
+% one was $8.9\times10^{-16}$.
+
+% \paragraph{What the refit does not preserve.} Stage 2 is a constrained
+% quadratic program on $S$ and may return $\widehat\alpha_i = 0$ for some
+% $i \in S$. The final support is therefore contained in $S$ but not equal to
+% it, and we do not claim that every selected coefficient survives.
+
+% \subsection{The measurement design}
+
+% The two families in \eqref{eq:objects} need not coincide. The configuration we
+% call \textbf{AKDE-V2} uses an independent bank of $m = 300$ kernels, $100$
+% locations $\times$ $3$ widths spanning $0.25$--$2.0$ reference bandwidths,
+% against a dictionary spanning $0.05$--$4.0$. The configuration we call
+% \textbf{AKDE-M} sets $k_j = b_j$, so $m = M = 300$ and the measurement family
+% is the dictionary itself. Everything else---criterion, weighting, $\tau$,
+% $\lambda$ path, $\rho$ grid, solver, cross-validation---is identical.
+
+% \section{Theory}
+% \label{sec:theory}
+
+% \begin{assumption}
+% \label{as:integrable}
+% $b_i, k_j, f_0 \in L^1(\mathbb R^d) \cap L^2(\mathbb R^d)$ and are
+% nonnegative and measurable.
+% \end{assumption}
+% Under Assumption~\ref{as:integrable} every integral in
+% \eqref{eq:objects}--\eqref{eq:moments} is finite by Cauchy--Schwarz, $G$ is
+% symmetric positive semidefinite, and $R$ in \eqref{eq:risk} is a convex
+% quadratic. Gaussian components satisfy the assumption automatically.
+
+% \begin{proposition}[matched measurement family]
+% \label{prop:matched}
+% Let Assumption~\ref{as:integrable} hold and suppose $k_j = b_j$ for
+% $j = 1,\dots,M$, so $m = M$. Then $D = G$, $y^0 = a$, and for every
+% $w \in \mathbb R^M$
+% \begin{equation}
+% D w - y^0 \;=\; G w - a \;=\; \tfrac12 \nabla R(w).
+% \label{eq:gradient}
+% \end{equation}
+% \end{proposition}
+% \begin{proof}
+% $D_{ji} = \int k_j b_i = \int b_j b_i = G_{ji}$ and
+% $y^0_j = \int k_j f_0 = \int b_j f_0 = a_j$. From \eqref{eq:risk},
+% $\nabla R(w) = 2Gw - 2a$, so $\tfrac12\nabla R(w) = Gw - a = Dw - y^0$.
+% \end{proof}
+
+% Proposition~\ref{prop:matched} says that under a matched bank the
+% \emph{population} moment residual is exactly half the risk gradient: driving
+% it to zero solves the stationarity condition of the exact risk. It says
+% nothing about the empirical residual $Dw - y$, nothing about the penalised
+% problem \eqref{eq:stage1}, and nothing about the constrained problem
+% \eqref{eq:stage2}. Remark~\ref{rem:constrained} below makes this explicit.
+
+% \begin{proposition}[when the weighting matters]
+% \label{prop:omega}
+% Let $\Omega \succ 0$ and
+% $U(\Omega) = \arg\min_{u} (Du-y)^\top \Omega (Du-y)$.
+% \begin{enumerate}
+% \item[(a)] If $y \in \operatorname{range}(D)$, then
+% $U(\Omega) = \{u : Du = y\}$ for every $\Omega \succ 0$; in particular
+% $U(\Omega)$ does not depend on $\Omega$, and it is a singleton when $D$ has
+% full column rank.
+% \item[(b)] If $y \notin \operatorname{range}(D)$, then $U(\Omega)$ is the
+% solution set of $D^\top\Omega D\,u = D^\top\Omega y$, which in general depends
+% on $\Omega$.
+% \end{enumerate}
+% \end{proposition}
+% \begin{proof}
+% (a) Since $\Omega \succ 0$ the objective is nonnegative and vanishes exactly
+% on $\{u : Du = y\}$, which is nonempty by hypothesis; the minimum value is $0$
+% and the argmin is that set, independently of $\Omega$. Full column rank makes
+% it a singleton. (b) The objective is a convex quadratic with gradient
+% $2D^\top\Omega(Du-y)$, so the argmin solves the stated normal equations; when
+% no exact solution exists the minimiser is an $\Omega$-orthogonal projection
+% and different $\Omega$ induce different orthogonality relations.
+% \end{proof}
+
+% \begin{remark}[a natural claim that is false]
+% \label{rem:false}
+% It is tempting to argue that ``$\Omega$ sets the metric, not the target, so it
+% cannot move the solution''. Proposition~\ref{prop:omega}(b) shows this is false
+% whenever the moment system is inconsistent. Supplement~S1 gives an analytic
+% counterexample with $M = 6$ well-separated atoms and $m = 12$ measurement
+% kernels, in which the residual is nonzero ($8.4\times10^{-3}$) and the
+% coefficient vector moves by $2.8\%$ of its norm as $\rho$ ranges over
+% $\{10^{-6},10^{-3},10^{-1},1\}$. The configurations studied in this paper are
+% square ($m = M = 300$) and consistent in exact arithmetic, so
+% $\Omega$-invariance does hold there---by
+% Proposition~\ref{prop:omega}(a), not by the false argument.
+% \end{remark}
+
+% \begin{proposition}[the $\Omega = G^{-1}$ boundary case]
+% \label{prop:gram}
+% Let $G \succ 0$, $k_j = b_j$ and $y = s$ with $s_i = N^{-1}\sum_n b_i(x_n)$.
+% Then for every $w$,
+% \begin{equation}
+% (Gw-s)^\top G^{-1} (Gw-s) \;=\; w^\top G w - 2 s^\top w + s^\top G^{-1} s ,
+% \label{eq:gram}
+% \end{equation}
+% so the unpenalised matched moment objective weighted by $G^{-1}$ differs from
+% the empirical integrated-square objective by a constant and has the same
+% minimisers.
+% \end{proposition}
+% \begin{proof}
+% Expand the left side using $G^\top = G$.
+% \end{proof}
+
+% Equation~\eqref{eq:gram} is one line of algebra and we claim no novelty for
+% it; it is the familiar bridge between weighted least squares and a quadratic
+% risk. It is \emph{not} a recommendation to use $\Omega = G^{-1}$: $G$ is
+% numerically singular at the dictionary sizes used here
+% ($\operatorname{cond}(G) \approx 1.1\times10^{19}$ at $M=300$). Nor is it what
+% the estimator does: the covariance weighting is a different matrix, with
+% cosine alignment $0.18$ to $G^{-1}$ on a well-conditioned test instance
+% (Supplement~S1).
+
+% \begin{remark}[the constrained problem is a different problem]
+% \label{rem:constrained}
+% Propositions~\ref{prop:matched}--\ref{prop:gram} concern the unpenalised,
+% unconstrained quadratic. On a $60$-atom dictionary fitted to MW6 at $N=500$,
+% the unconstrained minimiser has smallest coefficient $-4.4\times10^{3}$ and
+% coefficient sum $1.005$: it is not a density, and its exact risk is
+% $1.44\times10^{-2}$ against $1.74\times10^{-3}$ for the simplex optimum---eight
+% times worse. Reasoning from the unconstrained solution to the behaviour of the
+% constrained estimator is therefore an analogy, not a derivation, and we use
+% Proposition~\ref{prop:matched} only qualitatively.
+% \end{remark}
+
+% \paragraph{What we do not claim.} We do not claim that matching is necessary
+% or uniquely optimal; the evidence is a comparison of three specific banks. We
+% do not claim that the matched population-moment fit attains the dictionary
+% optimum---Section~\ref{sec:mechanism} shows it does not. We prove no
+% consistency, efficiency or rate result, and none is implied by three sample
+% sizes. Every proposition above has an executable test; all $11$ pass
+% (Supplement~S1).
+\section{Method}
+\label{sec:method}
+
+Our goal is to estimate an unknown probability density using a small
+number of Gaussian components. The method has two stages. First, it
+selects useful components from a larger collection of candidates.
+Second, it adjusts their weights so that the final estimate is
+nonnegative and integrates to one.
+
+\subsection{Data and density representation}
+
+Let $x_1,\ldots,x_N \in \mathbb{R}$ be $N \geq 2$ independent
+observations from an unknown density $f_0$. We approximate $f_0$
+using a dictionary of $M$ Gaussian probability densities,
+denoted by $b_1,\ldots,b_M$. Each dictionary element, also called
+an \emph{atom}, has the form
+\begin{equation}
+b_i(x)
+=
+\frac{1}{\sqrt{2\pi}\,h_i}
+\exp\left(
+-\frac{(x-\mu_i)^2}{2h_i^2}
+\right),
+\qquad i=1,\ldots,M,
+\label{eq:atom}
+\end{equation}
+where $\mu_i \in \mathbb{R}$ is its centre and $h_i>0$ is its
+standard deviation, or bandwidth. Each atom is nonnegative and
+has integral one.
+
+The dictionary combines $L$ candidate locations with $q$
+candidate bandwidths, giving $M=Lq$ atoms. Locations are equally
+spaced over an interval extending beyond the smallest and largest
+training observations. The bandwidths are geometrically spaced
+between $0.05h_{\mathrm{ref}}$ and $4h_{\mathrm{ref}}$, where
+$h_{\mathrm{ref}}>0$ is the Silverman reference bandwidth computed
+from the training data. Thus, the dictionary contains both narrow
+components for local features and wider components for smoother
+structure. The precise bandwidth and range-padding rules are
+specified in the experimental setup.
+
+For a coefficient vector $w=(w_1,\ldots,w_M)^\top$, define
+\begin{equation}
+f_w(x)=\sum_{i=1}^{M}w_i b_i(x).
+\label{eq:representation}
+\end{equation}
+Here, the superscript $\top$ denotes transpose. When
+$w_i\geq0$ and $\sum_i w_i=1$, $f_w$ is a Gaussian mixture
+and therefore a valid probability density. We also use
+\eqref{eq:representation} with unrestricted coefficients in the
+theoretical analysis; such a function need not be a valid density.
+
+\subsection{Measuring agreement with the observations}
+
+To assess how well a candidate density fits the data, we introduce
+$m$ measurement functions $k_1,\ldots,k_m$. These are Gaussian
+kernels, which may have different centres and bandwidths from
+the dictionary atoms.
+
+Each measurement function summarises the distribution through
+an expected kernel value. For example, a narrow kernel centred
+at a particular location gives greater weight to observations
+near that location. The empirical measurement is
+\begin{equation}
+y_j=\frac{1}{N}\sum_{n=1}^{N}k_j(x_n),
+\qquad j=1,\ldots,m.
+\label{eq:empirical-moment}
+\end{equation}
+We call these quantities \emph{moments}, although they are
+averages of kernel functions rather than necessarily averages
+of powers such as $x$ or $x^2$.
+
+The corresponding population measurement is
+\begin{equation}
+y_j^0=\int_{\mathbb{R}}k_j(x)f_0(x)\,dx.
+\label{eq:moments}
+\end{equation}
+The vectors $y=(y_1,\ldots,y_m)^\top$ and
+$y^0=(y_1^0,\ldots,y_m^0)^\top$ contain the empirical and
+population measurements, respectively. The empirical vector
+$y$ is available from the observations; $y^0$ depends on the
+unknown density and is used only for theory and oracle
+diagnostics.
+
+The measurement predicted by a candidate $f_w$ is
+\begin{equation}
+\int_{\mathbb{R}}k_j(x)f_w(x)\,dx
+=
+\sum_{i=1}^{M}D_{ji}w_i,
+\qquad
+D_{ji}=\int_{\mathbb{R}}k_j(x)b_i(x)\,dx.
+\label{eq:design}
+\end{equation}
+The matrix $D\in\mathbb{R}^{m\times M}$ is the
+\emph{measurement matrix}. Its $i$th column describes how
+atom $b_i$ contributes to all $m$ measurements. Consequently,
+$Dw$ is the vector of predicted measurements, and
+\[
+r(w)=Dw-y
+\]
+is the empirical moment residual. Moment fitting seeks
+coefficients that make this residual small.
+
+\subsection{Integrated squared error and Gaussian overlaps}
+
+To evaluate density accuracy, define
+\begin{equation}
+G_{i\ell}
+=
+\int_{\mathbb{R}}b_i(x)b_\ell(x)\,dx,
+\qquad
+a_i
+=
+\int_{\mathbb{R}}b_i(x)f_0(x)\,dx,
+\qquad
+c_0
+=
+\int_{\mathbb{R}}f_0(x)^2\,dx.
+\label{eq:objects}
+\end{equation}
+Here, $G\in\mathbb{R}^{M\times M}$ is the \emph{Gram matrix},
+which measures overlap between dictionary atoms;
+$a\in\mathbb{R}^{M}$ measures their overlap with the true
+density; and $c_0$ is the squared integral norm of the true
+density.
+
+The integrated squared error (ISE) is
+\begin{equation}
+R(w)
+=
+\int_{\mathbb{R}}\bigl(f_w(x)-f_0(x)\bigr)^2\,dx
+=
+w^\top G w-2a^\top w+c_0.
+\label{eq:risk}
+\end{equation}
+Smaller values indicate a closer approximation to $f_0$.
+The quantities $a$, $c_0$, and hence the exact ISE are generally
+unknown in applications. They are available in our synthetic
+experiments because the target density is specified.
+
+For Gaussian atoms and measurement functions, entries of
+$G$ and $D$ follow from the overlap identity
+\begin{equation}
+\int_{\mathbb{R}}
+\mathcal{N}(x;\mu,\sigma^2)
+\mathcal{N}(x;\nu,\eta^2)\,dx
+=
+\mathcal{N}(\mu;\nu,\sigma^2+\eta^2),
+\label{eq:gaussian-overlap}
+\end{equation}
+where $\mathcal{N}(x;\mu,\sigma^2)$ denotes a Gaussian
+density with mean $\mu$ and variance $\sigma^2$, evaluated
+at $x$. When $f_0$ is a known Gaussian mixture, the same
+identity also gives $a$, $c_0$, and $y^0$ analytically.
+The empirical measurements $y$ are computed directly by
+averaging kernel evaluations over the sample.
+
+\subsection{Weighting the moment residuals}
+
+Different measurements can have different variability and
+can be strongly correlated. We account for these differences
+using a covariance-based weighting matrix.
+
+Write
+\[
+k(x_n)=
+\bigl(k_1(x_n),\ldots,k_m(x_n)\bigr)^\top.
+\]
+We estimate the covariance of the empirical moment vector by
+\begin{equation}
+\widehat C
+=
+\frac{1}{N(N-1)}
+\sum_{n=1}^{N}
+\bigl(k(x_n)-y\bigr)
+\bigl(k(x_n)-y\bigr)^\top.
+\label{eq:covariance}
+\end{equation}
+For fixed measurement functions, this is the usual sample
+covariance of $k(X)$ divided by $N$, because $y$ is an average
+of $N$ observations. When the measurement functions themselves
+are constructed from the same data, it is a plug-in covariance
+estimate and does not fully account for uncertainty in their
+construction.
+
+To stabilise the weighting, define
+\begin{equation}
+\bar s
+=
+\frac{1}{m}\operatorname{tr}(\widehat C),
+\qquad
+\Omega
+=
+\bigl(\widehat C+\rho\bar s I_m\bigr)^{-1},
+\label{eq:weighting}
+\end{equation}
+where $\operatorname{tr}$ denotes the sum of diagonal entries,
+$I_m$ is the $m\times m$ identity matrix, and $\rho>0$ controls
+regularisation. The scale factor $\bar s$ is the average
+estimated variance of the moments.
+
+Provided $\bar s>0$, the added diagonal term makes the matrix
+positive definite and invertible. The degenerate case
+$\bar s=0$ requires a separately specified numerical safeguard.
+In implementation, the action of $\Omega$ can be computed
+using a matrix factorisation and linear solves rather than
+an explicit inverse.
+
+The weighted discrepancy is
+\begin{equation}
+L_\Omega(w)
+=
+\frac12(Dw-y)^\top\Omega(Dw-y).
+\label{eq:moment-loss}
+\end{equation}
+This measures agreement with the empirical moments while
+accounting for their estimated covariance.
+
+\subsection{Two-stage estimation}
+
+\paragraph{Stage 1: select candidate components.}
+We first solve
+\begin{equation}
+\widetilde u
+\in
+\operatorname*{arg\,min}_{u\in\mathbb{R}^{M},\,u\geq0}
+\left\{
+\frac12(Du-y)^\top\Omega(Du-y)
++
+\lambda\mathbf{1}_{M}^\top u
+\right\},
+\label{eq:stage1}
+\end{equation}
+where $u\geq0$ means that every coefficient is nonnegative,
+$\mathbf{1}_{M}$ is a vector of $M$ ones, and $\lambda\geq0$
+controls the strength of the sparsity penalty.
+The notation $\operatorname*{arg\,min}$ denotes the set
+of coefficient vectors attaining the minimum.
+
+Because $u$ is nonnegative,
+$\mathbf{1}_{M}^\top u=\|u\|_1$, where
+$\|u\|_1=\sum_i|u_i|$. The penalty encourages sparse
+solutions. We do not require the coefficients to sum to one
+at this stage, so the intermediate function
+$\sum_i\widetilde u_i b_i$ need not be a normalised density.
+
+\paragraph{Select the support.}
+We retain components whose coefficients exceed a relative
+threshold:
+\begin{equation}
+S
+=
+\left\{
+i\in\{1,\ldots,M\}:
+\widetilde u_i>
+\tau\max_{1\leq\ell\leq M}\widetilde u_\ell
+\right\},
+\qquad 0\leq\tau<1.
+\label{eq:select}
+\end{equation}
+The set $S$ is the selected \emph{support}, and $\tau$
+determines how small a coefficient can be relative to the
+largest one before it is discarded. The experiments use
+$\tau=10^{-3}$.
+
+If all coefficients are zero, $S$ is empty. In that case,
+we select a single atom using
+\begin{equation}
+i^\star
+\in
+\operatorname*{arg\,min}_{1\leq i\leq M}
+\frac12(D e_i-y)^\top\Omega(D e_i-y),
+\qquad
+S=\{i^\star\},
+\label{eq:fallback}
+\end{equation}
+where $e_i$ is the vector with a one in position $i$ and
+zeros elsewhere. This chooses the best unit-mass singleton
+under the moment loss. The stage-1 penalty would equal
+$\lambda$ for every $e_i$ and would therefore not affect
+this choice.
+
+\paragraph{Stage 2: refit a valid density.}
+Let $D_S$ contain the columns of $D$ corresponding to the
+selected indices in $S$. We solve
+\begin{equation}
+\widehat\alpha
+\in
+\operatorname*{arg\,min}_{
+\alpha\in\mathbb{R}^{|S|},\,
+\alpha\geq0,\,
+\mathbf{1}_{|S|}^\top\alpha=1}
+\frac12(D_S\alpha-y)^\top
+\Omega(D_S\alpha-y),
+\label{eq:stage2}
+\end{equation}
+where $|S|$ is the number of selected components.
+The coefficients $\alpha$ are indexed by the selected
+atoms. Their feasible set is the \emph{probability simplex}:
+all weights are nonnegative and sum to one.
+
+The final estimate is
+\begin{equation}
+\widehat f(x)
+=
+\sum_{i\in S}\widehat\alpha_i b_i(x).
+\label{eq:final-density}
+\end{equation}
+
+\paragraph{Why sparsity and normalisation are separated.}
+For a nonnegative vector on the probability simplex,
+\[
+\|\alpha\|_1
+=
+\mathbf{1}_{|S|}^\top\alpha
+=
+1.
+\]
+Consequently, a uniform penalty $\lambda\|\alpha\|_1$
+would be constant and could not encourage sparsity.
+The first stage therefore performs penalised selection
+without a unit-sum constraint, and the second stage
+enforces density validity on the selected components.
+
+\paragraph{Density validity and final support.}
+Since each $b_i$ is a normalised density,
+\[
+\widehat f(x)\geq0,
+\qquad
+\int_{\mathbb{R}}\widehat f(x)\,dx
+=
+\sum_{i\in S}\widehat\alpha_i
+=
+1.
+\]
+These properties follow from feasibility of the second-stage
+constraints; they do not require that the numerical solver
+find the exact optimum. In floating-point computations,
+feasibility and optimisation accuracy are checked separately.
+
+The refit may assign zero weight to some selected atoms.
+Therefore, the final support is a subset of $S$ and need
+not contain every component selected in the first stage.
+
+\paragraph{Tuning and numerical implementation.}
+The sparsity parameter $\lambda$ and covariance
+regularisation parameter $\rho$ are selected by
+cross-validation of the final refitted density.
+The dictionary, measurement functions, and covariance
+estimate are constructed using only the training
+observations within each fold. Candidate grids, solver
+budgets, and stopping tolerances are specified in the
+experimental setup. Equations~\eqref{eq:stage1} and
+\eqref{eq:stage2} define the optimisation problems;
+the numerical implementation returns approximate solutions,
+whose residuals are reported separately.
+
+\subsection{Matched measurement design}
+
+The proposed matched configuration, denoted by
+\textbf{AKDE-M}, uses the dictionary atoms themselves as
+measurement functions:
+\begin{equation}
+k_j=b_j,
+\qquad j=1,\ldots,M,
+\qquad m=M.
+\label{eq:matched-design}
+\end{equation}
+Thus, the functions used to represent the density are also
+used to measure its agreement with the observations.
+In the reported experiments, $L=60$ locations and $q=5$
+bandwidths give $M=m=300$.
+
+To assess the effect of measurement design, we also consider
+a separate measurement bank with $100$ locations and three
+bandwidths spanning $0.25$--$2.0$ times the reference
+bandwidth. This comparison uses the same representation
+dictionary and holds the remaining fitting and tuning
+settings fixed. The designation ``separate'' refers to
+a different collection of functions, not statistical
+independence from the training data.
+
+\section{Theory}
+\label{sec:theory}
+
+This section explains the relationship between moment fitting
+and integrated squared error. The results apply to fixed
+dictionary and measurement functions. They are algebraic
+properties of the objectives and do not, by themselves,
+establish statistical convergence of the estimator.
+
+\subsection{Integrability and risk geometry}
+
+\begin{assumption}
+\label{as:integrable}
+The dictionary atoms $b_i$, measurement functions $k_j$,
+and target density $f_0$ are nonnegative measurable
+functions in
+$L^1(\mathbb{R})\cap L^2(\mathbb{R})$.
+The atoms and target are normalised:
+$\int b_i(x)\,dx=1$ and $\int f_0(x)\,dx=1$.
+\end{assumption}
+
+Membership in $L^1(\mathbb{R})$ means that the absolute
+integral of the function is finite; membership in
+$L^2(\mathbb{R})$ means that the integral of its square
+is finite. Gaussian densities and finite Gaussian mixtures
+satisfy these conditions.
+
+By the Cauchy--Schwarz inequality, the overlap integrals
+in \eqref{eq:objects}, \eqref{eq:design}, and
+\eqref{eq:moments} are finite. Moreover, $G$ is symmetric
+and positive semidefinite: for every $v\in\mathbb{R}^M$,
+\[
+v^\top Gv
+=
+\int_{\mathbb{R}}
+\left(\sum_{i=1}^{M}v_i b_i(x)\right)^2dx
+\geq0.
+\]
+It follows that $R(w)$ is a convex quadratic function
+of the coefficients.
+
+\subsection{Connection between matched moments and exact risk}
+
+\begin{proposition}[Matched measurement family]
+\label{prop:matched}
+Under Assumption~\ref{as:integrable}, suppose
+$k_j=b_j$ for $j=1,\ldots,M$. Then
+$D=G$, $y^0=a$, and
+\begin{equation}
+Dw-y^0
+=
+Gw-a
+=
+\frac12\nabla_w R(w)
+\qquad
+\text{for every }w\in\mathbb{R}^M,
+\label{eq:gradient}
+\end{equation}
+where $\nabla_w R(w)$ is the vector of derivatives of
+$R$ with respect to the coefficients $w$.
+\end{proposition}
+
+\begin{proof}
+For each pair of indices,
+\[
+D_{ji}=\int b_j(x)b_i(x)\,dx=G_{ji},
+\]
+and
+\[
+y_j^0=\int b_j(x)f_0(x)\,dx=a_j.
+\]
+Differentiating \eqref{eq:risk} gives
+$\nabla_w R(w)=2Gw-2a$, proving the identity.
+\end{proof}
+
+The proposition states that, under matched measurements,
+the population moment residual indicates the direction
+of change of the exact ISE. A zero population residual
+therefore satisfies the stationarity condition for the
+unconstrained risk minimum.
+
+The empirical residual contains an additional term:
+\begin{equation}
+Dw-y
+=
+\frac12\nabla_w R(w)-(y-y^0).
+\label{eq:empirical-gradient}
+\end{equation}
+Thus, the population identity does not remove uncertainty
+in the observed moments. Nor does it imply that penalised
+or simplex-constrained moment fitting minimises exact ISE.
+
+\subsection{When the weighting matrix affects the solution}
+
+A matrix $\Omega\succ0$ is positive definite, meaning
+$r^\top\Omega r>0$ for every nonzero vector $r$.
+Such a matrix defines the relative importance of
+different residual directions.
+
+\begin{proposition}[Dependence on the weighting matrix]
+\label{prop:omega}
+For a fixed matrix $D$ and vector $y$, define the
+unconstrained solution set
+\[
+U(\Omega)
+=
+\operatorname*{arg\,min}_{u\in\mathbb{R}^M}
+(Du-y)^\top\Omega(Du-y),
+\qquad \Omega\succ0.
+\]
+Then:
+\begin{enumerate}
+\item[(a)]
+If there exists a vector $u$ satisfying $Du=y$, then
+\[
+U(\Omega)=\{u:Du=y\}
+\]
+for every positive-definite $\Omega$.
+The solution is unique if $D$ has full column rank.
+
+\item[(b)]
+If no vector satisfies $Du=y$, the minimisers satisfy
+\[
+D^\top\Omega D\,u=D^\top\Omega y,
+\]
+and the solution set can depend on $\Omega$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+In case (a), the objective is nonnegative and equals zero
+exactly when $Du=y$. Hence all exact solutions, and only
+those solutions, are minimisers. Full column rank means
+that the columns of $D$ are linearly independent, so an
+exact solution is unique.
+
+In case (b), differentiating the convex quadratic objective
+gives $2D^\top\Omega(Du-y)$. Setting this gradient to zero
+yields the stated equations. Their coefficients depend
+on $\Omega$, so changing the weighting can change
+the solution.
+\end{proof}
+
+\begin{remark}[An illustrative example]
+\label{rem:false}
+Consider
+\[
+D=
+\begin{pmatrix}1\\1\end{pmatrix},
+\qquad
+y=
+\begin{pmatrix}0\\1\end{pmatrix},
+\qquad
+\Omega=
+\begin{pmatrix}\omega_1&0\\0&\omega_2\end{pmatrix},
+\]
+with $\omega_1,\omega_2>0$. No scalar $u$ can satisfy
+both $u=0$ and $u=1$. The objective is
+\[
+\omega_1u^2+\omega_2(u-1)^2,
+\]
+whose minimiser is
+\[
+u^\star=\frac{\omega_2}{\omega_1+\omega_2}.
+\]
+The solution therefore changes with the weights.
+\end{remark}
+
+Having the same number of measurements and coefficients,
+$m=M$, does not by itself guarantee that $Du=y$ is solvable.
+A square matrix must also be nonsingular to guarantee
+a unique solution for every $y$. Furthermore, the
+weighting-invariance statement in
+Proposition~\ref{prop:omega}(a) concerns an unconstrained,
+unpenalised problem. It does not automatically extend
+to either stage of the proposed estimator.
+
+\subsection{Connection to empirical integrated-square loss}
+
+Define the empirical basis means
+\begin{equation}
+s_i=\frac1N\sum_{n=1}^{N}b_i(x_n),
+\qquad
+s=(s_1,\ldots,s_M)^\top.
+\label{eq:basis-means}
+\end{equation}
+Under matched measurements, $y=s$. The empirical
+integrated-square loss is
+\begin{equation}
+J(w)
+=
+\int_{\mathbb{R}}f_w(x)^2\,dx
+-
+\frac2N\sum_{n=1}^{N}f_w(x_n)
+=
+w^\top Gw-2s^\top w.
+\label{eq:empirical-l2}
+\end{equation}
+This replaces the unknown overlap with $f_0$ in the
+exact risk by a sample average and omits the constant
+$c_0$, which does not affect minimisation.
+
+\begin{proposition}[Inverse-Gram weighting]
+\label{prop:gram}
+Suppose $G\succ0$ and $k_j=b_j$. Then
+\begin{equation}
+(Gw-s)^\top G^{-1}(Gw-s)
+=
+J(w)+s^\top G^{-1}s.
+\label{eq:gram}
+\end{equation}
+Consequently, minimising the unpenalised matched moment
+loss with $\Omega=G^{-1}$ is equivalent to minimising
+$J(w)$ over the same feasible set.
+\end{proposition}
+
+\begin{proof}
+Expanding the left-hand side and using the symmetry
+of $G$ gives
+\[
+w^\top Gw-2s^\top w+s^\top G^{-1}s.
+\]
+The final term does not depend on $w$. The factor
+$1/2$ in \eqref{eq:moment-loss} also does not affect
+the unpenalised minimisers.
+\end{proof}
+
+The equivalence holds for unrestricted coefficients
+and for any common constrained feasible set, including
+the probability simplex. It is specific to the choice
+$\Omega=G^{-1}$. The proposed method instead uses the
+regularised covariance weighting in
+\eqref{eq:weighting}, so this equivalence does not
+generally apply to its refit. Moreover, an ill-conditioned
+Gram matrix can make inverse-Gram weighting numerically
+unstable.
+
+\subsection{Interpretation for the constrained estimator}
+
+\begin{remark}[Population stationarity and density constraints]
+\label{rem:constrained}
+The identity in Proposition~\ref{prop:matched} holds
+for every coefficient vector, including feasible
+density weights. However, a minimum over the probability
+simplex need not have zero gradient. The constraints
+can prevent movement in directions that would reduce
+the unconstrained objective.
+
+Likewise, the stage-1 penalty modifies the optimality
+conditions and the selected support restricts the
+second-stage feasible set. Sharing an unconstrained
+stationary point therefore does not generally make
+covariance-weighted moment fitting equivalent to
+ISE minimisation over the simplex.
+\end{remark}
+
+For the same objective, the unconstrained minimum cannot
+be larger than the minimum over a restricted feasible
+set. Comparisons between different objectives---for
+example, an empirical moment objective and population
+ISE---do not obey this ordering. Numerical comparisons
+must therefore identify both the objective being
+minimised and the accuracy with which it is solved.
+
+The results above explain the structure of the matched
+measurement design and its relationship to quadratic
+density-fitting objectives. They do not establish
+that matching is necessary or uniquely optimal, that
+the proposed estimator attains the dictionary's minimum
+ISE, or that it is statistically consistent or
+asymptotically efficient. Those properties require
+additional assumptions and analysis.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Experimental setup}
+% \label{sec:setup}
+
+% \paragraph{Targets and design.} The $15$ Marron--Wand normal mixtures
+% \cite{marron1992}, denoted $f_0,\dots,f_{14}$ for MW1--MW15, verified
+% component by component against the published parameters (Supplement~S2 lists
+% all $15$). Sample sizes $N \in \{200, 1000, 5000\}$, $R = 30$ independently
+% generated datasets per $(f_d, N)$ cell, six methods: $6 \times 15 \times 3
+% \times 30 = 8{,}100$ final fits. Within a replicate every method receives the
+% identical realisation, so all comparisons are paired.
+
+% \paragraph{Methods.} AKDE-M (the matched design), AKDE-V2 (the
+% measurement-design ablation), a density-valid SPADES adaptation
+% (nonnegative $\ell_1$ selection on the empirical integrated-square loss
+% followed by a simplex refit), a Sheather--Jones kernel estimator
+% \cite{sheather1991}, an Abramson adaptive kernel estimator
+% \cite{abramson1982}, and a Gaussian mixture fitted by EM \cite{dempster1977}
+% with component count chosen by the same validation criterion. Every
+% dictionary-based method uses the \emph{same pinned} $60 \times 5 = 300$-atom
+% dictionary; the earlier benchmark had cross-validated the dictionary size for
+% one method only while pinning the others, so its ``identical dictionary''
+% controls were not controlled (Supplement~S3).
+
+% \paragraph{Tuning.} All tuned hyperparameters are selected by $3$-fold
+% cross-validation of the held-out integrated-square score on training data
+% only: $\lambda$ on a $6$-point geometric path with ratios
+% $3\times10^{-4}$ to $0.7$, and $\rho \in \{10^{-6},10^{-3},10^{-1},1\}$.
+% The relative support threshold is held \emph{fixed} at $\tau = 10^{-3}$ and is
+% not tuned. No test observations and no knowledge of $f_0$ enter fitting or
+% tuning; $f_0$ is used only for scoring and, in Section~\ref{sec:mechanism},
+% for explicitly labelled oracle diagnostics that are structurally unreachable
+% from any fit.
+
+% \paragraph{Pre-specification.} The confirmation grid, the six methods, the
+% frozen configuration of AKDE-M, the tuning grid, the outcome, the seeds and
+% the replication count were fixed before the first confirmation dataset was
+% drawn, and no retuning was performed afterwards. The seed namespaces for
+% development and confirmation are disjoint, verified over the grid actually
+% run ($36{,}000$ keys, all unique, zero dataset-level collisions). We describe
+% this as \emph{pre-specified}, not pre-registered: the ordering is supported by
+% timestamps and content hashes on one machine and by the fact that the
+% confirmation code reads the frozen configuration rather than choosing it, but
+% there is no third-party registration.
+
+% \paragraph{Metrics and inference.} Integrated squared error, computed
+% analytically. For each cell we report the arithmetic mean $\pm$ sample
+% standard deviation (ddof $=1$) across replications, the number of valid and
+% attempted runs, the median as a robustness summary, and---separately
+% labelled---a $95\%$ percentile bootstrap confidence interval for the mean. The
+% mean $\pm$ SD describes variation between fitted datasets and is not a
+% confidence interval. Bootstrap: $B = 10{,}000$ seeded draws resampling
+% replicate IDs within each $(f_d,N)$ cell and carrying all methods together so
+% pairing is preserved. The target index is \emph{never} resampled: the $15$
+% densities are a fixed benchmark. For paired effects we use
+% $z_{dr} = \log(\mathrm{ISE}_{\text{method}}/\mathrm{ISE}_{\text{ref}})$ and
+% report the fixed-benchmark statistic
+% $T = \frac{1}{15}\sum_d \overline{z}_{d\cdot}$ with $\exp(T)$ and a bootstrap
+% interval obtained by the same within-target resampling. Between-target
+% heterogeneity is reported separately and is never presented as uncertainty of
+% the benchmark mean.
+
+% \section{Results}
+% \label{sec:results}
+
+% \paragraph{Execution, feasibility and optimisation are three different
+% statuses.} Of the $8{,}100$ fits, \textbf{zero} raised an execution failure and
+% \textbf{all $8{,}100$} returned a valid probability density (maximum mass
+% deviation $8.9\times10^{-16}$; the zero-solution fallback and the support cap
+% never fired). These are \emph{not} statements about optimisation: the
+% first-stage solver reached its relative KKT tolerance of $10^{-8}$ in $0.6\%$
+% of AKDE-V2 fits, $5.6\%$ of AKDE-M fits and $28.1\%$ of SPADES-simplex fits.
+% We keep the three statuses separate everywhere.
+
+% \begin{table}[htbp]
+% \centering
+% \caption{Benchmark mean ISE with equal weight per target, and $95\%$
+% percentile bootstrap confidence intervals obtained by resampling replicate IDs
+% within each target--$N$ cell ($B=10{,}000$). The interval is for the
+% \emph{mean}; it is not a replicate standard deviation. Per-target
+% mean~$\pm$~SD tables are in Supplement~S4.}
+% \label{tab:benchmark}
+% \input{tab_benchmark_mean.tex}
+% \end{table}
+
+% \begin{table}[htbp]
+% \centering
+% \caption{Fixed-benchmark paired effect $\exp(T)$ against AKDE-V2, where
+% $T = \frac{1}{15}\sum_d \overline{z}_{d\cdot}$ and
+% $z_{dr} = \log(\mathrm{ISE}/\mathrm{ISE}_{\text{AKDE-V2}})$, with $95\%$
+% bootstrap intervals from within-target resampling. Values below $1$ favour the
+% row method. Every method improves on AKDE-V2 on all $15$ targets at all three
+% sample sizes.}
+% \label{tab:ratio}
+% \input{tab_fixed_benchmark_ratio.tex}
+% \end{table}
+
+% \paragraph{The measurement-design correction.} AKDE-M attains
+% $\exp(T) = 0.453$ $[0.423,0.485]$, $0.174$ $[0.160,0.188]$ and $0.0822$
+% $[0.0753,0.0902]$ against AKDE-V2 at $N = 200,1000,5000$
+% (Table~\ref{tab:ratio}), improving \emph{all $15$ targets at all three sample
+% sizes}; the per-target ratios range from $0.221$ to $0.715$ at $N=200$ and
+% from $0.013$ to $0.546$ at $N=5000$ (Figure~\ref{fig:accuracy}, middle panel).
+% Median ISE pooled over targets falls from $0.119$, $0.0709$, $0.0551$ to
+% $0.0611$, $0.0136$, $0.0032$. Over the observed range $N = 200$ to $5000$ the
+% median ISE of AKDE-M declines by a factor of $19.3$ against $2.2$ for
+% AKDE-V2; we describe this as the observed finite-range decline and draw no
+% rate or asymptotic conclusion from three sample sizes.
+
+% \paragraph{Against the other baselines.} AKDE-M does \emph{not} lead the
+% comparison. Against the density-valid SPADES adaptation on the identical
+% dictionary its benchmark mean ISE is higher at every sample size
+% (Table~\ref{tab:benchmark}), and the per-cell paired geometric-mean ratio is
+% $1.23$, $1.07$ and $1.15$ at $N=200,1000,5000$. We do not describe this as a
+% tie or as equivalence: no equivalence margin was specified in advance, and a
+% $7$--$23\%$ disadvantage with intervals excluding $1$ at two of three sample
+% sizes is a disadvantage. Against the Sheather--Jones kernel
+% estimator, AKDE-M is $2.6$--$4.9\times$ behind in paired geometric-mean ISE
+% and $2.2$--$4.5\times$ behind in benchmark mean ISE; the Abramson estimator
+% and the EM mixture are further ahead still. Medians tell a slightly different
+% story---at $N \ge 1000$
+% the median ISE of AKDE-M ($0.0136$, $0.0032$) is within $6\%$ of
+% SPADES-simplex ($0.0128$, $0.0031$)---and the gap between mean and median is
+% itself informative, as the next paragraph explains.
+
+% \paragraph{Catastrophic replicates.} Defining a catastrophic replicate as one
+% whose ISE exceeds five times the median of its own $(f_d,N)$ cell, AKDE-M
+% produces $0.22\%$, $0\%$ and $2.67\%$ of such replicates at $N=200,1000,5000$,
+% with a worst case of $169\times$ the cell median. AKDE-V2 produces
+% $4.0\%$, $4.2\%$ and $1.3\%$; the SPADES adaptation and the Sheather--Jones
+% estimator produce \emph{none} at any sample size. These rare failures are what
+% separate AKDE-M's benchmark mean from its median at $N=5000$. They are
+% associated with selection of the smallest $\lambda$ on the grid: $11$ of the
+% $12$ catastrophic AKDE-M fits at $N=5000$ selected the lower endpoint
+% $\lambda_{\text{ratio}} = 3\times10^{-4}$, and their stage-1 KKT residuals
+% were $21\times$ larger than those of the remaining fits. The $\lambda$ grid's
+% lower endpoint is selected in $22.7$--$57.1\%$ of AKDE-M fits overall, so the
+% grid is too narrow at the sparse end; widening it is an obvious next step that
+% we have not taken here because the grid was frozen before the confirmation.
+
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=\textwidth]{fig3_accuracy_vs_N.pdf}
+% \caption{Accuracy over the locked confirmation. Top left: benchmark mean ISE
+% with equal weight per target and $95\%$ bootstrap intervals. Top right: the
+% fixed-benchmark paired effect $\exp(T)$ against AKDE-V2. Middle: per-target
+% paired ratios with paired bootstrap intervals; all $15$ targets are shown at
+% all three sample sizes. Bottom: $\log_{10}$ mean ISE for every method and
+% every target, none omitted. Any apparent trend in $N$ describes the observed
+% range only.}
+% \label{fig:accuracy}
+% \end{figure}
+
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=\textwidth]{fig1_fitted_densities.pdf}
+% \caption{Fitted densities on confirmation replicate~$0$, the first
+% pre-specified seed; within a panel every method is fitted to the identical
+% observations. AKDE-V2 places mass on atoms far narrower than its measurement
+% bank can resolve, producing the visible spikes; AKDE-M does not. Annotations
+% give ISE and the number of mixture components.}
+% \label{fig:fitted}
+% \end{figure}
+
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=\textwidth]{fig2_variability_N1000.pdf}
+% \caption{Variability across the $30$ independent confirmation datasets at
+% $N=1000$: mean fitted density and pointwise $10$th--$90$th percentile band
+% against the truth. These are empirical variability bands describing the spread
+% of the estimator across datasets; they are not confidence bands for the true
+% density and carry no simultaneous coverage statement.}
+% \label{fig:variability}
+% \end{figure}
+
+% \section{Where the error goes}
+% \label{sec:mechanism}
+
+% \paragraph{Oracle controls.} On a frozen $16$-dataset development subset we
+% replace the empirical moment vector $y$ by the population vector $y^0$ and the
+% estimated covariance by the population covariance, both closed form for
+% Gaussian mixtures and verified against quadrature to $5\times10^{-16}$. This
+% removes sampling error \emph{in the moments}, conditional on a dictionary that
+% is still built from the sample; it does not remove approximation error,
+% constraint effects, weighting effects or numerical error, so the remaining
+% excess is not ``criterion bias'' alone.
+
+% Under the AKDE-V2 measurement bank the population-moment fit still leaves
+% between $22\%$ and $56\%$ of that cell's total error. Under the matched bank
+% the same quantity falls to between $0.001\%$ and $17\%$. The reduction is
+% large and consistent, but it is \emph{not} to zero: on MW3 (strongly skewed)
+% the residual excess is $8.1\%$ of the total at $N=500$ and $17.5\%$ at
+% $N=5000$, with dictionary optimum and population-moment ISE of
+% $0.00490$ and $0.0101$ at $N=500$ and $0.00334$ and $0.00521$ at $N=5000$.
+% We report absolute excesses alongside ratios because several dictionary optima
+% are at or below the numerical resolution of the analytic ISE; the resolution
+% floor was measured against $50$-digit arithmetic rather than assumed
+% (Supplement~S1).
+
+% \paragraph{Substituting the covariance.} Replacing $\widehat C$ by the
+% population covariance changes the population-moment fit by at most $16.4\%$ of
+% the cell's total error (median $1.6\%$). Estimating the weighting matrix is
+% therefore a minor contributor, which is consistent with the finding that
+% identity and diagonal weighting both perform \emph{worse} than the ridge-
+% regularised covariance weighting in development.
+
+% \paragraph{Small measured discrepancy, large shape error.} At $N=5000$ on MW6,
+% AKDE-V2 satisfies every one of its own moment conditions to within $0.82$
+% standard errors while leaving a maximum pointwise density error of $1.02$;
+% AKDE-M has a \emph{larger} standardised moment residual ($2.94$) and a
+% maximum density error of $0.094$ (Figure~\ref{fig:mechanism}b). Fitting the
+% measured moments well is not the same as fitting the density well.
+
+% \paragraph{Ambiguity.} Starting from the exact-risk optimum on the simplex, we
+% search the full feasible tangent cone
+% $\{v : \mathbf 1^\top v = 0,\ v_i \ge 0 \text{ where } w_i = 0\}$ for feasible
+% perturbations, including directions that activate coefficients which are zero
+% at the optimum. At a zero weighted-moment budget---perturbations that do not
+% worsen the measured discrepancy at all---we exhibit feasible steps that raise
+% ISE by $0.125$ under the V2 bank and $0.0235$ under the matched bank, in both
+% cases comparable to the fitted error in the same cell. These are
+% \emph{witnesses}: lower bounds on achievable ambiguity. No global upper bound
+% is available from a directional search, and we make no claim that the largest
+% direction found is the largest that exists. An earlier analysis restricted to
+% the active face found only $2.5\times10^{-7}$ and concluded that
+% unidentifiability was not operative; that conclusion was an artefact of the
+% restricted search and is withdrawn.
+
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=\textwidth]{fig4_mechanism.pdf}
+% \caption{Mechanism diagnostics on the frozen $16$-dataset development subset.
+% (a) oracle ladder, V2 bank (left bar) and matched bank (right bar), log scale;
+% (b) measured moment discrepancy against fitted density error; (c) largest
+% witnessed ISE change from a feasible perturbation within a stated relative
+% weighted-moment budget (lower bounds, not maxima); (d) distribution of the
+% relative stage-1 KKT residual for coordinate descent at three iteration
+% budgets and for an independent proximal-gradient solver.}
+% \label{fig:mechanism}
+% \end{figure}
+
+% \section{Cost and compactness}
+% \label{sec:cost}
+
+% \begin{table}[htbp]
+% \centering
+% \caption{Mean cold end-to-end fit time and mean number of mixture components
+% over the confirmation. Fit cost and query cost trade in opposite directions
+% and are reported separately.}
+% \label{tab:cost}
+% \input{tab_cost.tex}
+% \end{table}
+
+% Fitting cost is the weak side of the estimator: AKDE-M takes a few seconds per
+% fit against milliseconds for a Sheather--Jones estimator and a fraction of a
+% second for the SPADES adaptation (Table~\ref{tab:cost}). Phase-level
+% instrumentation attributes the cost to the two quadratic programs, not to the
+% covariance: assembling and factorising the $m\times m$ weighting accounts for
+% $4.3\%$ of the time, the $\lambda$ path for $48.9\%$ and the stage-2 refits for
+% $28.7\%$.
+
+% Query cost is the strong side. Measured on the \emph{saved} fitted models with
+% identical query points ($10{,}000$ per model, batch $2{,}000$), identical
+% warmup and seven timing repeats per model in one process with BLAS pinned to
+% one thread, AKDE-M evaluates its density in $0.99$, $1.12$ and $1.17\,\mu$s
+% per point at $N=200,1000,5000$, essentially independent of $N$, against
+% $5.17$, $30.3$ and $147.8\,\mu$s for the Sheather--Jones estimator---a factor
+% of $127$ at $N=5000$. Its serialised model is $1{,}344$ bytes against
+% $120{,}000$, a factor of $89$. Timing repeats are timing repeats; they reduce
+% timer noise for a fixed model and are not treated as statistical replications.
+
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=\textwidth]{fig5_cost_and_compactness.pdf}
+% \caption{Cost and compactness. Accuracy against representation size and
+% against fitting cost; density-evaluation latency and serialised model size
+% against $N$. Latency and size are measured on the saved fitted models with
+% identical queries.}
+% \label{fig:cost}
+% \end{figure}
+
+% \section{Limitations}
+% \label{sec:limitations}
+
+% \paragraph{Optimisation.} Stage 1 does not solve its own problem to the stated
+% tolerance. On the frozen subset, coordinate descent at the deployed budget of
+% $500$ sweeps reaches relative KKT $10^{-8}$ in $13.5\%$ of instances (median
+% residual $8.7\times10^{-5}$); raising the budget to $10{,}000$ improves the
+% median residual to $1.1\times10^{-6}$ but still reaches tolerance in only
+% $24\%$. Critically, \textbf{the selected support is identical at budgets $500$
+% and $10{,}000$ in only $18.8\%$ of instances}, with a median change of $21$
+% atoms. An independent proximal-gradient solver achieves a median residual of
+% $1.6\times10^{-8}$ and finds the lowest objective essentially always, but
+% reaches \emph{its} tolerance in only $12.5\%$ of instances, so it is a second
+% opinion and not a certificate. Stage 2 is usually solved accurately (median
+% relative KKT $6.3\times10^{-13}$) with occasional failures (maximum
+% $3.3\times10^{-3}$); the independent reference is worse overall (median
+% $7.4\times10^{-7}$, maximum $0.87$) and is not adopted. We did not change the
+% solver, so the confirmation reported here belongs to the implementation as
+% deployed. A repaired first stage would define a \emph{different} estimator and
+% would require its own confirmation on fresh seeds.
+
+% \paragraph{A numerical diagnostic we withdrew.} An earlier analysis reported
+% distances between the ``centre'' of the moment objective and that of the
+% integrated-square objective ($0.946$, $0.644$, $0.028$ for three banks) as
+% headline mechanism evidence. Those numbers came from jittered normal-equation
+% solves on matrices with condition number $\approx 10^{19}$. Recomputing them
+% from the SVD of the whitened design at four documented relative rank
+% thresholds ($10^{-8}$ to $10^{-14}$) moves the answer by a factor with median
+% $39$ for the V2 bank and $3.1\times10^{4}$ for the matched bank. The
+% comparison is not numerically meaningful at this dictionary size and is
+% withdrawn from the mechanism argument; it survives only as a caution. The
+% mechanism evidence we retain---the oracle ladder---is computed by constrained
+% optimisation over a bounded feasible set and does not require inverting an
+% ill-conditioned matrix.
+
+% \paragraph{Scope.} Univariate data, Gaussian dictionaries, one dictionary
+% size, $15$ fixed benchmark densities, three sample sizes, $R = 30$. The
+% benchmark is fixed, so our inference concerns these $15$ densities and says
+% nothing about a population of densities; we neither resample the target index
+% nor report an across-target $t$ interval as Monte Carlo uncertainty. A
+% pre-specified precision target (a $95\%$ half-width of $\log 1.25$ for the
+% per-cell mean log ratio) is met in $22$ of $45$ cells; per-cell conclusions
+% are correspondingly weak, while the benchmark-wide effect is far larger than
+% that resolution limit. The measurement bank is anchored to the training
+% sample, so a fixed measurement \emph{count} does not give a fixed measurement
+% \emph{operator}: probe widths shrink as $N^{-1/5}$ and probe locations follow
+% the sample range. No asymptotic floor may be inferred from that design, and we
+% infer none.
+
+% \section{Discussion and conclusion}
+% \label{sec:conclusion}
+
+% The practical lesson is narrow and, we think, useful: in a moment-based
+% density estimator with a separately designed measurement family, the
+% \emph{measurement design} can dominate every other design choice. Holding the
+% criterion, the weighting, the constraint structure, the solver and the
+% dictionary fixed, and changing only which functionals are measured, moves the
+% paired error by a factor of $2$--$12$ depending on sample size, in the same
+% direction on every one of $15$ targets. Proposition~\ref{prop:matched} gives
+% the qualitative reason: a matched bank makes the population moment residual
+% the risk gradient, so the criterion is aiming at the stationarity condition of
+% the quantity one actually cares about. We attribute the observed improvement
+% primarily to this design change; we have not ruled out that other mechanisms
+% contribute, and the oracle ladder shows a residual population-level excess
+% that the matching does not remove.
+
+% The corrected estimator is not a state-of-the-art density estimator by
+% accuracy. It is behind a well-tuned kernel estimator by a factor of
+% $2.6$--$4.9$ in benchmark mean ISE and behind a density-valid SPADES
+% adaptation on the same dictionary by $7$--$23\%$. What it does offer is a
+% valid, compact mixture: a few dozen components rather than $N$, evaluated two
+% orders of magnitude faster from a model two orders of magnitude smaller, with
+% an interpretable link between the fitting residual and the risk gradient. For
+% applications that fit once and query often, that trade is the point; for
+% applications that need the best possible ISE, it is not.
+
+% The most promising immediate directions are all things this study identified
+% and did not fix: widening the $\lambda$ grid at the sparse end, where the
+% lower endpoint is currently selected in up to $57\%$ of fits and where the
+% catastrophic replicates live; a first-stage solver with a genuine optimality
+% certificate, which would change the estimator and require fresh confirmation;
+% and extending the measurement-design question to multivariate dictionaries,
+% where the matched choice $m = M$ becomes expensive and a subsampled matched
+% bank may be needed.
+\section{Experimental setup}
+\label{sec:setup}
+
+\subsection{Benchmark densities and sample sizes}
+
+We evaluated the proposed method on the $15$ Marron--Wand
+Gaussian-mixture densities \cite{marron1992}. These targets,
+denoted by $f_0,\ldots,f_{14}$, represent different density
+shapes, including symmetric, skewed, multimodal, and
+narrow-peaked distributions. Their parameters are provided
+in Supplement~S2.
+
+For each target, we considered sample sizes
+$N\in\{200,1000,5000\}$ and generated $R=30$ independent
+datasets. Six estimators were fitted to each dataset,
+giving
+\[
+15\times3\times30\times6=8{,}100
+\]
+final fits. Within each replication, all methods received
+the same observations. This paired design reduces the
+influence of differences between generated datasets when
+comparing methods.
+
+\subsection{Compared methods}
+
+The comparison included:
+\begin{enumerate}
+\item \textbf{AKDE-M:} the proposed estimator with matched
+measurement functions and dictionary atoms.
+\item \textbf{AKDE-V2:} a measurement-design ablation using
+a separate Gaussian measurement bank.
+\item \textbf{SPADES-simplex:} a density-valid adaptation
+of SPADES, combining nonnegative penalised selection
+under the empirical integrated-square loss with a
+simplex-constrained refit.
+\item \textbf{Sheather--Jones KDE:} a kernel density
+estimator using the Sheather--Jones bandwidth selector
+\cite{sheather1991}.
+\item \textbf{Abramson KDE:} an adaptive kernel density
+estimator with locally varying bandwidths
+\cite{abramson1982}.
+\item \textbf{Gaussian mixture:} a mixture fitted by the
+expectation--maximisation algorithm \cite{dempster1977},
+with its component count selected by validation.
+\end{enumerate}
+
+All dictionary-based methods used the same dictionary
+of $60$ locations and $5$ bandwidths, giving $300$
+candidate Gaussian components. Holding the dictionary
+fixed makes comparisons between their fitting
+procedures more interpretable.
+
+\subsection{Hyperparameter selection}
+
+Parameters requiring validation were selected using
+three-fold cross-validation and a held-out
+integrated-square score. For a fitted density
+$\widehat f_{\mathrm{tr}}$ and validation observations
+$x_1^{\mathrm{val}},\ldots,x_{n_{\mathrm{val}}}^{\mathrm{val}}$,
+this score is
+\[
+J_{\mathrm{val}}
+=
+\int \widehat f_{\mathrm{tr}}(x)^2\,dx
+-
+\frac{2}{n_{\mathrm{val}}}
+\sum_{i=1}^{n_{\mathrm{val}}}
+\widehat f_{\mathrm{tr}}(x_i^{\mathrm{val}}).
+\]
+Smaller values indicate better validation performance.
+
+For AKDE, the sparsity parameter was evaluated on a
+six-point geometric path with relative values from
+$3\times10^{-4}$ to $0.7$, and the covariance
+regularisation parameter was chosen from
+\[
+\rho\in\{10^{-6},10^{-3},10^{-1},1\}.
+\]
+The support threshold was fixed at $\tau=10^{-3}$.
+
+All data-dependent quantities were constructed from
+the training observations within each fold. The true
+density was used only to evaluate estimation error
+and to conduct the explicitly identified oracle
+diagnostics in Section~\ref{sec:mechanism}.
+
+The confirmation configurations and replication count
+were fixed before generating the confirmation datasets.
+Development and confirmation used separate seed sets,
+and the configuration was not retuned after inspecting
+confirmation results.
+
+\subsection{Accuracy and variability}
+
+The primary accuracy measure was integrated squared
+error:
+\[
+E_{j,d,N,r}
+=
+\int
+\left\{
+\widehat f_{j,d,N,r}(x)-f_d(x)
+\right\}^2\,dx,
+\]
+where $j$ identifies the method, $d$ the target density,
+$N$ the sample size, and $r$ the replication.
+The Gaussian-mixture targets permit analytical
+evaluation of this integral.
+
+For each method, target, and sample size, we report
+the arithmetic mean and sample standard deviation
+across the $R=30$ independent datasets:
+\[
+\overline E_{j,d,N}
+=
+\frac{1}{R}\sum_{r=1}^{R}E_{j,d,N,r},
+\qquad
+s_{j,d,N}
+=
+\sqrt{
+\frac{1}{R-1}
+\sum_{r=1}^{R}
+\left(E_{j,d,N,r}-\overline E_{j,d,N}\right)^2
+}.
+\]
+Table entries are expressed as
+$\overline E_{j,d,N}\pm s_{j,d,N}$.
+The mean describes average error, while the standard
+deviation describes variation between independently
+generated datasets. A smaller mean indicates better
+accuracy; a smaller standard deviation indicates
+more stable performance.
+
+For the overall benchmark table, we summarise all
+$K=15R=450$ fits per method and sample size:
+\[
+\overline E_{j,N}
+=
+\frac{1}{15R}
+\sum_{d=0}^{14}\sum_{r=1}^{R}E_{j,d,N,r},
+\]
+\[
+s^{\mathrm{pool}}_{j,N}
+=
+\sqrt{
+\frac{1}{15R-1}
+\sum_{d=0}^{14}\sum_{r=1}^{R}
+\left(E_{j,d,N,r}-\overline E_{j,N}\right)^2
+}.
+\]
+Because all targets have the same number of
+replications, this mean gives each target equal
+weight. The pooled SD includes both differences
+between target densities and variation between
+datasets. It is not a confidence interval or the
+standard error of the benchmark mean. Per-target
+mean~$\pm$~SD tables are therefore provided separately
+in the supplementary material.
+
+Medians are retained as additional summaries because
+a small number of large errors can substantially
+increase the mean and SD.
+
+\paragraph{Paired comparisons.}
+We additionally compare methods through their
+within-replication ISE ratios. The benchmark
+geometric-mean ratio between methods $j$ and $k$ is
+\[
+Q_{j/k,N}
+=
+\exp\left\{
+\frac{1}{15R}
+\sum_{d=0}^{14}\sum_{r=1}^{R}
+\log\left(
+\frac{E_{j,d,N,r}}{E_{k,d,N,r}}
+\right)
+\right\}.
+\]
+A value below one favours method $j$, while a value
+above one favours method $k$. This statistic is
+distinct from both an arithmetic mean of ratios
+and a ratio of arithmetic means.
+
+Bootstrap uncertainty analyses use $10{,}000$
+resamples of replication IDs within each target
+and sample size, preserving pairing between methods.
+These analyses are reported separately from the
+mean~$\pm$~SD tables.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Density validity and numerical completion}
+
+All $8{,}100$ fits completed without execution errors
+and returned valid probability densities. The maximum
+reported deviation of total probability mass from
+one was $8.9\times10^{-16}$. Neither the zero-solution
+fallback nor the support cap was activated.
+
+Successful execution and density validity do not
+imply that an optimisation problem was solved to its
+requested tolerance. In the confirmation study,
+the first-stage solver reached a relative
+Karush--Kuhn--Tucker (KKT) tolerance of $10^{-8}$ in
+$5.6\%$ of AKDE-M fits, $0.6\%$ of AKDE-V2 fits,
+and $28.1\%$ of SPADES-simplex fits.
+These numerical limitations are examined in
+Section~\ref{sec:limitations}.
+
+\subsection{Estimation accuracy}
+
+% AUTHOR ACTION:
+% Replace every placeholder below using the saved per-fit ISE rows.
+% Compute arithmetic mean and pooled sample SD as defined above.
+% Do not convert confidence intervals or medians into SDs.
+
+% \begin{table}[htbp]
+% \centering
+% \caption{Integrated squared error across the fixed
+% benchmark, reported as arithmetic mean $\pm$ pooled
+% sample standard deviation over $450$ fits per method
+% and sample size. The SD includes variation across
+% both target densities and independent datasets.
+% Smaller mean ISE indicates greater accuracy.
+% Per-target mean $\pm$ SD results are provided in
+% the supplementary material.}
+% \label{tab:benchmark}
+% \small
+% \begin{tabular}{lccc}
+% \toprule
+% Method & $N=200$ & $N=1000$ & $N=5000$ \\
+% \midrule
+% AKDE-M
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$ \\
+% AKDE-V2
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$ \\
+% SPADES-simplex
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$ \\
+% Sheather--Jones KDE
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$ \\
+% Abramson KDE
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$ \\
+% Gaussian mixture
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$
+% & $\langle\mathrm{mean}\pm\mathrm{SD}\rangle$ \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+\begin{table}[htbp]
+\centering
+\caption{Integrated squared error across the fixed benchmark, reported as
+arithmetic mean $\pm$ pooled sample standard deviation over 450 fits per
+method and sample size. The SD includes variation across both target
+densities and independent datasets. Smaller mean ISE indicates greater
+accuracy. Per-target mean $\pm$ SD results are provided in the supplementary
+material.}
+\label{tab:benchmark_sd}
+\begin{tabular}{lccc}
+\toprule
+Method & $N=200$ & $N=1000$ & $N=5000$ \\
+\midrule
+AKDE-M              & $0.0727 \pm 0.0660$ & $0.0148 \pm 0.00608$  & $0.0116 \pm 0.0470$   \\
+AKDE-V2             & $0.273 \pm 0.709$   & $0.187 \pm 0.576$     & $0.0664 \pm 0.0522$   \\
+SPADES-simplex      & $0.0570 \pm 0.0321$ & $0.0136 \pm 0.00483$  & $0.00390 \pm 0.00279$ \\
+Sheather--Jones KDE & $0.0198 \pm 0.0176$ & $0.00664 \pm 0.00582$ & $0.00260 \pm 0.00270$ \\
+Abramson KDE        & $0.0182 \pm 0.0153$ & $0.00573 \pm 0.00521$ & $0.00167 \pm 0.00138$ \\
+Gaussian mixture    & $0.0192 \pm 0.0187$ & $0.00586 \pm 0.00565$ & $0.00194 \pm 0.00181$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+\paragraph{Effect of matching the measurement functions.}
+AKDE-M achieved benchmark paired geometric-mean
+ISE ratios of $0.453$, $0.174$, and $0.0822$
+relative to the measurement-design ablation at
+$N=200$, $1000$, and $5000$, respectively.
+These correspond to reductions of approximately
+$55\%$, $83\%$, and $92\%$ on this ratio scale.
+The per-target geometric-mean ratio favoured
+AKDE-M on all $15$ densities at every sample size.
+
+The pooled median ISE of AKDE-M was $0.0611$,
+$0.0136$, and approximately $0.00317$ as sample
+size increased. Its median error therefore
+decreased by approximately a factor of $19.3$
+between $N=200$ and $N=5000$. This demonstrates
+a substantial improvement over the observed
+sample-size range, but does not establish an
+asymptotic convergence rate.
+
+\paragraph{Comparison with conventional estimators.}
+AKDE-M remained less accurate than the strongest
+comparison methods. Relative to SPADES-simplex,
+its benchmark paired geometric-mean ISE ratios
+were approximately $1.23$, $1.07$, and $1.15$.
+Thus, the proposed method incurred a $7$--$23\%$
+error disadvantage on this measure.
+
+Relative to Sheather--Jones KDE, the paired
+geometric-mean ISE was $2.6$--$4.9$ times larger;
+the corresponding ratio of benchmark arithmetic
+means was $2.2$--$4.5$. These summaries describe
+different aspects of performance and are not
+interchangeable.
+
+The results show that matching the measurement
+functions improves the moment-based estimator,
+but does not establish an accuracy advantage
+over integrated-square or conventional kernel
+density fitting.
+
+\subsection{Variability and large-error replications}
+
+To examine unusually poor fits, we classified
+a replication as a large-error case when its ISE
+exceeded five times the median ISE for the same
+method, target density, and sample size.
+
+For AKDE-M, the reported frequencies were
+$0.22\%$, $0\%$, and $2.67\%$ at $N=200$,
+$1000$, and $5000$. The most extreme case had
+an ISE approximately $169$ times its cell median.
+No such cases were reported for SPADES-simplex
+or Sheather--Jones KDE in this experiment.
+
+These observations explain why median performance
+alone is insufficient to assess reliability.
+A method can perform well on most datasets while
+occasionally producing a much larger error,
+which increases its mean and standard deviation.
+
+At $N=5000$, $11$ of the $12$ large-error AKDE-M
+fits selected the smallest candidate sparsity
+parameter. These fits also had substantially
+larger first-stage KKT residuals. This association
+suggests that weak penalisation and incomplete
+optimisation warrant further investigation,
+but does not establish either as the sole cause.
+
+The smallest candidate $\lambda$ was selected
+in $22.7$--$57.1\%$ of AKDE-M fits, depending on
+sample size. Frequent selection at a grid boundary
+motivates a sensitivity analysis of the tuning
+range. It does not, by itself, show that extending
+the grid toward still weaker penalisation would
+improve performance.
+
+\subsection{Visual assessment}
+
+Figure~\ref{fig:fitted} compares estimated density
+curves with the ground truth on a common dataset
+for each displayed condition. Such plots reveal
+features that a single error measure can conceal,
+including excessive peaks, missed modes, and
+oversmoothing.
+
+Figure~\ref{fig:variability} complements these
+individual examples by displaying variation
+across independent datasets. The pointwise bands
+describe the spread of fitted curves, rather than
+uncertainty intervals for the true density.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig3_accuracy_vs_N.pdf}
+\caption{Accuracy across the confirmation benchmark.
+The panels show benchmark mean ISE, paired error
+ratios, per-target comparisons, and the distribution
+of mean errors across targets and methods.
+Bootstrap confidence intervals in this figure
+describe uncertainty in the estimated summaries;
+they are distinct from the replicate standard
+deviations reported in the tables. Trends describe
+the tested sample-size range only.}
+\label{fig:accuracy}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig1_fitted_densities.pdf}
+\caption{Fitted densities and ground truth for
+confirmation replication $0$. Within each panel,
+all estimators use the same observations.
+Annotations report ISE and the number of mixture
+components. The plots illustrate differences in
+local shape, smoothing, and representation size;
+one displayed replication does not establish
+performance across all datasets.}
+\label{fig:fitted}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig2_variability_N1000.pdf}
+\caption{Variability of fitted densities across
+$30$ independent datasets at $N=1000$.
+Curves show the mean fitted density, and shaded
+regions show pointwise $10$th--$90$th percentiles.
+These are empirical variability bands, not
+confidence bands for the true density.}
+\label{fig:variability}
+\end{figure}
+
+\section{Does multiscale bandwidth selection help?}
+\label{sec:bandwidth}
+
+The dictionary of Section~\ref{sec:method} offers every centre at five
+bandwidths. This section asks, in a controlled follow-up experiment, whether
+that freedom is what makes the estimator useful. All numbers in this section
+are generated from the saved per-fit results of the experiment package
+(\texttt{experiments/bandwidth\_flexibility}); the protocol was written and
+hashed before the first dataset was drawn. It is a prospective follow-up
+protocol, not a preregistration: the question and the target family were
+chosen with the results of Section~\ref{sec:results} in hand.
+
+\subsection{Why multiscale selection might help, and who else has it}
+
+A density with a broad body and a sharp feature cannot be represented
+economically by atoms of one width: wide atoms smear the feature, narrow atoms
+need many terms to build the body and add variance. A dictionary that offers
+both lets a sparse selector place a few narrow atoms on the feature and a few
+wide ones under the body, which is the intuition behind location--scale
+dictionaries in sparse density estimation. Bandwidth flexibility is not,
+however, unique to the proposed estimator. The Abramson estimator varies its
+bandwidth per sample point, a Gaussian mixture fitted by EM has a free variance
+per component, and the SPADES adaptation selects from the same multiscale
+dictionary. Among the methods compared here only the Sheather--Jones estimator
+and the single-scale ablation introduced below use one bandwidth. Three
+questions are therefore kept apart: whether multiscale AKDE beats a
+single-scale AKDE (representation), whether AKDE uses the common dictionary
+at least as well as SPADES-simplex (fitting procedure), and whether AKDE's
+accuracy, size and query cost form a useful operating point against the
+kernel and mixture comparators (practical trade-off).
+
+\subsection{Controlled setup}
+
+\paragraph{Targets.} We used the family
+\[
+f_r(x) = 0.75\,\mathcal N(x;0,1) + 0.25\,\mathcal N(x;2,r^{-2}),
+\qquad r\in\{1,2,4,8\},
+\]
+where the third argument is a variance, so the narrow component has standard
+deviation $1/r$ and $r$ indexes scale heterogeneity: at $r=1$ both components
+have the same width, at $r=8$ the second is eight times narrower. The narrow
+region $A_r=[2-2/r,\,2+2/r]$ was declared before any fit was run. Regional
+errors are integrals of $(\widehat f - f_r)^2$ over $A_r$ and over its
+complement, against the full target, computed in closed form through the
+Gaussian product identity and Gaussian distribution functions; the identity
+$\mathrm{ISE} = \mathrm{ISE}_{A_r} + \mathrm{ISE}_{\mathbb R\setminus A_r}$
+holds to a relative residual below $10^{-10}$ on every fit. Because $A_r$
+shrinks with $r$, regional errors are compared between methods within an $r$,
+never across $r$. This family is a targeted test of scale heterogeneity, not a
+representative sample of densities; the 15-target benchmark of
+Section~\ref{sec:results} remains the broad assessment.
+
+\paragraph{Design.} $N\in\{500,5000\}$ and $R=20$ independent datasets per
+target and sample size give $160$ datasets. Six methods were fitted to every
+dataset ($960$ final fits), with identical observations and identical
+three-fold validation splits for every method on a dataset. Seeds came from a
+namespace disjoint from the development and confirmation namespaces of
+Section~\ref{sec:setup}; development checks used a further disjoint namespace
+and were never used to change the method or the protocol. $R$ was fixed in
+advance and not increased after inspecting results.
+
+\paragraph{Methods.} (B) \emph{Multiscale AKDE} is AKDE-M exactly as
+confirmed in Section~\ref{sec:results}: $60$ centres on
+$[\min x - 4h,\ \max x + 4h]$ at bandwidths
+$\{0.05, 0.15, 0.45, 1.34, 4\}\times h$, with $h$ the Silverman reference
+bandwidth of the training sample, matched measurements ($m=M=300$), and the
+tuning grids of Section~\ref{sec:setup}. (A) \emph{Single-scale AKDE} keeps
+the same $60$ centres and the same two-stage construction, measurements and
+tuning criterion, but gives all atoms one shared bandwidth per candidate fit,
+chosen by the same three-fold validation score from nine geometrically spaced
+values on $[0.05h,\,4h]$ that contain the five multiscale bandwidths; its
+measurement family is matched to its own $60$-atom dictionary. Its search is
+$216$ candidates per fold against $24$ for the multiscale entry, which cost
+$\bfSsTuneCostRatioNSmall\times$ and $\bfSsTuneCostRatioNLarge\times$ the
+multiscale tuning time at $N=500$ and $5000$. The true density was never used
+to select a bandwidth. (E) \emph{SPADES-simplex} uses exactly the dictionary of
+(B): on every dataset the SHA-256 of the two dictionaries' centre and variance
+arrays agree and every fitted atom of both methods lies in that dictionary.
+(C) Sheather--Jones KDE, (D) Abramson KDE and (F) the EM Gaussian mixture with
+component-specific variances and validation-selected component count are the
+implementations of Section~\ref{sec:setup}. Reference bandwidths and
+dictionaries are rebuilt from the training part of each fold and from the full
+sample for the final fit.
+
+\paragraph{Controls.} Two further AKDE variants, locked before their results
+were examined, were run on $r\in\{1,8\}$, $N\in\{500,5000\}$ and the first ten
+replication seeds ($40$ datasets, $80$ fits), paired with the main-run fits on
+the identical datasets. The \emph{dictionary-size-matched single-scale}
+control uses $300$ centres and one validation-selected bandwidth, so it has the
+multiscale entry's atom count without its multiple bandwidths. The
+\emph{expanded-range} control keeps $60\times5$ atoms and the same centres but
+spans $[0.025h,\,8h]$. The expanded range is exploratory and is not promoted
+to the main estimator on these data.
+
+\paragraph{Metrics and analysis.} For every fit we saved total, narrow-region
+and complement ISE, the selected and final support, the number of active
+components ($|w_i| > 10^{-8}\max_j|w_j|$), the minimal storage of an
+equivalent representation (three numbers per mixture component; $N$ centres
+plus one bandwidth for the Sheather--Jones estimator; $N$ centres plus $N$
+bandwidths for Abramson), the serialised file size, tuning and fitting time,
+the atom centres, bandwidths and weights, the total weight per dictionary
+scale, the number of scales receiving at least $1\%$ of the weight, solver
+status, iteration counts, objective values and relative KKT residuals of both
+stages, mass error and density validity. Query time was measured afterwards
+on every saved model with $10{,}000$ identical points on $[-5,6]$ in batches of
+$2{,}000$ after two warm-up calls, taking the median of seven timing repeats
+within each model; repeats are not replications. Per cell we report the
+arithmetic mean $\pm$ sample SD (ddof $=1$) across the $20$ datasets. Paired
+geometric-mean ISE ratios are defined with multiscale AKDE in the numerator, so
+values below one favour it, and are accompanied by $95\%$ percentile bootstrap
+intervals from $10{,}000$ resamples of dataset identifiers within a cell with
+all methods carried together (seed $20260930$). The trend statistic within
+each $N$ is the mean paired log-ratio at $r=8$ minus that at $r=1$; a negative
+value means a larger relative multiscale benefit at higher heterogeneity.
+A large-error fit is one whose ISE exceeds five times the median of its own
+(method, $r$, $N$) cell, a rule fixed in advance.
+
+\subsection{Results}
+
+\paragraph{Completion and validity.} All $\bfNAttempted$ main-run fits and
+all $80$ control fits completed without execution errors and returned valid
+densities (maximum mass deviation $\bfMaxMassError$, no negative weights, no
+fallback, no support cap). Tables~\ref{tab:bf-results} and
+\ref{tab:bf-narrow} give total and narrow-region ISE as mean $\pm$ SD;
+Table~\ref{tab:bf-ratios} gives the paired ratios; Figure~\ref{fig:bf-error}
+plots both.
+
+\begin{table}[htbp]
+\centering
+\caption{Total ISE on the controlled family $f_r$, arithmetic mean $\pm$
+sample SD (ddof $=1$) across $R=20$ independent datasets per cell. The SD
+describes variation between datasets; it is not a confidence interval. Smaller
+is better. All $960$ fits are included; none was excluded.}
+\label{tab:bf-results}
+\small
+\input{bandwidth_flexibility_results.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Narrow-region ISE, $\int_{A_r}(\widehat f - f_r)^2$ with
+$A_r=[2-2/r,2+2/r]$, mean $\pm$ SD across $20$ datasets per cell, against the
+full target density. The region shrinks with $r$, so entries are comparable
+between methods within a column, not across columns.}
+\label{tab:bf-narrow}
+\small
+\input{bandwidth_flexibility_narrow.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Paired geometric-mean ISE ratios with AKDE-M in the numerator
+(values below one favour AKDE-M), with $95\%$ percentile bootstrap intervals
+from $10{,}000$ resamples of dataset identifiers within each cell, pairing
+preserved. These are bootstrap intervals for the geometric-mean ratio, not
+replicate standard deviations; the mean $\pm$ SD summaries are in
+Tables~\ref{tab:bf-results} and \ref{tab:bf-narrow}. Twenty pairs per cell.}
+\label{tab:bf-ratios}
+\small
+\input{bandwidth_flexibility_ratios.tex}
+\end{table}
+
+\paragraph{Representation: multiscale versus single-scale AKDE.} The
+hypothesis is not supported. The single-scale ablation attained lower ISE than
+multiscale AKDE-M in seven of the eight cells, by paired geometric-mean factors
+of $\bfMsVsSsRoneNSmall$ $[\bfMsVsSsRoneNSmallLo, \bfMsVsSsRoneNSmallHi]$,
+$\bfMsVsSsRtwoNSmall$, $\bfMsVsSsRfourNSmall$ and $\bfMsVsSsReightNSmall$
+$[\bfMsVsSsReightNSmallLo, \bfMsVsSsReightNSmallHi]$ at $N=500$ for $r=1,2,4,8$,
+and $\bfMsVsSsRoneNLarge$ $[\bfMsVsSsRoneNLargeLo, \bfMsVsSsRoneNLargeHi]$,
+$\bfMsVsSsRtwoNLarge$ and $\bfMsVsSsRfourNLarge$ at $N=5000$ for $r=1,2,4$. In
+these seven cells the multiscale fit was better on at most three of the twenty
+paired datasets. The only cell favouring the multiscale entry is $r=8$,
+$N=5000$, with ratio $\bfMsVsSsReightNLarge$
+$[\bfMsVsSsReightNLargeLo, \bfMsVsSsReightNLargeHi]$, an interval that contains
+one; that cell is inconclusive, and its mean $\pm$ SD in
+Table~\ref{tab:bf-results} is dominated by four large-error single-scale fits.
+The narrow-region ratios tell the same story
+(Table~\ref{tab:bf-ratios}): the multiscale dictionary did not reproduce the
+narrow feature better than a single well-chosen bandwidth. The trend statistic
+is $\bfTrendNSmall$ $[\bfTrendNSmallLo, \bfTrendNSmallHi]$ at $N=500$ and
+$\bfTrendNLarge$ $[\bfTrendNLargeLo, \bfTrendNLargeHi]$ at $N=5000$: the
+\emph{relative} standing of the multiscale entry does improve as $r$ grows,
+but Figure~\ref{fig:bf-error} shows that this comes from the single-scale
+error rising with $r$ while the multiscale median error stays roughly flat
+near $0.02$ at $N=500$ and $0.002$ at $N=5000$. Changing $r$ also changes the height
+and curvature of the narrow peak, so no monotone law in $r$ is claimed.
+
+\paragraph{Controls: atom count versus bandwidth multiplicity.} The
+dictionary-size-matched control (300 centres, one bandwidth) beat multiscale
+AKDE-M on all $40$ paired control datasets, with ratios (control over
+multiscale) of $\bfCtrlSingleScaleMThreeZeroZeroVsMultiscaleAkdeRoneNSmall$,
+$\bfCtrlSingleScaleMThreeZeroZeroVsMultiscaleAkdeRoneNLarge$,
+$\bfCtrlSingleScaleMThreeZeroZeroVsMultiscaleAkdeReightNSmall$ and
+$\bfCtrlSingleScaleMThreeZeroZeroVsMultiscaleAkdeReightNLarge$ at $(r,N) =
+(1,500), (1,5000), (8,500), (8,5000)$ (Table~\ref{tab:bf-controls}). Having
+$300$ atoms is therefore not what hurts; offering them at five bandwidths is.
+Against the $60$-centre single-scale entry the $300$-centre control is
+similar or slightly better, with intervals that include one in every cell. The expanded-range control was worse than AKDE-M at $N=500$
+($\bfCtrlExpandedRangeAkdeVsMultiscaleAkdeRoneNSmall$ and
+$\bfCtrlExpandedRangeAkdeVsMultiscaleAkdeReightNSmall$) and at $r=8$,
+$N=5000$ ($\bfCtrlExpandedRangeAkdeVsMultiscaleAkdeReightNLarge$); at $r=1$,
+$N=5000$ its ratio of $\bfCtrlExpandedRangeAkdeVsMultiscaleAkdeRoneNLarge$
+$[\bfCtrlExpandedRangeAkdeVsMultiscaleAkdeRoneNLargeLo,
+\bfCtrlExpandedRangeAkdeVsMultiscaleAkdeRoneNLargeHi]$ reflects large-error
+fits on both sides and is uninformative. Widening the range does not repair the
+multiscale entry.
+
+\begin{table}[htbp]
+\centering
+\caption{Diagnostic controls on the $40$ shared datasets ($r\in\{1,8\}$,
+$N\in\{500,5000\}$, replication seeds $0$--$9$), mean $\pm$ SD across the $10$
+datasets of each cell. The main-run AKDE entries are restricted to the same
+datasets so all four rows per $N$ are paired.}
+\label{tab:bf-controls}
+\small
+\input{bandwidth_flexibility_controls.tex}
+\end{table}
+
+\paragraph{Fitting procedure: AKDE versus SPADES on the same dictionary.} On
+the identical $300$-atom dictionary, multiscale AKDE-M and SPADES-simplex are
+close: AKDE-M is $12$--$17\%$ worse at $N=500$ (ratios
+$\bfMsVsSpadesRoneNSmall$ to $\bfMsVsSpadesReightNSmall$ with intervals
+excluding one) and within $5\%$ at $N=5000$ for $r=2,4,8$ (ratios
+$\bfMsVsSpadesRtwoNLarge$, $\bfMsVsSpadesRfourNLarge$,
+$\bfMsVsSpadesReightNLarge$). The $r=1$, $N=5000$ ratio of
+$\bfMsVsSpadesRoneNLarge$ $[\bfMsVsSpadesRoneNLargeLo,
+\bfMsVsSpadesRoneNLargeHi]$ is produced by three AKDE-M fits with ISE above
+$0.19$ on a cell whose median is $0.002$ (all three selected the smallest
+penalty on the grid); SPADES-simplex produced no large-error fit in any cell.
+Both methods spread their weight over the same scales
+(Section~\ref{sec:bf-scales}). The multiscale dictionary is thus used about
+equally well by the two criteria, and the ablation result above is a statement
+about the dictionary-plus-selection design, not evidence that the moment
+criterion is a better or worse fitting rule than the integrated-square loss.
+
+\paragraph{Practical comparison.} Multiscale AKDE-M was behind every
+conventional comparator in every cell: $\bfMsVsSjReightNLarge$ to
+$\bfMsVsSjRoneNLarge$ times the Sheather--Jones ISE,
+$\bfMsVsAbrReightNLarge$ to $\bfMsVsAbrRoneNLarge$ times Abramson, and
+$\bfMsVsGmmRtwoNLarge$ to $\bfMsVsGmmRoneNSmall$ times the Gaussian mixture
+(Table~\ref{tab:bf-ratios}). The single-scale ablation was much closer to the
+kernel estimators, ranging from $\bfSsVsSjRfourNLarge$ to $\bfSsVsSjRtwoNSmall$
+times the Sheather--Jones ISE, with intervals including one in five of eight
+cells, and the EM mixture, which has the right parametric form for this
+family, was the most accurate method at $r=8$. These targets are easy for
+every comparator with its own form of scale adaptation.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{bandwidth_flexibility_error_vs_r.pdf}
+\caption{Error against scale heterogeneity. Left and middle: total and
+narrow-region ISE of every method, mean $\pm$ SD across the $20$ datasets of
+each $(r,N)$ cell (between-dataset SD, not a confidence interval). Right:
+paired geometric-mean ratios of AKDE-M against the single-scale ablation
+(total ISE solid, narrow-region dashed) and against SPADES-simplex (dotted),
+with $95\%$ percentile bootstrap intervals from $10{,}000$ within-cell
+resamples; values below one favour AKDE-M. Regional errors are comparable
+within an $r$ only.}
+\label{fig:bf-error}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{bandwidth_flexibility_fits.pdf}
+\caption{Fitted densities on the controlled family at $N=5000$, one dataset
+per row: replication $0$, the first locked seed, in every cell, with no
+selection after inspection. Left panels show the dictionary methods, right
+panels the kernel and mixture comparators; the truth and AKDE-M are repeated
+so the panels align. Shading marks $A_r$, enlarged in the inset; annotations
+give each curve's ISE and component count $K$. The $r=1$ AKDE-M curve is one
+of its three large-error fits and is shown at full height. One dataset
+illustrates shape only; Figure~\ref{fig:bf-error} carries the replicated
+evidence. The corresponding $N=500$ figure is
+Figure~\ref{fig:bf-fits-small}.}
+\label{fig:bf-fits}
+\end{figure}
+
+\subsection{Which bandwidths are selected}
+\label{sec:bf-scales}
+
+Figure~\ref{fig:bf-atoms} and Table~\ref{tab:bf-scales} show where the
+multiscale fits put their weight. At $N=5000$ the two middle scales,
+$0.45h$ and $1.34h$, carry $90$--$97\%$ of the mass in every cell, the
+narrowest scale $0.05h$ carries $1$--$5\%$ and $0.15h$ carries $1$--$4\%$; at
+$N=500$ the mass sits on $0.45h$ ($68$--$83\%$) and $0.15h$ ($13$--$27\%$), with
+at most $1\%$ on $1.34h$. The widest scale $4h$ receives exactly zero weight in
+all $160$ AKDE-M fits and all $160$ SPADES-simplex fits. On the rule that a
+scale is materially used when it receives at least $1\%$ of the weight, the
+fits use $3.2$--$3.8$ of the five scales on average at $N=5000$ and about $3$
+at $N=500$, but the narrow scales are used at low weight in every cell,
+including the homogeneous target $r=1$, rather than concentrated on the narrow
+feature. The single-scale ablation, in contrast, chose its bandwidth in step
+with the target: median selected values of
+$\bfSelScaleSingleScaleAkdeRoneNSmall h$, $\bfSelScaleSingleScaleAkdeRtwoNSmall h$,
+$\bfSelScaleSingleScaleAkdeRfourNSmall h$ and
+$\bfSelScaleSingleScaleAkdeReightNSmall h$ at $N=500$ for $r=1,2,4,8$, and
+$\bfSelScaleSingleScaleAkdeRoneNLarge h$ (the top of its grid in all $20$
+datasets), $\bfSelScaleSingleScaleAkdeRtwoNLarge h$,
+$\bfSelScaleSingleScaleAkdeRfourNLarge h$ and
+$\bfSelScaleSingleScaleAkdeReightNLarge h$ at $N=5000$, with
+$\bfCompNSingleScaleAkdeNSmall$ and $\bfCompNSingleScaleAkdeNLarge$ components
+on average against $\bfCompNMultiscaleAkdeNSmall$ and
+$\bfCompNMultiscaleAkdeNLarge$ for AKDE-M. The multiscale selector, in other
+words, did not use the wide atoms the body of the density calls for, and
+assembled the body from several dozen medium and narrow atoms instead; the
+single-scale validation search found the wide bandwidth directly. Individual
+supports vary from dataset to dataset even where the fitted curves are
+similar (Figure~\ref{fig:bf-atoms}, top), which is why the scale-weight
+summary over $20$ datasets, not the single example, is the evidence.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{bandwidth_flexibility_atoms.pdf}
+\caption{Selected centres and bandwidths. Top: for the models of
+Figure~\ref{fig:bf-fits} ($N=5000$, replication $0$) each retained atom is
+drawn at its centre and bandwidth (log scale) with marker area proportional
+to its weight; grey lines are the five dictionary scales of that dataset,
+the dotted line the narrow component's SD $1/r$, shading the region $A_r$.
+Bottom: total weight per dictionary scale for AKDE-M and SPADES-simplex,
+mean $\pm$ SD across the $20$ datasets of each cell at $N=5000$.}
+\label{fig:bf-atoms}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Total fitted weight per dictionary scale at $N=5000$, mean $\pm$ SD
+across $20$ datasets, and the mean number of scales receiving at least $1\%$
+of the weight. The widest scale received zero weight in every fit.}
+\label{tab:bf-scales}
+\small
+\input{bandwidth_flexibility_scales.tex}
+\end{table}
+
+\subsection{Accuracy against compactness and cost}
+
+Table~\ref{tab:bf-compact} and Figure~\ref{fig:bf-tradeoff} place every
+method at its validation-selected operating point. These are the points the
+tuning procedure produced, not a Pareto frontier; no hyperparameter was ever
+chosen by ground-truth error, and candidate models from tuning were not
+retained. AKDE-M stores $\bfCompNMultiscaleAkdeNLarge$ components on average
+at $N=5000$ ($\bfBytesMultiscaleAkdeNLarge$ bytes under the minimal-storage
+rule) and evaluates in $\bfQueryMultiscaleAkdeNLarge\,\mu$s per point against
+$\bfQueryKdeSjNLarge\,\mu$s for the Sheather--Jones estimator, a
+$\bfQuerySpeedupMsVsSjNLarge$-fold difference; the storage ratio is
+$\bfBytesRatioSjVsMsNLarge$ because the kernel estimator needs only one
+bandwidth, not one per component. The single-scale ablation is more compact
+still ($\bfCompNSingleScaleAkdeNLarge$ components,
+$\bfQuerySingleScaleAkdeNLarge\,\mu$s) and more accurate, and the EM mixture
+is both the smallest and, at $r=8$, the most accurate. On this family the
+compactness advantage of AKDE-M over kernel estimators is real but is not an
+advantage over the other compact estimators, and its fitting cost
+($\bfWallMultiscaleAkdeNLarge$~s at $N=5000$ including tuning) exceeds that of
+SPADES-simplex and of the Sheather--Jones estimator, though not that of the
+Abramson estimator at $N=5000$.
+
+\begin{table}[htbp]
+\centering
+\caption{Compactness and cost on the controlled family, mean $\pm$ SD across
+the $80$ fits of each (method, $N$) pair; the SD therefore includes variation
+across $r$. Minimal storage counts three numbers per mixture component, $N$
+centres plus one bandwidth for the Sheather--Jones estimator and $N$ centres
+plus $N$ bandwidths for Abramson, at $8$ bytes each. Query time is the median
+over seven timing repeats within each saved model, then mean $\pm$ SD across
+models ($10{,}000$ identical points, batches of $2{,}000$, one BLAS thread).
+Fit time is end-to-end including cross-validation.}
+\label{tab:bf-compact}
+\small
+\input{bandwidth_flexibility_compact.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{bandwidth_flexibility_tradeoff.pdf}
+\caption{Validation-selected operating points on the controlled family. Left:
+mean ISE against mean number of components per $(r,N)$ cell (open markers
+$N=500$, filled $N=5000$). Middle: query cost of every saved main-run model
+against its component count. Right: mean ISE against mean end-to-end fit
+time. These are operating points produced by cross-validation, not a Pareto
+frontier.}
+\label{fig:bf-tradeoff}
+\end{figure}
+
+\subsection{Reliability and optimisation}
+
+The reliability picture of Section~\ref{sec:results} recurs here. Multiscale
+AKDE-M produced $\bfLargeMultiscaleAkde$ large-error fits
+($\bfLargeFracMultiscaleAkde\%$, worst $\bfWorstMultiscaleAkde\times$ its cell
+median, all three at $r=1$, $N=5000$ and all three at the smallest penalty
+on the grid); the single-scale ablation produced $\bfLargeSingleScaleAkde$
+($\bfLargeFracSingleScaleAkde\%$, worst $\bfWorstSingleScaleAkde\times$),
+which is what separates its means from its medians in
+Table~\ref{tab:bf-results}; SPADES-simplex and the Sheather--Jones estimator
+produced none, Abramson one and the EM mixture four. The lower end of the
+penalty grid was selected in $\bfLamEdgeMultiscaleAkde\%$ of AKDE-M fits and
+$\bfLamEdgeSingleScaleAkde\%$ of single-scale fits.
+
+The first-stage solver is the one deployed in Section~\ref{sec:results} and
+it has not been changed, so the optimisation limitation of
+Section~\ref{sec:limitations} applies unchanged. Re-deriving the KKT residuals
+from the definitions for all $\bfPbNFits$ AKDE fits of the main and control
+runs reproduces the solver's own residuals to $10^{-13}$ and every saved
+support, but stage one reached its relative tolerance of $10^{-8}$ in only
+$\bfPbSOneTol\%$ of them (median residual $\bfPbSOneMed$) and stage two reached
+$10^{-7}$ in $\bfPbSTwoTol\%$ (maximum $\bfPbSTwoMax$). An audit on
+$\bfAuditNInstances$ development instances compared the deployed $500$-sweep
+solve with a $5{,}000$-sweep solve and with a residual-space FISTA reference at
+the cross-validated setting of each instance
+(Figure~\ref{fig:bf-diagnostics}). The reference reached its own tolerance in
+only $\bfAuditTolFistaMultiscaleAkde\%$ and
+$\bfAuditTolFistaSingleScaleAkde\%$ of multiscale and single-scale instances,
+so it is a second opinion rather than a certificate. Relative objective gaps
+were below $10^{-3}$ everywhere, but the selected support depends on the
+budget: the Jaccard overlap between the deployed and the reference support had
+median $\bfAuditJaccardMedMultiscaleAkde$ (multiscale) and
+$\bfAuditJaccardMedSingleScaleAkde$ (single-scale), and the ISE after refitting
+on the reference support changed by at most
+$\bfAuditIseMaxRelChangeMultiscaleAkde\%$ for the multiscale entry but by up
+to $\bfAuditIseMaxRelChangeSingleScaleAkde\%$ in one single-scale instance
+(median $\bfAuditIseMedRelChangeSingleScaleAkde\%$). The comparison between the
+two AKDE variants is therefore a comparison between two implemented procedures
+at their documented budgets; the single-scale entry is the more
+budget-sensitive of the two, and neither result should be read as a property
+of the exact minimiser of either objective.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{bandwidth_flexibility_diagnostics.pdf}
+\caption{Optimisation diagnostics. Left and middle: relative KKT residuals of
+stage one (deployed solve re-run) and stage two (from the saved weights),
+re-derived from the definitions for every AKDE fit of the main and control
+runs, with the stated tolerances dotted. Right: on the development instances,
+the ISE after the stage-two refit on the support returned by a ten-fold
+coordinate-descent budget and by the FISTA reference, relative to the deployed
+solve.}
+\label{fig:bf-diagnostics}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{bandwidth_flexibility_fits_N500.pdf}
+\caption{Supplementary counterpart of Figure~\ref{fig:bf-fits} at $N=500$,
+replication $0$ in every cell.}
+\label{fig:bf-fits-small}
+\end{figure}
+
+\subsection{What this establishes}
+
+On a family built to reward multiscale representation, the multiscale
+dictionary did not help the proposed estimator: a single validation-selected
+bandwidth on the same centres gave lower total and narrow-region error in
+seven of eight cells and was inconclusive in the eighth, a size-matched
+single-scale control confirmed that the atom count is not the cause, and the
+widest dictionary scale was never used. Since SPADES-simplex behaves the same
+way on the same dictionary, the finding concerns the dictionary-plus-sparse-
+selection design shared by both methods rather than the moment criterion in
+particular. What the experiment does establish is that compact, valid
+mixtures of a few dozen atoms with microsecond query cost can be fitted from
+either criterion, and that on this family a sparse single-bandwidth mixture,
+or an EM mixture, is the better compact choice. Whether a different penalty
+grid, a solver that reaches its tolerance, or a selection rule that favours
+wide atoms would change the picture is open, and would require a new
+confirmation on fresh seeds.
+
+\section{Analysis of estimation error}
+\label{sec:mechanism}
+
+\subsection{Oracle diagnostics}
+
+We used a fixed subset of $16$ development datasets
+to investigate why estimation error remains.
+In these diagnostics, empirical moments and
+estimated covariance matrices were replaced by
+their population counterparts, computed using
+the known target density.
+
+This removes estimation noise from those
+quantities for the realised dictionary.
+The dictionary itself remains sample-dependent,
+and approximation error, constraints, weighting
+effects, and numerical error can still contribute.
+
+Let $R_{\mathrm{dict}}^\star$ denote the minimum
+ISE achievable by a valid mixture over the full
+dictionary, and let $R_{\mathrm{pop}}$ denote the
+ISE obtained by the population-moment fit.
+The difference
+\[
+\Delta_{\mathrm{pop}}
+=
+R_{\mathrm{pop}}-R_{\mathrm{dict}}^\star
+\]
+measures its excess over the dictionary optimum,
+subject to the accuracy of the numerical solves.
+
+Matching the measurements substantially reduced
+this excess in the reported diagnostics, but
+did not eliminate it. For the strongly skewed
+target MW3, the reported dictionary and
+population-moment errors were $0.00490$ and
+$0.0101$ at $N=500$, giving an excess of
+approximately $0.00520$. At $N=5000$, the
+corresponding values were $0.00334$ and
+$0.00521$, giving an excess of approximately
+$0.00187$.
+
+These examples show that exact population
+moments alone do not guarantee the best density
+approximation available in the dictionary.
+Absolute excesses are particularly useful when
+the dictionary optimum is close to numerical
+zero, where ratios can become misleading.
+
+\subsection{Effect of covariance estimation}
+
+Replacing the estimated covariance by its
+population counterpart changed the ISE by an
+amount reported to be at most $16.4\%$ of
+the corresponding cell's total error, with
+a median of $1.6\%$ across the diagnostic
+conditions.
+
+This suggests that covariance estimation was
+not the dominant source of error in most
+of the tested conditions. It does not imply
+that covariance estimation is negligible in
+every setting or that the choice of weighting
+matrix is unimportant.
+
+\subsection{Moment agreement and density accuracy}
+
+A small moment residual does not necessarily
+imply a small density error. In the reported
+MW6 example at $N=5000$, the separate-bank
+configuration had a maximum standardised
+moment residual of $0.82$, but a maximum
+pointwise density error of $1.02$.
+AKDE-M had a larger standardised residual
+of $2.94$ but a smaller maximum density
+error of $0.094$.
+
+Because the two configurations measure
+different functions, their residual magnitudes
+are not directly interchangeable measures
+of density accuracy. The example illustrates
+why fitted curves and ISE should be assessed
+alongside moment residuals.
+
+We also searched for feasible changes to
+mixture weights that did not increase the
+weighted moment loss. The search included
+directions that activated previously zero
+coefficients while preserving nonnegativity
+and total mass.
+
+The reported search found perturbations
+increasing ISE by $0.125$ for the separate
+measurement bank and $0.0235$ for the matched
+bank without worsening the moment loss.
+These are examples of disagreement between
+the two objectives. They are lower bounds
+on the deterioration found by the search,
+not global maxima or proof that the
+measurement map is non-injective.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig4_mechanism.pdf}
+\caption{Error diagnostics on the fixed development
+subset: population-moment controls, moment
+residuals compared with density errors, feasible
+perturbations of mixture weights, and sensitivity
+to optimisation settings. Perturbation results
+are witnessed examples rather than certified
+global bounds.}
+\label{fig:mechanism}
+\end{figure}
+
+\section{Computational cost and model compactness}
+\label{sec:cost}
+
+The computational assessment distinguishes
+fitting a model from evaluating the resulting
+density. A more expensive fitting procedure
+can still be useful when the fitted model
+is stored compactly and queried repeatedly.
+
+AKDE-M required seconds per fit, whereas
+Sheather--Jones KDE required milliseconds.
+Its fitting cost also exceeded that of the
+SPADES adaptation. Profiling identified
+component selection and constrained refitting
+as the main computational tasks.
+The phase percentages obtained for a particular
+configuration should not be transferred to
+another configuration without separate profiling.
+
+For density evaluation, saved models were
+queried at $10{,}000$ common locations using
+batches of $2{,}000$ points, common warmup
+procedures, and one BLAS thread. Seven timing
+repeats were performed for each model.
+These repeats measure timer variability;
+they are not independent fitted datasets.
+
+The reported AKDE-M evaluation times were
+$0.99$, $1.12$, and $1.17\,\mu$s per point
+at $N=200$, $1000$, and $5000$, respectively.
+The corresponding Sheather--Jones times
+were $5.17$, $30.3$, and $147.8\,\mu$s.
+At $N=5000$, this represents approximately
+$127$-fold faster evaluation under the
+tested implementation.
+
+The reported serialised model sizes at
+$N=5000$ were $1{,}344$ bytes for AKDE-M
+and $120{,}000$ bytes for Sheather--Jones KDE,
+a ratio of approximately $89$.
+These results demonstrate compactness relative
+to a full-sample KDE, rather than superiority
+over all compact density estimators.
+
+\begin{table}[htbp]
+\centering
+\caption{Fitting cost and representation size on the
+confirmation benchmark, reported as arithmetic mean $\pm$
+sample standard deviation across fitted datasets. Fit times
+are end-to-end in seconds over all $450$ fits per method and
+sample size. Component counts refer to the final active
+mixture components. Query latency is the median over seven
+timing repeats within each of the $30$ timed models
+(replications $0$ and $1$ of every target), then mean $\pm$ SD
+across those models; timing repeats are not replications.
+Aggregated SDs across the benchmark include between-target
+variation.}
+\label{tab:cost}
+\small
+\input{tab_cost_mean_sd.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig5_cost_and_compactness.pdf}
+\caption{Accuracy, computational cost, and compactness.
+The panels compare ISE with representation size
+and fitting time, and show density-evaluation
+latency and stored model size as sample size
+increases. Evaluation times depend on the
+implementation, hardware, and query workload.}
+\label{fig:cost}
+\end{figure}
+
+\section{Limitations}
+\label{sec:limitations}
+
+\paragraph{Optimisation accuracy.}
+The first-stage solver frequently stopped
+before meeting its requested KKT tolerance.
+On the diagnostic subset, increasing the
+coordinate-descent budget from $500$ to
+$10{,}000$ sweeps reduced the median relative
+KKT residual from $8.7\times10^{-5}$ to
+$1.1\times10^{-6}$. However, the proportion
+meeting tolerance increased only from
+$13.5\%$ to $24\%$.
+
+The selected supports were identical under
+these two budgets in only $18.8\%$ of
+diagnostic instances, with a reported median
+difference of $21$ atoms. Thus, the numerical
+stopping rule influences the implemented
+selection procedure.
+
+The second-stage solver generally had smaller
+residuals, but occasional failures to reach
+tolerance remained. Alternative solvers also
+failed to provide uniformly reliable
+certificates. The reported confirmation
+therefore characterises the deployed numerical
+implementation. A solver repair may retain
+the mathematical objective while changing
+the returned estimates; its practical effects
+would require separate evaluation.
+
+\paragraph{Numerical conditioning.}
+Some diagnostic matrices had condition
+numbers near $10^{19}$. Unconstrained
+coefficient solutions were highly sensitive
+to numerical rank thresholds, making
+distances between computed objective
+centres unreliable as mechanistic evidence.
+Even constrained oracle calculations require
+feasibility and optimality checks; bounded
+constraints alone do not guarantee
+numerical accuracy.
+
+\paragraph{Experimental scope and precision.}
+The study considers univariate densities,
+Gaussian dictionaries, one dictionary size,
+and $15$ fixed benchmark targets.
+The results do not establish performance
+for arbitrary density families, multivariate
+problems, or other dictionary constructions.
+
+The predefined precision target for per-cell
+log-ratio estimates was achieved in $22$
+of $45$ target--sample-size conditions.
+Consequently, the precision of individual
+effect estimates remains uneven.
+Mean $\pm$ SD reporting describes observed
+variability but does not resolve this
+limitation or replace uncertainty analysis.
+
+The measurement functions also depend on
+the training sample. Their bandwidths
+and locations change with sample size,
+even when their number is fixed.
+The observed trends therefore do not
+establish an asymptotic error floor
+or convergence rate.
+
+\paragraph{Multiscale selection.}
+The controlled experiment of Section~\ref{sec:bandwidth}
+shows that, on a family built to reward it, the five-bandwidth
+dictionary is a liability rather than an asset for this
+estimator: one cross-validated bandwidth on the same centres
+was more accurate in seven of eight cells, and the widest
+dictionary scale was never selected. That experiment uses
+four targets of one parametric form, two sample sizes and
+$20$ datasets per cell, and its single-scale ablation is the
+more budget-sensitive of the two AKDE variants under the
+deployed first-stage solver. The result bounds what the
+dictionary design can be credited with; it does not identify
+which of the penalty grid, the selection rule or the solver
+is responsible, and it does not transfer to other dictionary
+constructions without a fresh confirmation.
+
+\section{Discussion and conclusion}
+\label{sec:conclusion}
+
+This study evaluates a sparse density estimator
+that combines component selection through
+moment matching with a constrained refit
+ensuring nonnegativity and unit total mass.
+Using the same Gaussian functions for
+representation and measurement provides
+an interpretable design: the population
+moment residual equals one half of the
+gradient of integrated squared error.
+
+The experiments demonstrate that this
+measurement choice substantially affects
+estimation accuracy. Matching the two
+families reduced paired geometric-mean
+ISE relative to the separate-bank ablation
+across every tested target and sample size.
+However, the oracle diagnostics show that
+matching does not eliminate all excess
+error, and the resulting estimator remains
+less accurate than the conventional
+comparators on the benchmark summaries.
+
+The principal practical strength is a compact
+representation with fast density evaluation.
+At $N=5000$, AKDE-M achieved approximately
+$127$-fold faster queries and $89$-fold lower
+stored model size than the tested
+Sheather--Jones implementation.
+This benefit comes with higher fitting
+cost and higher estimation error.
+Its usefulness therefore depends on the
+application's accuracy requirements, storage
+constraints, and number of subsequent queries.
+
+The follow-up experiment of Section~\ref{sec:bandwidth}
+qualifies the role of the multiscale dictionary.
+On two-component targets with a narrow feature,
+a single cross-validated bandwidth on the same
+centres gave lower error than the five-bandwidth
+dictionary in seven of eight cells, a size-matched
+single-scale control was better on every paired
+dataset, and the widest scale was never used;
+SPADES-simplex used the dictionary in the same way.
+The estimator's demonstrated strength is therefore
+a compact, valid mixture that can be fitted from the
+moment criterion and queried cheaply, not a
+multiscale representation that captures sharp and
+broad features better than its alternatives.
+
+Future work should prioritise
+reliable optimisation, the interaction between
+penalisation and large-error fits, the selection
+rule's apparent preference for narrow atoms over
+the wide atoms a density's body calls for, and
+sensitivity to dictionary and measurement
+design. Extending the approach to
+multivariate data will also require
+examining how measurement count and
+dictionary size affect accuracy and cost.
+The present findings establish a measurable
+accuracy--compactness trade-off and identify
+the numerical and statistical issues that
+must be addressed to improve reliability.
+% \paragraph{Reproducibility.} Every number in this paper is regenerated from
+% saved per-replication metrics by the accompanying code; no figure or table is
+% hand-entered. The package contains the raw per-fit rows, the fitted models,
+% the analysis and plotting scripts, the frozen configurations, hashes and
+% provenance manifests, and step-by-step commands including a plot-only path
+% that performs no fitting.
+
+\bibliographystyle{plain}
+\input{references.tex}
+
+\end{document}

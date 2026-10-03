@@ -1,0 +1,24 @@
+{
+  "problems": [],
+  "n_errors": 0,
+  "stats": {
+    "main.tex": {
+      "labels": 32,
+      "refs": 21,
+      "citations": 19,
+      "environments": 27,
+      "bytes": 39888
+    },
+    "supplement.tex": {
+      "labels": 11,
+      "refs": 2,
+      "citations": 0,
+      "environments": 10,
+      "bytes": 11867
+    }
+  },
+  "bib_keys": 19,
+  "toolchain_available": false,
+  "pdf_produced": false,
+  "build_command": "latexmk -pdf main.tex; latexmk -pdf supplement.tex"
+}

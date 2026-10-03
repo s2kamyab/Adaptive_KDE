@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "test": "Prop 1(i): D = G when the measurement family is the dictionary",
+      "pass": true,
+      "detail": "max|D-G| = 0.000e+00"
+    },
+    {
+      "test": "Prop 1(ii): y0 = a",
+      "pass": true,
+      "detail": "max|y0-a| = 0.000e+00"
+    },
+    {
+      "test": "Prop 1(iii): grad R(w) = 2(Gw - a), vs central differences",
+      "pass": true,
+      "detail": "max relative deviation 2.248e-09"
+    },
+    {
+      "test": "Prop 2(a): m=M, nonsingular D -> solution independent of Omega",
+      "pass": true,
+      "detail": "cond(D)=4.67, residual=4.723e-16, max spread across 4 rho = 4.698e-15"
+    },
+    {
+      "test": "Prop 2(b): m<M, consistent -> min-norm solution independent of Omega",
+      "pass": true,
+      "detail": "residual=1.908e-16, max spread across 4 rho = 9.134e-16"
+    },
+    {
+      "test": "Prop 2(c) COUNTEREXAMPLE: m>M, inconsistent -> solution DEPENDS on Omega",
+      "pass": true,
+      "detail": "cond(D)=7.59, residual=8.364e-03 (nonzero), max coefficient spread across 4 rho = 1.635e-02 (2.8% of ||u||)"
+    },
+    {
+      "test": "Prop 3: (Gw-s)'G^{-1}(Gw-s) = w'Gw - 2s'w + s'G^{-1}s",
+      "pass": true,
+      "detail": "max relative deviation from constancy 1.532e-14; constant 0.289905 vs s'G^{-1}s 0.289905"
+    },
+    {
+      "test": "Prop 3 remark: the covariance weighting is NOT proportional to G^{-1}",
+      "pass": true,
+      "detail": "cosine alignment between (C+rho I)^{-1} and G^{-1} = 0.1814"
+    },
+    {
+      "test": "Remark: the unconstrained centre is not on the simplex",
+      "pass": true,
+      "detail": "min coefficient -4441, sum 1.00455 (simplex requires >=0 and sum 1)"
+    },
+    {
+      "test": "Remark: exact risk at the unconstrained centre vs the simplex optimum",
+      "pass": true,
+      "detail": "R(u_unc)=0.0144003 vs R_simplex*=0.00174204"
+    },
+    {
+      "test": "Assumptions: a_i = int b_i f0 finite and matches quadrature",
+      "pass": true,
+      "detail": "max relative error 4.865e-15; G finite=True; c0=0.370246"
+    }
+  ],
+  "n_tests": 11,
+  "n_failed": 0
+}

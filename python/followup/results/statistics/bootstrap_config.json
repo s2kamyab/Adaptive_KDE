@@ -1,0 +1,20 @@
+{
+  "B": 10000,
+  "master_seed": 20260928,
+  "streams": {
+    "per_cell_summary": 20260928,
+    "paired_effects": 20260929,
+    "fixed_benchmark": 20260930,
+    "benchmark_means": 20260931
+  },
+  "unit_resampled": "replicate ID within each (target, N) cell",
+  "pairing": "all methods carried together on the resampled replicate IDs",
+  "target_index": "NEVER resampled - the 15 targets are a fixed benchmark",
+  "interval_type": "percentile",
+  "limitations": [
+    "A percentile bootstrap CI is not a p-value and no test is derived from it here.",
+    "Resampling 30 replicate IDs cannot represent uncertainty about the choice of benchmark densities; between-target spread is reported separately and is not uncertainty of the benchmark mean.",
+    "ISE distributions are right-skewed; medians are reported alongside means as a robustness summary.",
+    "The bootstrap resamples stored metric rows only. Nothing is refitted."
+  ]
+}

@@ -1,0 +1,28 @@
+stage dev: 528 fits, jobs 12
+{
+ "stage": "dev",
+ "n_fits": 528,
+ "n_rows": 528,
+ "n_errors": 0,
+ "status_counts": {
+  "ok": 308,
+  "cached": 220
+ },
+ "elapsed_s": 756.8696011999855,
+ "jobs": 12,
+ "protocol_sha256": "54b63c222b7288791897765d9614514f4a812afc1d5c119b993abe2167e5d216",
+ "code_sha256": "891fd293aa8869782dda0211af16ee224998b2d53261c1e59cc22b604d67d554"
+}
+N                             500      5000
+method                                     
+I0_finalist                0.02336 0.002535
+I10_gram_colnorm_cvanchor  0.00553 0.001141
+I1_gram_fista              0.02221 0.002728
+I2_identity_fista          0.02128 0.002617
+I3_ridge_fista             0.02328 0.002534
+I4_simplex_l2              0.02222 0.002729
+I5_gram_colnorm            0.01009 0.001447
+I6_gram_ext1se5f           0.02844 0.003357
+I7_simplex_cvanchor       0.007261  0.00107
+I8_simplex_merge            0.0153 0.005012
+I9_simplex_cvanchor_merge 0.007698 0.002863

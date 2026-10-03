@@ -1,0 +1,9 @@
+variant,rho_edge_rate,lam_edge_rate,rho_lo,lam_lo,rho_hi,lam_hi
+A1_v2_moment_m300,0.6,0.6,0.0,0.5,0.6,0.1
+A2_moment_full_nosel,0.475,0.0,0.425,0.0,0.05,0.0
+A3_hybrid_momentsel_l2refit,0.65,0.45,0.0,0.45,0.65,0.0
+A4_l2_full_simplex,0.0,0.0,0.0,0.0,0.0,0.0
+A5_moment_m597_nested_loc,0.35,0.375,0.0,0.375,0.35,0.0
+A6_moment_matched_m300,0.875,0.325,0.0,0.325,0.875,0.0
+A7_moment_diagonal,0.575,0.825,0.0,0.7,0.575,0.125
+A8_moment_identity,0.0,0.8,0.0,0.8,0.0,0.0

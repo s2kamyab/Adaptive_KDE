@@ -1,0 +1,166 @@
+{
+  "config_version": "frozen-2026-09-28-a",
+  "labels": {
+    "f0": [
+      1,
+      "Gaussian"
+    ],
+    "f2": [
+      3,
+      "Strongly skewed"
+    ],
+    "f5": [
+      6,
+      "Bimodal"
+    ],
+    "f9": [
+      10,
+      "Claw"
+    ]
+  },
+  "synthetic": {
+    "cond_G": 4.66570729751874,
+    "M": 6,
+    "max_abs_D_minus_G": 0.0,
+    "max_abs_y_minus_s": 0.0,
+    "matched_centre_vs_rho": {
+      "rho=1e-06": {
+        "centre_distance_in_G": 4.914520286917328e-16,
+        "rel_coef_distance": 1.1542123695714579e-15
+      },
+      "rho=0.001": {
+        "centre_distance_in_G": 3.975604521517085e-16,
+        "rel_coef_distance": 1.0059107160671687e-15
+      },
+      "rho=0.1": {
+        "centre_distance_in_G": 2.579081242463652e-16,
+        "rel_coef_distance": 6.388907994259939e-16
+      },
+      "rho=1": {
+        "centre_distance_in_G": 5.328684347287545e-16,
+        "rel_coef_distance": 1.2184526547269262e-15
+      }
+    },
+    "unmatched_underdetermined_centre_vs_rho": {
+      "rho=1e-06": 0.030421483068849276,
+      "rho=0.001": 0.030421483068849106,
+      "rho=0.1": 0.03042148306884921,
+      "rho=1": 0.03042148306884917
+    },
+    "unmatched_note": "m=3 < M=6, so the moment system is UNDERDETERMINED: the minimum-norm least-squares solution depends on Omega, and the distance to the L2 centre varies with rho accordingly. This is the regime in which 'Omega cannot move the centre' is FALSE.",
+    "overdetermined_centre_vs_rho": {
+      "rho=1e-06": 0.01775800241220561,
+      "rho=0.001": 0.016927174299701763,
+      "rho=0.1": 0.01299217153394845,
+      "rho=1": 0.011759552702266295
+    },
+    "overdetermined_max_pairwise_coef_spread": 0.023083004302225454,
+    "overdetermined_residual_norm": 0.011951113258612651,
+    "overdetermined_note": "m=12 > M=6 and the system is inconsistent (nonzero residual), so the weighted least-squares solution genuinely DEPENDS on Omega. The coefficient spread across the four rho values quantifies that."
+  },
+  "hp_resolution": {
+    "M": 36,
+    "N": 200,
+    "target": "f5",
+    "digits": 50,
+    "regimes": {
+      "generic_weights_M36": {
+        "ise_double": 0.3121038705790843,
+        "ise_mpmath": 0.3121038705790842,
+        "abs_error": 1.1102230246251565e-16,
+        "int_f0_squared": 0.23387052305983913,
+        "abs_error_over_c0": 4.747169545351767e-16,
+        "implied_cancellation_factor_x_eps": 2.1379350995510786,
+        "n_nonzero_weights": 36
+      },
+      "simplex_optimal_M36": {
+        "ise_double": 0.01069584327416817,
+        "ise_mpmath": 0.010695843274168101,
+        "abs_error": 6.938893903907228e-17,
+        "int_f0_squared": 0.23387052305983913,
+        "abs_error_over_c0": 2.9669809658448547e-16,
+        "implied_cancellation_factor_x_eps": 1.3362094372194242,
+        "n_nonzero_weights": 6
+      },
+      "full_dict_optimum_f5_N5000": {
+        "ise_double": 8.326672684688674e-17,
+        "ise_mpmath": 2.1107020417290298e-17,
+        "abs_error": 6.215970642959645e-17,
+        "int_f0_squared": 0.23387052305983913,
+        "abs_error_over_c0": 2.657868363072502e-16,
+        "implied_cancellation_factor_x_eps": 1.196997496953315,
+        "n_nonzero_weights": 109,
+        "simplex_kkt": 6.715646445593883e-11
+      },
+      "full_dict_optimum_f0_N5000": {
+        "ise_double": 6.045164369083977e-13,
+        "ise_mpmath": 6.046695317954576e-13,
+        "abs_error": 1.5309488705984066e-16,
+        "int_f0_squared": 0.28209479177387814,
+        "abs_error_over_c0": 5.427072442463192e-16,
+        "implied_cancellation_factor_x_eps": 2.444136142958992,
+        "n_nonzero_weights": 161,
+        "simplex_kkt": 9.826386553418567e-09
+      }
+    },
+    "worst_implied_cancellation_factor_x_eps": 2.444136142958992,
+    "configured_cancellation_factor": 10000.0,
+    "measured_resolution_floor_x_c0": 5.427072442463192e-16,
+    "configured_resolution_floor_x_c0": 2.220446049250313e-12,
+    "note": "The resolution floor is CANCELLATION_FACTOR * eps * int f0^2. The configured factor is deliberately conservative; the measured worst case over a generic and a simplex-optimal weight vector is reported so the floor is validated rather than assumed. Any analytic ISE at or below the floor is numerically indistinguishable from zero and must not be quoted as an orders-of-magnitude comparison."
+  },
+  "centre_table_summary": {
+    "median_by_bank_and_tol": {
+      "1e-14": {
+        "base": 50.674536360557454,
+        "matched": 6.20619344774521e-07
+      },
+      "1e-12": {
+        "base": 10.538901387093201,
+        "matched": 2.9993315709432427e-09
+      },
+      "1e-10": {
+        "base": 1.705088833202952,
+        "matched": 5.454224386508732e-10
+      },
+      "1e-08": {
+        "base": 1.5988028874624984,
+        "matched": 6.442451160219319e-08
+      }
+    },
+    "spread_factor_by_bank": {
+      "count": {
+        "base": 16.0,
+        "matched": 16.0
+      },
+      "mean": {
+        "base": 2864.957370284423,
+        "matched": 5074157.19158399
+      },
+      "std": {
+        "base": 6625.993035138496,
+        "matched": 12737749.377081042
+      },
+      "min": {
+        "base": 1.1115053396055807,
+        "matched": 105.43319730406024
+      },
+      "25%": {
+        "base": 6.406263968388876,
+        "matched": 2034.4421983113778
+      },
+      "50%": {
+        "base": 38.94957270279137,
+        "matched": 30556.661326915902
+      },
+      "75%": {
+        "base": 1453.1018936448422,
+        "matched": 1617692.7302006758
+      },
+      "max": {
+        "base": 24967.07506844344,
+        "matched": 45120634.63064078
+      }
+    }
+  }
+}

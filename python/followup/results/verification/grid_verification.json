@@ -1,0 +1,128 @@
+{
+  "grid": {
+    "source": "Adaptive_KDE\\python\\followup\\results\\stage_c\\all_rows.csv",
+    "sha256": "9d1b2e538d72e60ffcf0081acb7a53d32202e11d7d5b51b10271d085ac7083b9",
+    "n_rows": 8100,
+    "n_targets": 15,
+    "targets": [
+      "f0",
+      "f1",
+      "f10",
+      "f11",
+      "f12",
+      "f13",
+      "f14",
+      "f2",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9"
+    ],
+    "sample_sizes": [
+      200,
+      1000,
+      5000
+    ],
+    "n_replications": 30,
+    "replications": [
+      0,
+      29
+    ],
+    "n_methods": 6,
+    "methods": [
+      "abramson",
+      "finalist",
+      "gmm_em",
+      "kde_sj",
+      "spades_simplex",
+      "v2_akde"
+    ],
+    "expected_rows": 8100,
+    "grid_complete": true,
+    "n_missing_cells": 0,
+    "n_duplicate_keys": 0,
+    "statuses": {
+      "execution": {
+        "n_rows": 8100,
+        "n_execution_failures": 0,
+        "n_ise_nonfinite": 0,
+        "n_ise_nonpositive": 0
+      },
+      "density_feasibility": {
+        "n_valid_density": 8100,
+        "n_invalid_density": 0,
+        "max_abs_mass_error": 8.881784197001252e-16,
+        "n_fallback_used": 0,
+        "n_support_capped": 0
+      },
+      "optimisation_convergence": {
+        "v2_akde": {
+          "n_fits": 1350,
+          "n_stage1_converged": 8,
+          "frac_stage1_converged": 0.005925925925925926,
+          "median_stage1_rel_kkt": 9.709581930391373e-05,
+          "max_stage1_rel_kkt": 0.0013490104102013,
+          "median_stage2_rel_kkt": 4.234035702898659e-13,
+          "max_stage2_rel_kkt": 0.0040391417321343
+        },
+        "finalist": {
+          "n_fits": 1350,
+          "n_stage1_converged": 76,
+          "frac_stage1_converged": 0.056296296296296296,
+          "median_stage1_rel_kkt": 3.88420811852758e-06,
+          "max_stage1_rel_kkt": 0.0001121958680984,
+          "median_stage2_rel_kkt": 4.0480972046637226e-14,
+          "max_stage2_rel_kkt": 0.0063764617744267
+        },
+        "spades_simplex": {
+          "n_fits": 1350,
+          "n_stage1_converged": 379,
+          "frac_stage1_converged": 0.28074074074074074,
+          "median_stage1_rel_kkt": 6.246955962144211e-07,
+          "max_stage1_rel_kkt": 8.117873069184674e-05,
+          "median_stage2_rel_kkt": 3.002155815612362e-16,
+          "max_stage2_rel_kkt": 2.414675665731436e-05
+        }
+      }
+    }
+  },
+  "pairing_and_seeds": {
+    "pairing_dataset_stream_method_independent": true,
+    "seed_keys_checked": 21600,
+    "seed_keys_unique": true,
+    "seed_first_draws_unique": true,
+    "dev_confirmation_disjoint": true,
+    "v2_disjoint_from_followup": true,
+    "dataset_level_pairs_checked": 135,
+    "dataset_level_collisions": 0,
+    "namespaces": {
+      "v2_main": {
+        "id": 0,
+        "master": null
+      },
+      "development": {
+        "id": 11,
+        "master": 20260927
+      },
+      "confirmation": {
+        "id": 23,
+        "master": 20260928
+      },
+      "figure_dev": {
+        "id": 31,
+        "master": 20260929
+      }
+    }
+  },
+  "protocol_evidence": {
+    "protocol_file_mtime_utc": "2026-09-28T02:32:43+00:00",
+    "finalist_frozen_utc_claimed": "2026-09-28T02:31:15+00:00",
+    "replication_decided_utc_claimed": "2026-09-28T02:31:24+00:00",
+    "first_confirmation_shard_mtime_utc": "2026-09-28T02:50:11+00:00",
+    "caveat": "Filesystem mtimes and content hashes establish ORDERING ON THIS MACHINE ONLY. They do not constitute third-party timestamping, and a hash does not by itself prove prospective locking. The freeze is supported by: (i) finalist.json and replication_choice.json both carry UTC stamps earlier than the first confirmation shard; (ii) the confirmation code reads the finalist from finalist.json rather than choosing it; (iii) the confirmation seed namespace is disjoint from development. It is NOT supported by any external registry, and is described in the manuscript as pre-specified, not preregistered.",
+    "freeze_precedes_first_confirmation_shard": true
+  }
+}

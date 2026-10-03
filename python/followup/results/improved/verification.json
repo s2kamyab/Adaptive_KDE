@@ -1,0 +1,77 @@
+{
+  "all_passed": true,
+  "checks": {
+    "dev_counts": {
+      "ok": true,
+      "rows": 528,
+      "expected": 528,
+      "errors": 0,
+      "max_mass_error": 6.661338147750939e-16,
+      "code_hashes": 1,
+      "protocol_hashes": 1
+    },
+    "confirm_counts": {
+      "ok": true,
+      "rows": 2700,
+      "expected": 2700,
+      "errors": 0,
+      "max_mass_error": 7.771561172376097e-16,
+      "code_hashes": 1,
+      "protocol_hashes": 1
+    },
+    "confirm_stage2_at_tol": {
+      "ok": true,
+      "max_stage2_kkt": 1.7806936480901925e-15
+    },
+    "hr_counts": {
+      "ok": true,
+      "rows": 320,
+      "expected": 320,
+      "errors": 0,
+      "max_mass_error": 4.440892098500626e-16,
+      "code_hashes": 1,
+      "protocol_hashes": 1
+    },
+    "hr_stage2_at_tol": {
+      "ok": true,
+      "max_stage2_kkt": 1.4981031280954238e-15
+    },
+    "hr_datasets_identical_to_bf_rows": {
+      "ok": true,
+      "n": 320
+    },
+    "confirm_datasets_regenerate_from_seeds": {
+      "ok": true,
+      "cells_checked": 45,
+      "mismatches": 0
+    },
+    "table_mean_sd_recomputed": {
+      "ok": true,
+      "worst_rel_dev": 4.370423840496634e-14
+    },
+    "section_macros_defined": {
+      "ok": true,
+      "n_used": 69,
+      "undefined": []
+    },
+    "manuscript_assets_and_macros": {
+      "ok": true,
+      "n_refs": 31,
+      "missing": [],
+      "bad_paths": [],
+      "undefined_macros": []
+    },
+    "manuscript_structure": {
+      "ok": true,
+      "dangling_refs": [],
+      "undefined_cites": []
+    },
+    "paper_assets_match_generated": {
+      "ok": true,
+      "differing": []
+    },
+    "plot_data_present": {
+      "ok": true
+    }
+  }
+}

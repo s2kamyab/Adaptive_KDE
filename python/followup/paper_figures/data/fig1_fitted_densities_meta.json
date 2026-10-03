@@ -1,0 +1,4 @@
+{
+  "replicate": "confirmation replicate 0 (first prespecified); identical data for every method within a panel",
+  "window": "truth quantiles [0.0005, 0.9995], visualisation only"
+}

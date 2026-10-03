@@ -1,0 +1,13 @@
+{
+  "stage": "confirm",
+  "n_fits": 2700,
+  "n_rows": 2700,
+  "n_errors": 0,
+  "status_counts": {
+    "ok": 2700
+  },
+  "elapsed_s": 391.4081661000382,
+  "jobs": 10,
+  "protocol_sha256": "54b63c222b7288791897765d9614514f4a812afc1d5c119b993abe2167e5d216",
+  "code_sha256": "891fd293aa8869782dda0211af16ee224998b2d53261c1e59cc22b604d67d554"
+}

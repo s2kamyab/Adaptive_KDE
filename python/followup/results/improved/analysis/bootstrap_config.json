@@ -1,0 +1,8 @@
+{
+  "B": 10000,
+  "seed": 20261002,
+  "unit": "replicate id within (target, N) cell, all methods carried together",
+  "targets_never_resampled": true,
+  "interval": "percentile 95%",
+  "comparators": "Stage-C rows (confirmation namespace) and bandwidth-flexibility main rows reused; datasets identical by seed, verified by dataset sha256 where stored"
+}

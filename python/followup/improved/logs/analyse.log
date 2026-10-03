@@ -1,0 +1,63 @@
+rows 10800; new methods ['I4_simplex_l2', 'I7_simplex_cvanchor']; valid 10800
+
+== benchmark mean ISE (equal weight per target) ==
+N                      200      1000     5000
+method                                       
+I4_simplex_l2       0.05698   0.0136 0.003905
+I7_simplex_cvanchor  0.0245 0.007575 0.002951
+abramson            0.01819  0.00573 0.001669
+akde_m              0.07267  0.01481  0.01158
+akde_v2              0.2731   0.1872   0.0664
+gmm_em              0.01915  0.00586  0.00194
+kde_sj              0.01984 0.006639 0.002602
+spades_simplex      0.05701  0.01361 0.003898
+
+== exp(T) paired ratios ==
+N                                   200   1000  5000
+method              reference                       
+I4_simplex_l2       abramson       4.055 3.309 2.808
+                    akde_m         0.815 0.932 0.874
+                    gmm_em         4.855 4.104 3.677
+                    kde_sj         4.027 3.083 2.265
+                    spades_simplex 1.000 1.000 1.002
+I7_simplex_cvanchor abramson       1.283 1.405 1.625
+                    akde_m         0.258 0.396 0.505
+                    gmm_em         1.537 1.743 2.128
+                    kde_sj         1.275 1.309 1.310
+                    spades_simplex 0.316 0.425 0.580
+kde_sj              abramson       1.007 1.073 1.240
+                    akde_m         0.202 0.302 0.386
+                    gmm_em         1.206 1.331 1.624
+                    spades_simplex 0.248 0.324 0.442
+spades_simplex      abramson       4.056 3.310 2.803
+                    akde_m         0.815 0.932 0.872
+                    gmm_em         4.856 4.105 3.670
+                    kde_sj         4.028 3.083 2.260
+
+== reliability ==
+             method  n_attempted  n_errors  n_valid  n_valid_density  n_large_error  frac_large_error  worst_ise_over_cell_median  stage2_kkt_median  stage2_kkt_max  stage2_kkt_frac_at_tol  stage1_converged_frac  lam_at_grid_edge_frac  stage1_kkt_median  stage1_kkt_max  stage1_kkt_frac_at_tol
+      I4_simplex_l2         1350         0     1350             1350              0          0.000000                    3.496136       1.406075e-16    1.780694e-15                1.000000               1.000000               0.000000                NaN             NaN                     NaN
+I7_simplex_cvanchor         1350         0     1350             1350              7          0.005185                   10.388749       1.211325e-16    1.431581e-15                1.000000               1.000000               0.000000                NaN             NaN                     NaN
+           abramson         1350         0     1350             1350              1          0.000741                    6.928367                NaN             NaN                     NaN                    NaN                    NaN                NaN             NaN                     NaN
+             akde_m         1350         0     1350             1350             13          0.009630                  168.981886       4.048097e-14    6.376462e-03                0.919259               0.056296               0.351111       3.884208e-06        0.000112                0.056296
+            akde_v2         1350         0     1350             1350             43          0.031852                   76.711437       4.234036e-13    4.039142e-03                0.998519               0.005926                    NaN       9.709582e-05        0.001349                0.005926
+             gmm_em         1350         0     1350             1350             37          0.027407                   34.163212                NaN             NaN                     NaN                    NaN                    NaN                NaN             NaN                     NaN
+             kde_sj         1350         0     1350             1350              0          0.000000                    3.635890                NaN             NaN                     NaN                    NaN                    NaN                NaN             NaN                     NaN
+     spades_simplex         1350         0     1350             1350              0          0.000000                    3.537587       3.002156e-16    2.414676e-05                0.917037               0.280741                    NaN       6.246956e-07        0.000081                0.280741
+
+== hr ratios (total ISE) ==
+N                                   500                   5000               
+r                                      1     2     4    8    1    2    4    8
+method              reference                                                
+I4_simplex_l2       abramson        8.29  6.97  4.53 2.43 5.61 5.05 3.13 2.17
+                    akde_m          0.89  0.89  0.89 0.85 0.46 1.05 0.99 1.03
+                    akde_single     7.83  3.38  3.35 1.59 6.36 3.30 2.95 0.66
+                    gmm_em         11.26  5.20 10.06 6.91 4.60 2.30 3.25 9.29
+                    kde_sj         11.25 11.87  4.87 1.71 7.28 5.11 2.73 1.47
+                    spades_simplex  1.00  1.00  1.00 1.00 1.00 1.00 1.00 1.00
+I7_simplex_cvanchor abramson        2.00  1.46  1.43 1.47 2.23 1.76 1.11 1.35
+                    akde_m          0.22  0.19  0.28 0.52 0.18 0.36 0.35 0.64
+                    akde_single     1.89  0.71  1.06 0.97 2.53 1.15 1.05 0.41
+                    gmm_em          2.72  1.09  3.18 4.19 1.83 0.80 1.15 5.80
+                    kde_sj          2.72  2.48  1.54 1.04 2.89 1.78 0.97 0.92
+                    spades_simplex  0.24  0.21  0.32 0.61 0.40 0.35 0.35 0.62

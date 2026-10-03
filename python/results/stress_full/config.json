@@ -1,0 +1,38 @@
+{
+  "name": "stress_full",
+  "targets": [
+    "s_outlier",
+    "s_rare_spike",
+    "s_twin_spike"
+  ],
+  "sample_sizes": [
+    50,
+    100,
+    200,
+    500,
+    1000,
+    5000
+  ],
+  "n_reps": 30,
+  "estimators": [
+    "akde",
+    "spades",
+    "spades_simplex",
+    "song",
+    "kde_sj",
+    "kde_lscv",
+    "abramson",
+    "kde_botev",
+    "gmm_em",
+    "thin_kt"
+  ],
+  "seed": 20260915,
+  "out_dir": "results",
+  "n_jobs": 14,
+  "dict_n_loc": 150,
+  "dict_n_scale": 10,
+  "n_test": 2000,
+  "compute_iae": true,
+  "compute_hellinger": true,
+  "n_folds": 5
+}

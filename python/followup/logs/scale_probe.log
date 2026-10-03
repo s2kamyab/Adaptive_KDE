@@ -1,0 +1,9 @@
+f0 N=500   ISE 0.12606  M=600  supp=40  sd_wmean/h=0.132  mass<0.25h=0.775  int fhat^2 / int f0^2 = 1.444
+f0 N=5000  ISE 0.036059  M=300  supp=60  sd_wmean/h=0.373  mass<0.25h=0.237  int fhat^2 / int f0^2 = 1.130
+f2 N=5000  ISE 0.10535  M=300  supp=55  sd_wmean/h=0.349  mass<0.25h=0.270  int fhat^2 / int f0^2 = 1.140
+f5 N=500   ISE 0.036602  M=1500  supp=156  sd_wmean/h=0.091  mass<0.25h=1.000  int fhat^2 / int f0^2 = 1.088
+f5 N=5000  ISE 0.038628  M=300  supp=71  sd_wmean/h=0.325  mass<0.25h=0.389  int fhat^2 / int f0^2 = 1.165
+f9 N=500   ISE 4.1846  M=1500  supp=10  sd_wmean/h=0.050  mass<0.25h=1.000  int fhat^2 / int f0^2 = 11.087
+f9 N=5000  ISE 0.11637  M=600  supp=76  sd_wmean/h=0.184  mass<0.25h=0.567  int fhat^2 / int f0^2 = 1.321
+
+wrote C:\dev\Adaptive_KDE_project\Adaptive_KDE\python\followup\results\audit_tables\scale_mismatch_probe.csv

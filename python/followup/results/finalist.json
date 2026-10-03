@@ -1,0 +1,57 @@
+{
+  "variant": "A6_moment_matched_m300",
+  "stage": "stage_a",
+  "display_name": "AKDE-matched",
+  "family": "moment",
+  "frozen_utc": "2026-09-28T02:31:15+00:00",
+  "config": {
+    "dict_n_loc": 60,
+    "dict_n_scale": 5,
+    "dict_lo_mult": 0.05,
+    "dict_hi_mult": 4.0,
+    "measurement": {
+      "n_loc": 60,
+      "n_scale": 5,
+      "lo_mult": 0.05,
+      "hi_mult": 4.0,
+      "source": "dictionary",
+      "label": "matched_60x5"
+    },
+    "weighting": "ridge",
+    "rho_grid": [
+      1e-06,
+      0.001,
+      0.1,
+      1.0
+    ],
+    "selection": "l1",
+    "refit": "moment",
+    "n_lambda": 6,
+    "lam_max_ratio": 0.7,
+    "lam_min_ratio": 0.0003,
+    "tau": 0.001,
+    "max_support": 400,
+    "stage1_solver": "cd_v2",
+    "fista_kkt_tol": 1e-08,
+    "fista_max_iter": 20000,
+    "stagnation_stop": false,
+    "stagnation_patience": 3,
+    "max_cd_iter": 500,
+    "label": "A6_moment_matched_m300",
+    "family": "moment",
+    "n_aware_measurement": false
+  },
+  "config_sha256": "735bd44a78bc11dc75448aa7fd60963718c72350764f140916b041c14fcd10c9",
+  "one_line": "V2 two-stage covariance-weighted moment estimator with the measurement family set equal to the dictionary (k_j = b_j), so m = M = 300 and D = G. Everything else is V2: ridge Omega, nonneg L1 selection, tau=1e-3, Omega-weighted simplex refit, V2 coordinate-descent solver.",
+  "why": [
+    "Stage A: equal-weight-per-target geometric ISE ratio vs V2 AKDE is 0.214 (N=500) and 0.063 (N=5000); 39 of 40 paired development replicates improved; no target got worse.",
+    "It is a PURE MOMENT estimator: the criterion is still (Du-y)Omega(Du-y), not the empirical L2 loss. The hybrid B4 (moment selection + L2 refit) did not beat it (0.198 / 0.131), so the gain is not attributable to L2 refitting.",
+    "Stage B: the alternatives that beat it slightly are not worth their cost or complexity. B3 (same objective solved to KKT tolerance by residual-space FISTA) reaches 0.213 / 0.050 at 7.5x the tuning time. B2 (a frozen sample-size rule that enlarges the bank above N=2000) reaches 0.214 / 0.054 at 1.8x the tuning time and adds a tuned-looking rule to justify.",
+    "Mechanism (followup/results/criterion_geometry/): the distance in the exact-ISE metric between the moment criterion unconstrained centre and the L2 centre is 0.95 for the V2 bank, 0.64 for an independent wide-range bank, and 0.028 for this one. The V2 measurement design was aiming at the wrong point in coefficient space, which no weighting matrix can repair."
+  ],
+  "rejected_alternatives": {
+    "B1b_moment_wide_indep75x4": "independent bank with the same count and the same 0.05-4h range but a different location/scale grid: 0.352 / 0.875, and one target 10.9x worse. Scale coverage alone is not enough; matching the families is what removes the centre offset.",
+    "A4_l2_full_simplex": "better (0.190 / 0.050) but it is NOT a moment method - it is the empirical integrated-square loss on the full dictionary. Reported as a control, not as the finalist.",
+    "B4_hybrid_wide_l2refit": "hybrid; reported separately, never as an improvement to moment fitting."
+  }
+}

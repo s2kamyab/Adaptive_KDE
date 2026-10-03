@@ -1,0 +1,17 @@
+V2 seed keys: 32400, unique keys 32400, unique first draws 32400
+pairing across methods (identical data stream): True
+  f9 N=500 rep=0 kde_sj   recomputed 0.04316430584  saved 0.04316430584  rel 9.65e-16
+  f9 N=500 rep=0 spades   recomputed 0.05255518671  saved 0.05255518671  rel 6.60e-16
+  f9 N=500 rep=0 song     recomputed 0.0432750407  saved 0.0432750407  rel 1.76e-15
+  f9 N=500 rep=0 akde     recomputed 0.035353116  saved 0.035353116  rel 1.96e-16
+  f9 N=500 rep=7 kde_sj   recomputed 0.04310680367  saved 0.04310680367  rel 1.29e-15
+  f9 N=500 rep=7 spades   recomputed 0.05038787128  saved 0.05038787128  rel 8.26e-16
+  f9 N=500 rep=7 song     recomputed 0.03224047553  saved 0.03224047553  rel 2.37e-15
+  f9 N=500 rep=7 akde     recomputed 0.048775139  saved 0.048775139  rel 0.00e+00
+  f5 N=5000 rep=0 kde_sj   recomputed 0.0003153507253  saved 0.0003153507253  rel 1.43e-13
+  f5 N=5000 rep=0 spades   recomputed 0.005154223758  saved 0.005154223758  rel 1.46e-14
+  f5 N=5000 rep=0 song     recomputed 0.02755853671  saved 0.02755853671  rel 3.78e-16
+  f5 N=5000 rep=0 akde     recomputed 0.07333268092  saved 0.07333268092  rel 0.00e+00
+
+max relative error over 12 reproduced rows: 1.425e-13
+wrote C:\dev\Adaptive_KDE_project\Adaptive_KDE\python\followup\results\audit_tables\v2_reproduction_check.csv

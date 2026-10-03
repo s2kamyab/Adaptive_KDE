@@ -1,0 +1,54 @@
+  f0 N=500   rep=0  R_full*=8.02e-11  moment(y0,C0)=0.02759  moment(y,Chat)=0.06558  l2(s)=0.01124
+  f0 N=500   rep=1  R_full*=1.609e-10  moment(y0,C0)=0.02398  moment(y,Chat)=0.06207  l2(s)=0.01741
+  f0 N=500   rep=2  R_full*=4.192e-11  moment(y0,C0)=0.02367  moment(y,Chat)=0.06683  l2(s)=0.02222
+  f0 N=500   rep=3  R_full*=7.919e-11  moment(y0,C0)=0.02688  moment(y,Chat)=0.05544  l2(s)=0.0201
+  f0 N=500   rep=4  R_full*=1.418e-10  moment(y0,C0)=0.02873  moment(y,Chat)=0.0657  l2(s)=0.01763
+  f0 N=5000  rep=0  R_full*=6.045e-13  moment(y0,C0)=0.00811  moment(y,Chat)=0.03814  l2(s)=0.00213
+  f0 N=5000  rep=1  R_full*=1.864e-13  moment(y0,C0)=0.003867  moment(y,Chat)=0.007606  l2(s)=0.001811
+  f0 N=5000  rep=2  R_full*=2.351e-13  moment(y0,C0)=0.004535  moment(y,Chat)=0.01045  l2(s)=0.002899
+  f0 N=5000  rep=3  R_full*=6.878e-13  moment(y0,C0)=0.00531  moment(y,Chat)=0.01249  l2(s)=0.001596
+  f0 N=5000  rep=4  R_full*=4.674e-13  moment(y0,C0)=0.004047  moment(y,Chat)=0.01112  l2(s)=0.002471
+  f2 N=500   rep=0  R_full*=0.002085  moment(y0,C0)=0.01247  moment(y,Chat)=0.02463  l2(s)=0.02184
+  f2 N=500   rep=1  R_full*=0.006026  moment(y0,C0)=0.08324  moment(y,Chat)=0.2762  l2(s)=0.03044
+  f2 N=500   rep=2  R_full*=0.01104  moment(y0,C0)=0.02972  moment(y,Chat)=0.08213  l2(s)=0.0344
+  f2 N=500   rep=3  R_full*=0.004899  moment(y0,C0)=0.08912  moment(y,Chat)=0.1815  l2(s)=0.02609
+  f2 N=500   rep=4  R_full*=0.002044  moment(y0,C0)=0.02414  moment(y,Chat)=0.1137  l2(s)=0.02425
+  f2 N=5000  rep=0  R_full*=0.00315  moment(y0,C0)=0.0286  moment(y,Chat)=0.02843  l2(s)=0.005407
+  f2 N=5000  rep=1  R_full*=0.006247  moment(y0,C0)=0.02994  moment(y,Chat)=0.05007  l2(s)=0.008706
+  f2 N=5000  rep=2  R_full*=0.008891  moment(y0,C0)=0.02706  moment(y,Chat)=0.04015  l2(s)=0.01389
+  f2 N=5000  rep=3  R_full*=0.00334  moment(y0,C0)=0.0434  moment(y,Chat)=0.0465  l2(s)=0.005805
+  f2 N=5000  rep=4  R_full*=0.003072  moment(y0,C0)=0.02565  moment(y,Chat)=0.05214  l2(s)=0.006946
+  f5 N=500   rep=0  R_full*=3.243e-11  moment(y0,C0)=0.02391  moment(y,Chat)=0.06209  l2(s)=0.02522
+  f5 N=500   rep=1  R_full*=3.697e-11  moment(y0,C0)=0.01351  moment(y,Chat)=0.06267  l2(s)=0.01819
+  f5 N=500   rep=2  R_full*=3.746e-11  moment(y0,C0)=0.01297  moment(y,Chat)=0.08606  l2(s)=0.02811
+  f5 N=500   rep=3  R_full*=3.165e-11  moment(y0,C0)=0.01663  moment(y,Chat)=0.07515  l2(s)=0.0164
+  f5 N=500   rep=4  R_full*=2.022e-11  moment(y0,C0)=0.01617  moment(y,Chat)=0.09337  l2(s)=0.02855
+  f5 N=5000  rep=0  R_full*=8.327e-17  moment(y0,C0)=0.0248  moment(y,Chat)=0.03333  l2(s)=0.002798
+  f5 N=5000  rep=1  R_full*=1.539e-12  moment(y0,C0)=0.02478  moment(y,Chat)=0.04833  l2(s)=0.002572
+  f5 N=5000  rep=2  R_full*=0  moment(y0,C0)=0.02452  moment(y,Chat)=0.04291  l2(s)=0.001921
+  f5 N=5000  rep=3  R_full*=5.551e-17  moment(y0,C0)=0.02467  moment(y,Chat)=0.04898  l2(s)=0.00215
+  f5 N=5000  rep=4  R_full*=1.367e-08  moment(y0,C0)=0.02494  moment(y,Chat)=0.04444  l2(s)=0.002661
+  f9 N=500   rep=0  R_full*=0.0001435  moment(y0,C0)=0.02428  moment(y,Chat)=0.06352  l2(s)=0.0176
+  f9 N=500   rep=1  R_full*=0.0003594  moment(y0,C0)=0.01972  moment(y,Chat)=0.07142  l2(s)=0.02302
+  f9 N=500   rep=2  R_full*=0.0002201  moment(y0,C0)=0.03396  moment(y,Chat)=0.08108  l2(s)=0.02447
+  f9 N=500   rep=3  R_full*=5.335e-05  moment(y0,C0)=0.03111  moment(y,Chat)=0.06698  l2(s)=0.02222
+  f9 N=500   rep=4  R_full*=0.0001113  moment(y0,C0)=0.02284  moment(y,Chat)=0.06947  l2(s)=0.03209
+  f9 N=5000  rep=0  R_full*=0.0006709  moment(y0,C0)=0.01056  moment(y,Chat)=0.01879  l2(s)=0.002828
+  f9 N=5000  rep=1  R_full*=0.0009442  moment(y0,C0)=0.005843  moment(y,Chat)=0.01553  l2(s)=0.004481
+  f9 N=5000  rep=2  R_full*=0.0005396  moment(y0,C0)=0.008106  moment(y,Chat)=0.01074  l2(s)=0.002821
+  f9 N=5000  rep=3  R_full*=0.002016  moment(y0,C0)=0.003586  moment(y,Chat)=0.007569  l2(s)=0.004343
+  f9 N=5000  rep=4  R_full*=0.0008378  moment(y0,C0)=0.007242  moment(y,Chat)=0.01796  l2(s)=0.002992
+
+== median exact ISE of each rung (base bank, rho=0.001) ==
+             R_full_star  ise_moment_y0_C0  ise_moment_y0_Chat  ise_moment_y_C0  ise_moment_y_Chat  ise_l2_empirical
+target N                                                                                                            
+f0     500      8.02e-11           0.02688             0.02625          0.07347            0.06558           0.01763
+       5000    4.674e-13          0.004535            0.004659          0.01089            0.01112           0.00213
+f2     500      0.004899           0.02972             0.04387          0.07927             0.1137           0.02609
+       5000      0.00334            0.0286             0.03496          0.04685             0.0465          0.006946
+f5     500     3.243e-11           0.01617             0.01707          0.06006            0.07515           0.02522
+       5000    8.327e-17           0.02478             0.02518          0.04982            0.04444          0.002572
+f9     500     0.0001435           0.02428             0.01914           0.0602            0.06947           0.02302
+       5000    0.0008378          0.007242            0.009789            0.011            0.01553          0.002992
+
+wrote C:\dev\Adaptive_KDE_project\Adaptive_KDE\python\followup\results\oracle_controls\ladder_base_rho0.001.csv

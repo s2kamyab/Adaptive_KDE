@@ -1,0 +1,26 @@
+\begin{tabular}{llccc}
+\toprule
+$N$ & Method & components & query ($\mu$s/point) & fit time incl.\ tuning (s) \\
+\midrule
+200 & AKDE-R (repaired) & $16.2 \pm 8.55$ & $0.184 \pm 0.148$ & $0.852 \pm 0.205$ \\
+200 & AKDE-R core (no anchor/merge) & $45 \pm 6.19$ & $0.721 \pm 0.173$ & $0.0395 \pm 0.0168$ \\
+200 & AKDE-M & $44 \pm 6.43$ & see Table~\ref{tab:cost} & $2.01 \pm 0.313$ \\
+200 & SPADES-simplex & $44.2 \pm 6.4$ & see Table~\ref{tab:cost} & $0.154 \pm 0.0466$ \\
+200 & Sheather--Jones KDE & $200 \pm 0$ & see Table~\ref{tab:cost} & $0.00192 \pm 4.99\times10^{-4}$ \\
+200 & Gaussian mixture (EM) & $3.25 \pm 1.96$ & see Table~\ref{tab:cost} & $1.63 \pm 0.286$ \\
+\midrule
+1000 & AKDE-R (repaired) & $27.9 \pm 12.7$ & $0.356 \pm 0.302$ & $1.87 \pm 0.271$ \\
+1000 & AKDE-R core (no anchor/merge) & $60.8 \pm 7.16$ & $1.25 \pm 0.462$ & $0.0786 \pm 0.0263$ \\
+1000 & AKDE-M & $50.9 \pm 8.39$ & see Table~\ref{tab:cost} & $2.45 \pm 0.328$ \\
+1000 & SPADES-simplex & $58 \pm 8.16$ & see Table~\ref{tab:cost} & $0.296 \pm 0.28$ \\
+1000 & Sheather--Jones KDE & $1000 \pm 0$ & see Table~\ref{tab:cost} & $0.00187 \pm 4.45\times10^{-4}$ \\
+1000 & Gaussian mixture (EM) & $5.52 \pm 4.31$ & see Table~\ref{tab:cost} & $2.06 \pm 0.232$ \\
+\midrule
+5000 & AKDE-R (repaired) & $42.1 \pm 14.9$ & $0.641 \pm 0.517$ & $5.21 \pm 5.75$ \\
+5000 & AKDE-R core (no anchor/merge) & $74.7 \pm 8.48$ & $1.98 \pm 0.441$ & $0.232 \pm 0.0541$ \\
+5000 & AKDE-M & $56.1 \pm 11.5$ & see Table~\ref{tab:cost} & $5.2 \pm 2.43$ \\
+5000 & SPADES-simplex & $66.2 \pm 10.8$ & see Table~\ref{tab:cost} & $2.06 \pm 2$ \\
+5000 & Sheather--Jones KDE & $5000 \pm 0$ & see Table~\ref{tab:cost} & $0.0021 \pm 4.93\times10^{-4}$ \\
+5000 & Gaussian mixture (EM) & $7.3 \pm 6.27$ & see Table~\ref{tab:cost} & $4.52 \pm 0.662$ \\
+\bottomrule
+\end{tabular}

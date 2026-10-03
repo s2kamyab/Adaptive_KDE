@@ -1,0 +1,58 @@
+# locked protocol of the improved-AKDE study (rendered by lock_protocol.py)
+version: "1"
+created_utc: "2026-10-02"
+status: "prospective development-then-confirmation protocol; NOT preregistered: the repairs were chosen from the findings of the earlier studies"
+question: "do the recommended repairs (metric-consistent weighting, converged solver, full-simplex L2 fit, scale-aware penalty, extended lambda grid + 1-SE rule, CV-anchored scales, post-fit merge) make AKDE more accurate and/or more compact, and does the repaired estimator still fall behind the conventional comparators?"
+development:
+  namespace: "development"
+  targets: ["f0", "f2", "f5", "f9"]
+  sizes: [500, 5000]
+  n_reps: 5
+  fold_stream: "method index 0 for every variant (shared folds, as Stage A)"
+  hr_namespace: "bf_dev"
+  hr_targets: ["hr1", "hr8"]
+  hr_sizes: [500, 5000]
+  hr_reps: 2
+  hr_fold_stream: "100 shared"
+  variants: ["I0_finalist", "I1_gram_fista", "I2_identity_fista", "I3_ridge_fista", "I4_simplex_l2", "I5_gram_colnorm", "I6_gram_ext1se5f", "I7_simplex_cvanchor", "I8_simplex_merge", "I9_simplex_cvanchor_merge", "I10_gram_colnorm_cvanchor"]
+  n_fits: 528
+  purpose: "ablation and finalist selection only; never reported as confirmation"
+selection_rule:
+  primary: "equal-weight-per-cell geometric mean, over the 8 Marron-Wand dev cells, of the paired ISE ratio variant / I0_finalist (lower is better)"
+  gates: ["geometric-mean ratio vs I0 on the 4 hr dev cells <= 1.0", "stage-1 AND stage-2 KKT at tolerance in >= 90% of dev fits (stage-1 n/a for simplex_l2)", "no execution error; all fits valid densities"]
+  tie_break: "among variants whose primary ratio is within 10% of the best, prefer the one with fewer tuned hyperparameters, then lower mean wall time"
+  ablation_to_confirm: "the finalist; plus I4_simplex_l2 if the finalist is not I4 (the parameter-free core), so the contribution of anchor/merge is confirmed too"
+  decided_before_dev_results: true
+confirmation:
+  namespace: "confirmation"
+  targets: ["f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "f13", "f14"]
+  sizes: [200, 1000, 5000]
+  n_reps: 30
+  fold_stream: "method index 6 (finalist) and 7 (ablation): Stage-C policy, datasets identical to Stage C so comparisons with the saved Stage-C rows of AKDE-M, AKDE-V2, SPADES-simplex, KDE-SJ, Abramson, GMM-EM are paired on data"
+  comparators_reused: "results/stage_c/all_rows.csv (not re-run)"
+  hr_namespace: "bf_main"
+  hr_targets: ["hr1", "hr2", "hr4", "hr8"]
+  hr_sizes: [500, 5000]
+  hr_reps: 20
+  hr_comparators_reused: "final_package/experiments/bandwidth_flexibility/results/main/all_rows.csv"
+  n_reps_fixed_in_advance: true
+metrics: ["ISE (analytic)", "narrow-region ISE on hr", "mass error, validity", "n_components, n_active", "minimal storage 24 bytes/component", "tune/fit/wall time", "query latency on saved models (10000 identical points, batch 2000, 2 warmup, 7 repeats, median within model)", "stage-1/2 KKT, iterations, objective, convergence", "selected lambda/rho/anchor and grid-edge flags", "merge counts and training-loss change", "large-error flag: ISE > 5x own cell median"]
+analysis:
+  per_cell: "mean +- SD (ddof=1), median"
+  benchmark: "equal-weight-per-target mean ISE; fixed-benchmark exp(T) paired ratio vs AKDE-M and vs SPADES-simplex / KDE-SJ / Abramson / GMM"
+  bootstrap:
+    B: 10000
+    seed: 20261002
+    unit: "replicate id within (target, N) cell"
+    targets_never_resampled: true
+  tables: "mean +- SD; bootstrap intervals only in labelled tables/figures"
+solver_tolerances:
+  stage1_fista_kkt: 1e-08
+  stage1_max_iter: 20000
+  stage2_kkt: 1e-07
+  simplex_l2: "fully corrective Frank-Wolfe, 400 rounds, active-set subproblems"
+seeds:
+  development: "master 20260927 id 11"
+  confirmation: "master 20260928 id 23"
+  bf_dev: "master 20261001 id 43"
+  bf_main: "master 20260930 id 41"

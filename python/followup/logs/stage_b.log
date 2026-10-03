@@ -1,0 +1,15 @@
+Stage B: 4 targets x 2 sizes x 5 reps x 4 variants = 160 final fits
+[Parallel(n_jobs=8)]: Using backend LokyBackend with 8 concurrent workers.
+[Parallel(n_jobs=8)]: Done   3 out of   8 | elapsed:  2.3min remaining:  3.9min
+[Parallel(n_jobs=8)]: Done   5 out of   8 | elapsed:  3.6min remaining:  2.1min
+[Parallel(n_jobs=8)]: Done   8 out of   8 | elapsed:  4.6min finished
+
+160 rows, 0 errors
+
+median ISE by variant and N:
+N                             500       5000
+variant                                     
+B1_moment_wide_indep_m300 0.023621 0.0027917
+B2_moment_wide_naware     0.023621 0.0030815
+B3_moment_wide_fista      0.023574 0.0027781
+B4_hybrid_wide_l2refit    0.023561 0.0029161

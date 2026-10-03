@@ -1,0 +1,168 @@
+{
+  "name": "stage_b",
+  "namespace": "development",
+  "targets": [
+    "f0",
+    "f2",
+    "f5",
+    "f9"
+  ],
+  "sizes": [
+    500,
+    5000
+  ],
+  "n_reps": 5,
+  "n_folds": 3,
+  "n_test": 2000,
+  "oracle": true,
+  "variants": {
+    "B1_moment_wide_indep_m300": {
+      "dict_n_loc": 60,
+      "dict_n_scale": 5,
+      "dict_lo_mult": 0.05,
+      "dict_hi_mult": 4.0,
+      "measurement": {
+        "n_loc": 60,
+        "n_scale": 5,
+        "lo_mult": 0.05,
+        "hi_mult": 4.0,
+        "source": "independent",
+        "label": "wide_60x5_0.05-4h_m300"
+      },
+      "weighting": "ridge",
+      "rho_grid": [
+        1e-06,
+        0.001,
+        0.1,
+        1.0
+      ],
+      "selection": "l1",
+      "refit": "moment",
+      "n_lambda": 6,
+      "lam_max_ratio": 0.7,
+      "lam_min_ratio": 0.0003,
+      "tau": 0.001,
+      "max_support": 400,
+      "stage1_solver": "cd_v2",
+      "fista_kkt_tol": 1e-08,
+      "fista_max_iter": 20000,
+      "stagnation_stop": false,
+      "stagnation_patience": 3,
+      "max_cd_iter": 500,
+      "label": "B1_moment_wide_indep_m300",
+      "family": "moment",
+      "n_aware_measurement": false
+    },
+    "B2_moment_wide_naware": {
+      "dict_n_loc": 60,
+      "dict_n_scale": 5,
+      "dict_lo_mult": 0.05,
+      "dict_hi_mult": 4.0,
+      "measurement": {
+        "n_loc": 60,
+        "n_scale": 5,
+        "lo_mult": 0.05,
+        "hi_mult": 4.0,
+        "source": "independent",
+        "label": "wide_60x5_0.05-4h_m300"
+      },
+      "weighting": "ridge",
+      "rho_grid": [
+        1e-06,
+        0.001,
+        0.1,
+        1.0
+      ],
+      "selection": "l1",
+      "refit": "moment",
+      "n_lambda": 6,
+      "lam_max_ratio": 0.7,
+      "lam_min_ratio": 0.0003,
+      "tau": 0.001,
+      "max_support": 400,
+      "stage1_solver": "cd_v2",
+      "fista_kkt_tol": 1e-08,
+      "fista_max_iter": 20000,
+      "stagnation_stop": false,
+      "stagnation_patience": 3,
+      "max_cd_iter": 500,
+      "label": "B2_moment_wide_naware",
+      "family": "moment",
+      "n_aware_measurement": true
+    },
+    "B3_moment_wide_fista": {
+      "dict_n_loc": 60,
+      "dict_n_scale": 5,
+      "dict_lo_mult": 0.05,
+      "dict_hi_mult": 4.0,
+      "measurement": {
+        "n_loc": 60,
+        "n_scale": 5,
+        "lo_mult": 0.05,
+        "hi_mult": 4.0,
+        "source": "independent",
+        "label": "wide_60x5_0.05-4h_m300"
+      },
+      "weighting": "ridge",
+      "rho_grid": [
+        1e-06,
+        0.001,
+        0.1,
+        1.0
+      ],
+      "selection": "l1",
+      "refit": "moment",
+      "n_lambda": 6,
+      "lam_max_ratio": 0.7,
+      "lam_min_ratio": 0.0003,
+      "tau": 0.001,
+      "max_support": 400,
+      "stage1_solver": "fista",
+      "fista_kkt_tol": 1e-08,
+      "fista_max_iter": 4000,
+      "stagnation_stop": false,
+      "stagnation_patience": 3,
+      "max_cd_iter": 500,
+      "label": "B3_moment_wide_fista",
+      "family": "moment",
+      "n_aware_measurement": false
+    },
+    "B4_hybrid_wide_l2refit": {
+      "dict_n_loc": 60,
+      "dict_n_scale": 5,
+      "dict_lo_mult": 0.05,
+      "dict_hi_mult": 4.0,
+      "measurement": {
+        "n_loc": 60,
+        "n_scale": 5,
+        "lo_mult": 0.05,
+        "hi_mult": 4.0,
+        "source": "independent",
+        "label": "wide_60x5_0.05-4h_m300"
+      },
+      "weighting": "ridge",
+      "rho_grid": [
+        1e-06,
+        0.001,
+        0.1,
+        1.0
+      ],
+      "selection": "l1",
+      "refit": "l2",
+      "n_lambda": 6,
+      "lam_max_ratio": 0.7,
+      "lam_min_ratio": 0.0003,
+      "tau": 0.001,
+      "max_support": 400,
+      "stage1_solver": "cd_v2",
+      "fista_kkt_tol": 1e-08,
+      "fista_max_iter": 20000,
+      "stagnation_stop": false,
+      "stagnation_patience": 3,
+      "max_cd_iter": 500,
+      "label": "B4_hybrid_wide_l2refit",
+      "family": "hybrid",
+      "n_aware_measurement": false
+    }
+  }
+}

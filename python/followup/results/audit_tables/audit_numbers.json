@@ -1,0 +1,10 @@
+{
+  "source": "C:\\dev\\Adaptive_KDE_project\\Adaptive_KDE\\python\\results\\main_full\\all_results.csv",
+  "n_rows": 27000,
+  "akde_fits_total": 2700,
+  "all_fits_total": 27000,
+  "akde_frac_valid": 1.0,
+  "akde_worst_mass_error": 9.325873406851317e-15,
+  "akde_fallback_count": 0,
+  "all_frac_valid": 0.9
+}

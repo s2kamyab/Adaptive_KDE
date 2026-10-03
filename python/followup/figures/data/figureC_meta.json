@@ -1,0 +1,13 @@
+{
+  "figure": "C",
+  "targets": [
+    "f5",
+    "f9"
+  ],
+  "N": [
+    500,
+    5000
+  ],
+  "sweep_source": "C:\\dev\\Adaptive_KDE_project\\Adaptive_KDE\\python\\results\\moment_count\\raw.csv",
+  "sweep_note": "V2 archive, per target (NOT pooled)"
+}

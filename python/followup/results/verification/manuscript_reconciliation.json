@@ -1,0 +1,721 @@
+{
+  "n_checks": 89,
+  "n_failed": 0,
+  "undefined_citations": [],
+  "unused_bibitems": [],
+  "dangling_refs": [],
+  "checks": [
+    {
+      "claim": "total confirmation fits (8,100)",
+      "in_manuscript": 8100,
+      "recomputed": 8100,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "execution failures (0)",
+      "in_manuscript": 0,
+      "recomputed": 0,
+      "rel_diff": 0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "valid densities (8,100)",
+      "in_manuscript": 8100,
+      "recomputed": 8100,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "max mass deviation (8.9e-16)",
+      "in_manuscript": 8.9e-16,
+      "recomputed": 8.881784197001252e-16,
+      "rel_diff": 0.00204671943806161,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-1 tolerance rate, AKDE-V2 (0.6%)",
+      "in_manuscript": 0.006,
+      "recomputed": 0.005925925925925926,
+      "rel_diff": 0.01234567901234575,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-1 tolerance rate, AKDE-M (5.6%)",
+      "in_manuscript": 0.056,
+      "recomputed": 0.056296296296296296,
+      "rel_diff": 0.005291005291005259,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-1 tolerance rate, SPADES (28.1%)",
+      "in_manuscript": 0.281,
+      "recomputed": 0.28074074074074074,
+      "rel_diff": 0.0009226308158693679,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "exp(T) AKDE-M vs V2 at N=200",
+      "in_manuscript": 0.453,
+      "recomputed": 0.4530643471917387,
+      "rel_diff": 0.00014204678088013383,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "exp(T) CI low at N=200",
+      "in_manuscript": 0.423,
+      "recomputed": 0.4226788777535689,
+      "rel_diff": 0.0007591542468820444,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "exp(T) CI high at N=200",
+      "in_manuscript": 0.485,
+      "recomputed": 0.4849551694653968,
+      "rel_diff": 9.243409196534176e-05,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "targets favouring AKDE-M at N=200 (15)",
+      "in_manuscript": 15,
+      "recomputed": 15,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "exp(T) AKDE-M vs V2 at N=1000",
+      "in_manuscript": 0.174,
+      "recomputed": 0.1738313832707099,
+      "rel_diff": 0.0009690616625866845,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "exp(T) CI low at N=1000",
+      "in_manuscript": 0.16,
+      "recomputed": 0.1599938428825656,
+      "rel_diff": 3.8481983965013566e-05,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "exp(T) CI high at N=1000",
+      "in_manuscript": 0.188,
+      "recomputed": 0.1881096034987198,
+      "rel_diff": 0.0005829973336159646,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "targets favouring AKDE-M at N=1000 (15)",
+      "in_manuscript": 15,
+      "recomputed": 15,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "exp(T) AKDE-M vs V2 at N=5000",
+      "in_manuscript": 0.0822,
+      "recomputed": 0.082169099361236,
+      "rel_diff": 0.0003759201796107105,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "exp(T) CI low at N=5000",
+      "in_manuscript": 0.0753,
+      "recomputed": 0.0753318362218731,
+      "rel_diff": 0.00042279179114338176,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "exp(T) CI high at N=5000",
+      "in_manuscript": 0.0902,
+      "recomputed": 0.090178405683803,
+      "rel_diff": 0.00023940483588690597,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "targets favouring AKDE-M at N=5000 (15)",
+      "in_manuscript": 15,
+      "recomputed": 15,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "per-target ratio range at N=200, min (0.221)",
+      "in_manuscript": 0.221,
+      "recomputed": 0.220921689539826,
+      "rel_diff": 0.0003543459736380457,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "per-target ratio range at N=200, max (0.715)",
+      "in_manuscript": 0.715,
+      "recomputed": 0.7147306672258755,
+      "rel_diff": 0.0003766891945796395,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "per-target ratio range at N=5000, min (0.013)",
+      "in_manuscript": 0.01323,
+      "recomputed": 0.0132283419912927,
+      "rel_diff": 0.00012532189775513026,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "per-target ratio range at N=5000, max (0.546)",
+      "in_manuscript": 0.5456,
+      "recomputed": 0.545558943852691,
+      "rel_diff": 7.524953685663876e-05,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "median ISE AKDE-V2 at N=200",
+      "in_manuscript": 0.119,
+      "recomputed": 0.11934528589748924,
+      "rel_diff": 0.002901562163775213,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "median ISE AKDE-V2 at N=1000",
+      "in_manuscript": 0.0709,
+      "recomputed": 0.07093049242986504,
+      "rel_diff": 0.00043007658483835563,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "median ISE AKDE-V2 at N=5000",
+      "in_manuscript": 0.0551,
+      "recomputed": 0.055130335439724745,
+      "rel_diff": 0.0005505524450951382,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "median ISE AKDE-M at N=200",
+      "in_manuscript": 0.0611,
+      "recomputed": 0.06107873303665815,
+      "rel_diff": 0.00034806813980114054,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "median ISE AKDE-M at N=1000",
+      "in_manuscript": 0.0136,
+      "recomputed": 0.01358466054879465,
+      "rel_diff": 0.0011279008239227027,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "median ISE AKDE-M at N=5000",
+      "in_manuscript": 0.0032,
+      "recomputed": 0.0031723606462391,
+      "rel_diff": 0.008637298050281319,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "median ISE SPADES at N=1000",
+      "in_manuscript": 0.0128,
+      "recomputed": 0.012777141524923749,
+      "rel_diff": 0.001785818365332149,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "median ISE SPADES at N=5000",
+      "in_manuscript": 0.0031,
+      "recomputed": 0.00305342970356015,
+      "rel_diff": 0.015022676270919286,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M median decline factor 200->5000 (19.3)",
+      "in_manuscript": 19.3,
+      "recomputed": 19.253401440680545,
+      "rel_diff": 0.0024144331253604144,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-V2 median decline factor 200->5000 (2.2)",
+      "in_manuscript": 2.2,
+      "recomputed": 2.164784323287352,
+      "rel_diff": 0.016007125778476423,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M / SPADES paired ratio at N=200",
+      "in_manuscript": 1.23,
+      "recomputed": 1.2263012017156605,
+      "rel_diff": 0.00300715307669878,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M / SPADES paired ratio at N=1000",
+      "in_manuscript": 1.07,
+      "recomputed": 1.0730814336511294,
+      "rel_diff": 0.0028798445337657377,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M / SPADES paired ratio at N=5000",
+      "in_manuscript": 1.15,
+      "recomputed": 1.146989505202569,
+      "rel_diff": 0.002617821562983465,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M behind KDE(SJ) in benchmark mean, min factor (2.2)",
+      "in_manuscript": 2.2,
+      "recomputed": 2.2305250800655814,
+      "rel_diff": 0.013875036393445995,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M behind KDE(SJ) in benchmark mean, max factor (4.5)",
+      "in_manuscript": 4.5,
+      "recomputed": 4.451629779727084,
+      "rel_diff": 0.010748937838425713,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M behind KDE(SJ) in paired geometric mean, min (2.6)",
+      "in_manuscript": 2.6,
+      "recomputed": 2.5926188066974687,
+      "rel_diff": 0.002838920500973614,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M behind KDE(SJ) in paired geometric mean, max (4.9)",
+      "in_manuscript": 4.9,
+      "recomputed": 4.9397740696495465,
+      "rel_diff": 0.008117157071335939,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M catastrophic rate at N=200",
+      "in_manuscript": 0.0022,
+      "recomputed": 0.0022222222222222222,
+      "rel_diff": 0.01010101010101004,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M catastrophic rate at N=1000",
+      "in_manuscript": 0.0,
+      "recomputed": 0.0,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M catastrophic rate at N=5000",
+      "in_manuscript": 0.0267,
+      "recomputed": 0.02666666666666667,
+      "rel_diff": 0.0012484394506866341,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-V2 catastrophic rate at N=200",
+      "in_manuscript": 0.04,
+      "recomputed": 0.04,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-V2 catastrophic rate at N=1000",
+      "in_manuscript": 0.042,
+      "recomputed": 0.042222222222222223,
+      "rel_diff": 0.005291005291005259,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-V2 catastrophic rate at N=5000",
+      "in_manuscript": 0.013,
+      "recomputed": 0.013333333333333334,
+      "rel_diff": 0.025641025641025755,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "SPADES catastrophic rate at N=200 (0)",
+      "in_manuscript": 0.0,
+      "recomputed": 0.0,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "KDE(SJ) catastrophic rate at N=200 (0)",
+      "in_manuscript": 0.0,
+      "recomputed": 0.0,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "SPADES catastrophic rate at N=1000 (0)",
+      "in_manuscript": 0.0,
+      "recomputed": 0.0,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "KDE(SJ) catastrophic rate at N=1000 (0)",
+      "in_manuscript": 0.0,
+      "recomputed": 0.0,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "SPADES catastrophic rate at N=5000 (0)",
+      "in_manuscript": 0.0,
+      "recomputed": 0.0,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "KDE(SJ) catastrophic rate at N=5000 (0)",
+      "in_manuscript": 0.0,
+      "recomputed": 0.0,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M worst catastrophic ratio at N=5000 (169)",
+      "in_manuscript": 169.0,
+      "recomputed": 168.98188556598487,
+      "rel_diff": 0.00010718600008953858,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M lambda lower-edge selection, min (22.7%)",
+      "in_manuscript": 0.227,
+      "recomputed": 0.22666666666666666,
+      "rel_diff": 0.0014684287812041944,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M lambda lower-edge selection, max (57.1%)",
+      "in_manuscript": 0.571,
+      "recomputed": 0.5711111111111111,
+      "rel_diff": 0.0001945903872349788,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M query latency at N=200 (us)",
+      "in_manuscript": 0.99,
+      "recomputed": 0.9937399998307228,
+      "rel_diff": 0.003777777606790725,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M query latency at N=1000 (us)",
+      "in_manuscript": 1.12,
+      "recomputed": 1.115670002764091,
+      "rel_diff": 0.003866068960633224,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M query latency at N=5000 (us)",
+      "in_manuscript": 1.17,
+      "recomputed": 1.1661450000246987,
+      "rel_diff": 0.003294871773761756,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "KDE(SJ) query latency at N=200 (us)",
+      "in_manuscript": 5.17,
+      "recomputed": 5.166120000649244,
+      "rel_diff": 0.000750483433415152,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "KDE(SJ) query latency at N=1000 (us)",
+      "in_manuscript": 30.3,
+      "recomputed": 30.3036749974126,
+      "rel_diff": 0.00012128704332009612,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "KDE(SJ) query latency at N=5000 (us)",
+      "in_manuscript": 147.8,
+      "recomputed": 147.84453999600373,
+      "rel_diff": 0.0003013531529345109,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "query speedup at N=5000 (127x)",
+      "in_manuscript": 127.0,
+      "recomputed": 126.78058045343626,
+      "rel_diff": 0.0017277129650688351,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "AKDE-M model bytes at N=5000 (1344)",
+      "in_manuscript": 1344.0,
+      "recomputed": 1344.0,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "KDE(SJ) model bytes at N=5000 (120000)",
+      "in_manuscript": 120000.0,
+      "recomputed": 120000.0,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "model-size factor at N=5000 (89x)",
+      "in_manuscript": 89.0,
+      "recomputed": 89.28571428571429,
+      "rel_diff": 0.00321027287319429,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "V2-bank criterion excess, min share (22%)",
+      "in_manuscript": 0.22,
+      "recomputed": 0.2151626257112755,
+      "rel_diff": 0.0219880649487477,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "V2-bank criterion excess, max share (56%)",
+      "in_manuscript": 0.56,
+      "recomputed": 0.5576279177053922,
+      "rel_diff": 0.004235861240371135,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "matched criterion excess, max share (17%)",
+      "in_manuscript": 0.175,
+      "recomputed": 0.1746567477480477,
+      "rel_diff": 0.0019614414397273183,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "MW3 matched excess share at N=500 (8.1%)",
+      "in_manuscript": 0.081,
+      "recomputed": 0.0814534056609156,
+      "rel_diff": 0.005597600752044493,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "MW3 matched excess share at N=5000 (17.5%)",
+      "in_manuscript": 0.175,
+      "recomputed": 0.1746567477480477,
+      "rel_diff": 0.0019614414397273183,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "MW3 R_full* at N=500 (0.00490)",
+      "in_manuscript": 0.0049,
+      "recomputed": 0.0048990710562913,
+      "rel_diff": 0.0001895803487142028,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "MW3 moment(y0,C0) at N=500 (0.0101)",
+      "in_manuscript": 0.0101,
+      "recomputed": 0.0101391449939846,
+      "rel_diff": 0.0038757419786733527,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "MW3 R_full* at N=5000 (0.00334)",
+      "in_manuscript": 0.00334,
+      "recomputed": 0.0033403750653089,
+      "rel_diff": 0.0001122950026645876,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "MW3 moment(y0,C0) at N=5000 (0.00521)",
+      "in_manuscript": 0.00521,
+      "recomputed": 0.0052102087109562,
+      "rel_diff": 4.005968449135648e-05,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "covariance substitution max share (16.4%)",
+      "in_manuscript": 0.164,
+      "recomputed": 0.1640467206813284,
+      "rel_diff": 0.0002848822032218457,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "ambiguity witness at zero budget, V2 bank (0.125)",
+      "in_manuscript": 0.125,
+      "recomputed": 0.1247536434824842,
+      "rel_diff": 0.001970852140126378,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "ambiguity witness at zero budget, matched bank (0.0235)",
+      "in_manuscript": 0.0235,
+      "recomputed": 0.0234621482901515,
+      "rel_diff": 0.0016107110573830368,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-1 CD@500 median rel KKT (8.7e-5)",
+      "in_manuscript": 8.7e-05,
+      "recomputed": 8.697880697114361e-05,
+      "rel_diff": 0.00024359803283202674,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-1 CD@10000 median rel KKT (1.1e-6)",
+      "in_manuscript": 1.1e-06,
+      "recomputed": 1.0543198057490037e-06,
+      "rel_diff": 0.041527449319087625,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-1 FISTA median rel KKT (1.6e-8)",
+      "in_manuscript": 1.6e-08,
+      "recomputed": 1.5569500079281085e-08,
+      "rel_diff": 0.026906245044932227,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-1 CD@500 tolerance rate (13.5%)",
+      "in_manuscript": 0.135,
+      "recomputed": 0.13541666666666666,
+      "rel_diff": 0.003086419753086285,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-1 CD@10000 tolerance rate (24%)",
+      "in_manuscript": 0.24,
+      "recomputed": 0.23958333333333334,
+      "rel_diff": 0.0017361111111110356,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-1 FISTA tolerance rate (12.5%)",
+      "in_manuscript": 0.125,
+      "recomputed": 0.125,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-2 median rel KKT, original (6.3e-13)",
+      "in_manuscript": 6.3e-13,
+      "recomputed": 6.322184829878471e-13,
+      "rel_diff": 0.0035214015680112543,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-2 max rel KKT, original (3.3e-3)",
+      "in_manuscript": 0.0033,
+      "recomputed": 0.003346343220913157,
+      "rel_diff": 0.014043400276714251,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-2 median rel KKT, reference (7.4e-7)",
+      "in_manuscript": 7.4e-07,
+      "recomputed": 7.445586695161263e-07,
+      "rel_diff": 0.006160364210981509,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "stage-2 max rel KKT, reference (0.87)",
+      "in_manuscript": 0.87,
+      "recomputed": 0.8719210074867078,
+      "rel_diff": 0.0022080545824227126,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "support identical at budgets 500 vs 10000 (18.8%)",
+      "in_manuscript": 0.188,
+      "recomputed": 0.1875,
+      "rel_diff": 0.002659574468085109,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "claim": "median support change 500->10000 (21 atoms)",
+      "in_manuscript": 21.0,
+      "recomputed": 21.0,
+      "rel_diff": 0.0,
+      "pass": true,
+      "note": ""
+    }
+  ]
+}

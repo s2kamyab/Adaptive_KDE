@@ -1,0 +1,81 @@
+  done f0 N=500 rep=0 base
+  done f0 N=500 rep=0 matched
+  done f0 N=500 rep=1 base
+  done f0 N=500 rep=1 matched
+  done f0 N=5000 rep=0 base
+  done f0 N=5000 rep=0 matched
+  done f0 N=5000 rep=1 base
+  done f0 N=5000 rep=1 matched
+  done f2 N=500 rep=0 base
+  done f2 N=500 rep=0 matched
+  done f2 N=500 rep=1 base
+  done f2 N=500 rep=1 matched
+  done f2 N=5000 rep=0 base
+  done f2 N=5000 rep=0 matched
+  done f2 N=5000 rep=1 base
+  done f2 N=5000 rep=1 matched
+  done f5 N=500 rep=0 base
+  done f5 N=500 rep=0 matched
+  done f5 N=500 rep=1 base
+  done f5 N=500 rep=1 matched
+  done f5 N=5000 rep=0 base
+  done f5 N=5000 rep=0 matched
+  done f5 N=5000 rep=1 base
+  done f5 N=5000 rep=1 matched
+  done f9 N=500 rep=0 base
+  done f9 N=500 rep=0 matched
+  done f9 N=500 rep=1 base
+  done f9 N=500 rep=1 matched
+  done f9 N=5000 rep=0 base
+  done f9 N=5000 rep=0 matched
+  done f9 N=5000 rep=1 base
+  done f9 N=5000 rep=1 matched
+
+== STAGE 1: relative KKT residual by solver and budget (median / max) ==
+                               median       max  size
+stage1_solver stage1_budget                          
+cd            500           8.698e-05 5.397e-04    96
+              2000          2.884e-05 1.904e-04    96
+              10000         1.054e-06 6.275e-05    96
+fista         40000         1.557e-08 1.282e-07    96
+
+== STAGE 1: fraction reaching the solver's own tolerance ==
+stage1_solver  stage1_budget
+cd             500             0.135
+               2000            0.177
+               10000           0.240
+fista          40000           0.125
+
+== STAGE 1: relative objective gap vs the best point found ==
+                               median       max
+stage1_solver stage1_budget                    
+cd            500           6.635e-04 2.262e-03
+              2000          1.316e-04 4.663e-04
+              10000         3.981e-06 7.009e-05
+fista         40000         0.000e+00 2.452e-10
+
+== STAGE 1: budget sensitivity of the selected support (CD only) ==
+  support identical at budget 500 vs 10000 in 18.8% of instances; median |change| = 21.0 atoms
+
+== STAGE 2: relative KKT residual, original vs independent reference ==
+        stage2_kkt_rel_orig  stage2_kkt_rel_ref
+median            6.322e-13           7.446e-07
+max               3.346e-03           8.719e-01
+
+== STAGE 2: feasibility ==
+     stage2_feas_orig_sum_minus_one  stage2_feas_orig_min_coefficient  stage2_feas_ref_sum_minus_one  stage2_feas_ref_min_coefficient
+max                       5.551e-16                         5.000e-01                      6.661e-16                        5.000e-01
+min                       0.000e+00                         0.000e+00                      0.000e+00                        0.000e+00
+
+== STAGE 2: agreement between the two solvers ==
+  fitted-density L2 difference: median 4.580e-07, max 1.329e-01
+  relative ISE change: median 1.190e-07, max 5.240e-02
+  support Jaccard: median 1.000, min 0.143
+  runtime original 0.0004 s vs reference 5.4218 s (median)
+
+== predefined practical-equivalence criterion (frozen before the run) ==
+  max relative ISE change <= 0.020  -> observed 5.240e-02
+  max fitted-density L2  <= 1.0e-03 -> observed 1.329e-01
+  VERDICT: stage-2 solvers are NOT practically equivalent on this subset
+
+wrote C:\dev\Adaptive_KDE_project\Adaptive_KDE\python\followup\results\verification\solver_verification.csv

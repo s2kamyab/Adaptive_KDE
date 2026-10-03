@@ -1,0 +1,52 @@
+running 80 reference fits (8 cells x 5 reps x 2 methods)
+[Parallel(n_jobs=6)]: Using backend LokyBackend with 6 concurrent workers.
+  f0 N=500   rep=0 done
+  f2 N=500   rep=0 done
+  f5 N=500   rep=0 done
+  f0 N=500   rep=1 done
+  f2 N=500   rep=1 done
+  f2 N=500   rep=2 done
+  f0 N=500   rep=2 done
+  f5 N=500   rep=1 done
+  f2 N=500   rep=3 done
+  f5 N=500   rep=2 done
+  f0 N=500   rep=3 done
+  f2 N=500   rep=4 done
+  f0 N=500   rep=4 done
+  f5 N=500   rep=3 done
+  f9 N=500   rep=0 done
+  f9 N=500   rep=1 done
+  f5 N=500   rep=4 done
+[Parallel(n_jobs=6)]: Done   3 out of   8 | elapsed:    4.4s remaining:    7.4s
+  f9 N=500   rep=2 done
+  f9 N=500   rep=3 done
+  f9 N=500   rep=4 done
+  f9 N=5000  rep=0 done
+  f0 N=5000  rep=0 done
+  f2 N=5000  rep=0 done
+  f5 N=5000  rep=0 done
+  f9 N=5000  rep=1 done
+  f5 N=5000  rep=1 done
+  f9 N=5000  rep=2 done
+  f9 N=5000  rep=3 done
+  f2 N=5000  rep=1 done
+  f0 N=5000  rep=1 done
+  f9 N=5000  rep=4 done
+[Parallel(n_jobs=6)]: Done   5 out of   8 | elapsed:   11.5s remaining:    6.8s
+  f5 N=5000  rep=2 done
+  f0 N=5000  rep=2 done
+  f2 N=5000  rep=2 done
+  f5 N=5000  rep=3 done
+  f0 N=5000  rep=3 done
+  f2 N=5000  rep=3 done
+  f2 N=5000  rep=4 done
+  f0 N=5000  rep=4 done
+  f5 N=5000  rep=4 done
+[Parallel(n_jobs=6)]: Done   8 out of   8 | elapsed:   18.8s finished
+
+80 rows
+N                   500       5000
+variant                           
+kde_sj         0.0082983 0.0010356
+spades_simplex  0.022619 0.0028266
+wrote C:\dev\Adaptive_KDE_project\Adaptive_KDE\python\followup\results\dev_references\all_rows.csv
